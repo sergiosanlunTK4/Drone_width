@@ -1,0 +1,38 @@
+protocol: composite C+B CFD architecture, coaxial thrust split, per-platform gates
+
+Arquitectura CFD decidida (ya no es disyuntiva):
+  C como restriccion fisica global (sum T_i + W = 0) + B como representacion CFD
+  local (actuator disk). A (RPM prescrita) queda como modelo secundario para
+  cuantificar si el disco reproduce la estructura de estela relevante para H3.
+
+mg/N NO se adopta como verdad experimental. Nuevo analisis
+geometry/coaxial_thrust_split.md: la restriccion real es el equilibrio de momento
+angular Q_u(w_u) = Q_l(w_l), de donde w_l/w_u = sqrt(C_Qu/C_Ql) y
+T_l/T_u = (C_Tl/C_Tu)*(C_Qu/C_Ql). El rotor superior gira mas rapido y el reparto
+depende de la interferencia, no de una simetria.
+
+Punto ciego nuevo (item A10): si el par coaxial es solidario o tiene dos motores/ESC
+independientes. El material DJI no lo declara; sin esto el modelo de empuje del
+coaxial no esta definido. La separacion axial del par (A6) pasa a ser parametro del
+modelo, no una cota decorativa.
+
+GATE 1A se cierra POR PLATAFORMA. Nuevo scripts/freeze_geometry_v1.py: valida y
+congela geometry-v1/<uav>/ con manifest, STL, SOURCES.md, README.md y SHA256SUMS.
+Sin flag de forzado. Verificacion con --verify.
+Estado real del dry-run: T25P 1 bloqueante (medicion), T55 3, T70P 1, T100 2
+(conflicto 8 vs 16 rotores abierto).
+
+Esquema del CSV de mediciones ampliado: value, unit, uncertainty, method,
+instrument, timestamp, operator, source_class, reference_frame, notes.
+
+Multimedia: la premisa de que el EMF era vectorial y por tanto escalable sin perdida
+resulto FALSA. El objeto de 16 MB es un mapa de bits envuelto en un metafile, sin
+trazados. Inkscape no esta instalado y winget esta bloqueado en este entorno; se
+resolvio con Pillow/GDI (scripts/convert_vector_media.py). Los rotulos son cuadros de
+texto de PowerPoint, asi que la geometria se extrae del XML en EMU, que es dato
+exacto: scripts/extract_pptx_shape_geometry.py -> data/processed/shape_geometry/
+(285 formas + 17 conectores de la slide 09). El mapeo rotulo-componente por cercania
+de linea guia es AMBIGUO (17 conectores vs 22 rotulos) y no se cita como hecho; lo
+exacto son las posiciones de las formas. Todo sigue siendo clase S, no M.
+
+No se ejecuto CFD. Ningun gate cerrado.

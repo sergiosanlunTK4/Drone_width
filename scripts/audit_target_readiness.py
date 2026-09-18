@@ -88,8 +88,8 @@ def audit_geometry() -> None:
         uav = f.name.split("_")[0].upper()
         total_d[uav] = n_d
         span = mg.get("span_candidato_mm", mg.get("span_predicho_mm"))
-        rc_txt = (f"{rc['valor']} ({rc['clasificacion']})" if rc.get("valor")
-                  else f"hipotesis {rc.get('hipotesis_trabajo')} (D)")
+        rc_txt = (f"{rc.get('valor')} ({rc.get('clasificacion')})" if rc.get("valor")
+                  else f"hipotesis {rc.get('hipotesis_trabajo', rc.get('hipotesis_previa'))} (D)")
         clases = ", ".join(f"{k.split(' ')[0]}={v}" for k, v in sorted(n_por_clase.items()))
         print(f"    {uav:5s} rotor={d_rot} m  lado_ejes={mg['lado_entre_ejes_adyacentes_m']} m"
               f"  span_cand={span} vs {mg['span_oficial_mm'][0]} mm ({mg['error_vs_ancho_pct']:+.2f} %)"

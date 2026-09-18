@@ -8,6 +8,8 @@ data/*.pdf
 #     figures/contact_sheets/ (derivados, utiles para revision).
 data/raw/dji_academy_*.txt
 data/raw/media/
+# el render PNG del diagrama se regenera con scripts/convert_vector_media.py
+data/raw/media_converted/
 
 # --- Casos CFD: la malla y los campos son regenerables desde los diccionarios.
 #     Se versionan los diccionarios (system/, constant/*.dict, 0/), NO la malla ni los resultados.

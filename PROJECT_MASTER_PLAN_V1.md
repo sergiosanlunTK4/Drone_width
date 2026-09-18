@@ -236,17 +236,32 @@ silencio durante el DOE. Criterios completos en `geometry/protocolo_geometria.md
 
 ### 8.3 Decisión pendiente: frontera CFD por RPM o por empuje
 
-Pregunta **previa** a la campaña de medición, porque determina qué dato es necesario:
+Pregunta **previa** a la campaña de medición, porque determina qué dato es necesario.
 
-| Estrategia | Frontera | Dato experimental necesario |
-|---|---|---|
-| **A. RPM prescrita** (MRF / sliding mesh / ALM) | ω + geometría de pala | RPM en condición real **y** geometría de pala fiable |
-| **B. Empuje prescrito** (actuator disk) | Δp o distribución de fuerza | empuje por rotor en la condición de vuelo |
-| **C. Sustentación impuesta** (empuje = peso) | reparto de carga | masa total + reparto de empuje (CG y ángulos) |
+**DECISIÓN ADOPTADA (2026-09-14): C y B no son alternativas excluyentes, se combinan.**
 
-Recomendación provisional: **B/C para el dataset principal** y **A en casos selectos**, para que el
-cuello de botella no dependa de la geometría de pala (el dato más caro). Requiere decisión del
-investigador. Detalle en `geometry/protocolo_geometria.md` §6.1.
+```
+C  →  Σ_i T_i + W ≈ 0              restricción física global (equilibrio de fuerzas)
+C  →  reparto T_i entre rotores     a partir de masa, CG y actitud medidos
+B  →  materializa T_i en cada disco del solver (actuator disk)
+A  →  casos selectos: ¿reproduce el disco la estructura de estela que ven los atomizadores?
+```
+
+| Nivel | Método | Dato necesario | Papel |
+|---|---|---|---|
+| **Principal (dataset)** | **Actuator disk + empuje prescrito (B)** con condición física por masa/CG/actitud (**C**) | empuje por rotor + masa + CG | niveles 1–3 del plan; no exige geometría de pala |
+| **Secundario (sensibilidad)** | **RPM prescrita (A)**: MRF / sliding mesh / ALM | RPM real + geometría de pala fiable | cuantifica si el disco reproduce la estela relevante para H3 |
+
+> ⚠ **`T_i = mg/N` NO se adopta como verdad experimental.**
+> - **T25P (no coaxial):** primera aproximación aceptable, **contrastada** con el CG medido (C5).
+> - **T55 / T70P / T100 (coaxiales):** reparto **asimétrico**. La restricción real es el equilibrio
+>   de momento angular `Q_u(ω_u) = Q_l(ω_l)`, de donde `ω_l/ω_u = √(C_Qu/C_Ql)` y
+>   `T_l/T_u = (C_Tl/C_Tu)·(C_Qu/C_Ql)`: el rotor **superior gira más rápido** y el reparto depende
+>   del grado de interferencia. Ver `geometry/coaxial_thrust_split.md`.
+>   **Incógnita abierta (A10):** si el par es solidario o tiene dos motores/ESC independientes —
+>   el material DJI no lo declara.
+
+Detalle en `geometry/protocolo_geometria.md` §6.1 y `geometry/coaxial_thrust_split.md`.
 
 ### 8.4 Relación geométrica candidata (no elevada a ley)
 

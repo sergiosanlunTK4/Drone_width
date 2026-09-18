@@ -80,15 +80,63 @@ Ambas son fuentes oficiales y **no concuerdan**. Consecuencias si se elige mal:
 **Medir y resolver antes de mallar.** Registrado en
 `geometry/manifests/t100_geometry_manifest.json`.
 
-### 2.2 Multimedia pendiente de explotar
+### 2.2 Diagrama rotulado de la slide 09 — resuelto por XML, no por render
 
-- `data/raw/media/01a_conocimiento_basico/p09_0a7ec705d2dc.emf` (**16 MB, vectorial**):
-  la slide 9 es un **diagrama rotulado** con "Hélice", "Boquilla centrífuga", "Motor", "ESC",
-  "Antena RTK", "Radar LiDAR", "Depósito de líquidos", "Bomba", etc. Un vectorial se escala sin
-  pérdida ⇒ es el mejor candidato para leer **posiciones relativas**. Requiere conversión
-  EMF→PNG/SVG (Inkscape o ImageMagick, no instalados en esta sesión).
-- Quedan decks 04–09 por extraer (energía, agroquímicos, seguridad, instructivos, mantenimiento,
-  operación práctica). Pueden contener material del **T55**.
+**Hipótesis inicial (incorrecta):** el `p09_0a7ec705d2dc.emf` de 16 MB parecía un diagrama
+vectorial escalable en el que leer posiciones relativas.
+
+**Verificación:** con `scripts/convert_vector_media.py` (Pillow rasteriza WMF/EMF por GDI en
+Windows; Inkscape/ImageMagick no están disponibles y `winget` está bloqueado) se renderizó a
+5174 × 2558 px. El resultado revela que **el objeto es un mapa de bits envuelto en un metafile**:
+no hay trazados vectoriales que escalar. La premisa "vectorial ⇒ escalable" era falsa aquí.
+
+**Los rótulos no están en el gráfico.** Son **cuadros de texto de PowerPoint superpuestos**.
+Por tanto la vía correcta no es renderizar el metafile, sino leer el XML de la diapositiva:
+cada forma trae su transformación en EMU (914 400 EMU = 1 pulgada), que es un **dato exacto**
+del archivo y no una estimación de píxeles.
+
+`scripts/extract_pptx_shape_geometry.py` → `data/processed/shape_geometry/` (285 formas;
+posiciones normalizadas al lienzo, y extremos de los 17 conectores de la slide 09).
+
+**Componentes señalados en la slide 09** (posición normalizada del extremo de la línea guía):
+
+| Rótulo | Posición relativa |
+|---|---|
+| Hélice | (0,088 , 0,265) |
+| Motor | (0,152 , 0,394) |
+| Control electrónico de velocidad (ESC) | (0,152 , 0,394) |
+| Antena RTK | (0,426 , 0,266) |
+| Cámara FPV | (0,577 , 0,223) |
+| Radar hacia adelante | (0,591 , 0,166) |
+| Radar LiDAR | (0,470 , 0,339) |
+| Antena de transmisión de vídeo | (0,184 , 0,401) |
+| Boquilla centrífuga | (0,110 , 0,612) |
+| Panel de pulverización | (0,110 , 0,612) |
+| Bomba de impulsor magnético | (0,110 , 0,612) |
+| Radar descendente | (0,397 , 0,602) |
+| Depósito de líquidos | (0,776 , 0,596) |
+| Diseño de pistola doble trasera | (0,776 , 0,596) |
+| Sistema de pulverización de carga útil | (0,721 , 0,709) |
+| Luces LED y auxiliares inferiores | (0,447 , 0,652) |
+
+> ⚠ **Limitación declarada.** El mapeo se obtuvo por proximidad entre rótulo y extremo de línea
+> guía, y **es ambiguo**: "Motor" y "ESC" colapsan en el mismo punto (van juntos en el brazo), y
+> "Boquilla centrífuga", "Panel de pulverización" y "Bomba" también. Con 17 conectores frente a
+> 22 rótulos no hay correspondencia uno a uno. **Los pares rótulo–componente no deben citarse
+> como hechos**; lo que sí es dato exacto son las **posiciones de las formas** en el CSV/JSON.
+
+**Utilidad real:** da la **topología del conjunto** (qué componentes existen y en qué zona de la
+aeronave caen) y sirve para diseñar mejor la medición — por ejemplo, confirma que el atomizador y
+la bomba están en la zona baja del brazo, por debajo del plano de rotor. **No da milímetros.**
+
+### 2.3 Multimedia pendiente de explotar
+
+- Quedan 18 objetos vectoriales sin convertir (13 son `.wdp` = Windows Media Photo, que Pillow no
+  lee; 5 son EMF pequeños que GDI no pudo renderizar). Ninguno es crítico: los grandes ya se
+  procesaron.
+- Quedan los decks **04–09** por extraer (energía, agroquímicos, seguridad, instructivos,
+  mantenimiento, operación práctica). **Pueden contener material del T55**, que es la plataforma
+  con menos evidencia.
 
 ---
 
@@ -143,18 +191,62 @@ gota–estela más puede diferir respecto de T25P/T55/T70P.
 
 ---
 
-## 5. Plantilla de captura
+## 5. Plantilla de captura y esquema del CSV
 
-```csv
-uav,bloque,id,parametro,valor,unidad,clasificacion,metodo,fecha,operador,incertidumbre,nota
-T25P,rotor,R1_FL,posicion_x,0.697,m,M,cinta_desde_centro_buje,2026-XX-XX,,0.005,origen=CG
+No se guarda solo `valor`. La trazabilidad experimental se captura **en el momento**, porque
+reconstruirla después para la publicación es mucho más caro y más frágil.
+
+### 5.1 Campos obligatorios por fila
+
+| Campo | Descripción | Ejemplo |
+|---|---|---|
+| `value` | valor numérico o categórico | `0.697` |
+| `unit` | unidad explícita; `-` si es adimensional | `m` |
+| `uncertainty` | incertidumbre con su tipo y cobertura | `±0.005 (k=2)` |
+| `method` | cómo se obtuvo | `cinta_desde_centro_buje` |
+| `instrument` | instrumento concreto, marca/modelo si aplica | `cinta Stanley 5 m, clase II` |
+| `timestamp` | fecha y hora ISO 8601 | `2026-09-20T10:35:00-03:00` |
+| `operator` | quién midió (iniciales o id) | `D.M.` |
+| `source_class` | P / P-A / S / M / I / E / D | `M` |
+| `reference_frame` | sistema de referencia de la medición | `CG_tank50` |
+| `notes` | observaciones, desviaciones, dudas | `dron sobre caballete` |
+
+Campos adicionales de contexto: `uav`, `block`, `element_id` (ej. `R1_upper`), `parameter`,
+`configuracion` (2/4 atomizadores, carga de tanque), `repetitions`, `raw_file` (foto o CSV fuente).
+
+### 5.2 Sistema de referencia (`reference_frame`)
+
+**Se declara una sola vez para todo el proyecto** y se referencia por nombre en cada fila.
+Propuesta:
+
+```
+origen  = CG en configuración de pulverización con tanque al 50 %
+X       = hacia adelante (dirección de vuelo)
+Y       = hacia la izquierda
+Z       = hacia arriba
 ```
 
-- **Bloque `rotor`** → una fila por campo y por rotor (§3).
+Sin esto, las coordenadas de rotores y atomizadores no son comparables entre campañas,
+entre plataformas ni contra el CAD.
+
+### 5.3 Ejemplo de filas
+
+```csv
+uav,block,element_id,parameter,value,unit,uncertainty,method,instrument,timestamp,operator,source_class,reference_frame,notes
+T25P,rotor,R1,posicion_x,0.6965,m,±0.005 (k=2),cinta_desde_centro_buje,"cinta Stanley 5 m, clase II",2026-09-20T10:35:00-03:00,D.M.,M,CG_tank50,dron sobre caballete
+T25P,rotor,R1,n_palas,2,-,exacto,conteo_visual,-,2026-09-20T10:36:00-03:00,D.M.,M,CG_tank50,confirma evidencia S de la slide 12
+T70P,rotor,R1_upper,rpm_hover,2680,rpm,±10 %,tacometro_optico,"tacometro optico X, 2 canales",2026-09-21T09:10:00-03:00,D.M.,M,CG_tank50,medido junto con R1_lower
+T100,rotor,par_A,separacion_axial_par,0.215,m,±0.005 (k=2),cinta_entre_planos,-,2026-09-22T11:00:00-03:00,D.M.,M,CG_tank50,parametro del modelo de empuje
+```
+
+### 5.4 Reglas de captura
+
+- **Bloque `rotor`** → una fila por campo y por **disco** (§3), incluidos `R1_upper` / `R1_lower`.
 - **Bloque `atomizer`** → una fila por campo y por atomizador (§4).
-- **Bloques `masa`** y **`bancada`** → según §6.
-- Guardar en `data/raw/mediciones_geometria.csv`. Si una medición contradice a la ficha
-  oficial, **gana la medición** y se anota la discrepancia.
+- **Bloques `masa`**, **`bancada`** → según §6.
+- Guardar en `data/raw/mediciones_geometria.csv`. Si una medición contradice la ficha oficial,
+  **gana la medición** y se anota la discrepancia en `notes`.
+- Ninguna fila con `source_class = M` sin `uncertainty` y `instrument`.
 
 ---
 
@@ -204,28 +296,49 @@ T25P,rotor,R1_FL,posicion_x,0.697,m,M,cinta_desde_centro_buje,2026-XX-XX,,0.005,
 | D2 | Presión de pulverización | manómetro |
 | D3 | **Espectro real** (D10/D50/D90) | PDI/Sympatec, o hidrosensibles como ordinal |
 | D4 | RPM del motor del **atomizador** (P-A: hasta 14 000 rpm) y su efecto en el espectro | tacómetro óptico |
-| D5 | Curva **empuje–RPM–torque–corriente** por rotor | bancada (ver §6.1) |
+| D5 | Curva **empuje–RPM–torque–corriente por rotor** | bancada (ver §6.2) |
+
+### Bloque A-bis — par coaxial (prioridad 1 para T55/T70P/T100)
+
+| # | Medición | Método |
+|---|---|---|
+| A10 | **Accionamiento del par**: nº de motores y de ESC por brazo; ¿par solidario o independiente? | inspección, despiece o manual de servicio |
+| A11 | **RPM de cada rotor del par en hover real**, simultáneamente (2 canales) | tacómetro óptico doble / cámara de alta velocidad |
+| A6 | **Separación axial del par** (ya en bloque A): es **parámetro del modelo de empuje**, no una cota decorativa | cinta entre planos de rotor |
+
+> Ver `geometry/coaxial_thrust_split.md`: el reparto de empuje del par **no se asume `mg/N`**.
 
 ---
 
-## 6.1 GATE 1B — estado operativo del rotor y decisión de frontera CFD
+## 6.1 GATE 1B — estado operativo del rotor y arquitectura CFD
 
-### 6.1.1 La pregunta que hay que cerrar primero
+### 6.1.1 Arquitectura adoptada: C → B para el dataset, A para sensibilidad
 
-**¿El CFD impondrá RPM como condición de frontera, o empuje (thrust) equivalente?**
+Decisión (2026-09-14). **C y B no son alternativas excluyentes: se combinan.**
 
-Es una decisión **previa** a la campaña de medición, porque determina qué dato es necesario:
+```
+C  →  Σ_i T_i + W ≈ 0              restricción física global (equilibrio de fuerzas)
+C  →  reparto T_i entre rotores     a partir de masa, CG y actitud medidos
+B  →  materializa T_i en cada disco del solver (actuator disk)
+A  →  casos selectos: ¿reproduce el disco la estructura de estela que ven los atomizadores?
+```
 
-| Estrategia CFD | Frontera que impone | Dato experimental necesario | Ventaja | Coste |
-|---|---|---|---|---|
-| **A. RPM prescrita** (MRF / sliding mesh / ALM) | ω del rotor + geometría de pala | **RPM en condición real** + geometría de pala fiable | Física de pala y estela de punta explícitas | Exige geometría de pala y RPM reales |
-| **B. Empuje prescrito** (actuator disk) | Δp o distribución de fuerza por disco | **Empuje por rotor** en la condición de vuelo | Robusto; no necesita geometría de pala | No reproduce estelas de punta; arrastra la incertidumbre del disco |
-| **C. Sustentación impuesta** (empuje = peso) | reparto de carga entre rotores | **masa total + reparto de empuje** (CG y ángulos) | Autoconsistente con el vuelo | Asume reparto uniforme salvo medición |
+| Nivel | Método | Papel | Papel |
+|---|---|---|---|
+| **Principal (dataset)** | **Actuator disk + empuje prescrito (B)**, condición física por masa/CG/actitud (**C**) | Niveles 1–3 del plan | No necesita geometría de pala |
+| **Secundario (sensibilidad)** | **RPM prescrita (A)**: MRF / sliding mesh / ALM | Casos selectos de alta fidelidad | Exige RPM real y geometría de pala fiable |
 
-**Recomendación:** estrategia **B/C para el dataset principal** (niveles 1–3 del plan) y
-**A en los casos selectos** de alta fidelidad, para cuantificar cuánto se pierde con el disco
-actuador. Así el cuello de botella del dataset no depende de la geometría de pala — que es el
-dato más caro de obtener.
+**Para qué sirve el modelo secundario:** para cuantificar si la simplificación por disco reproduce
+la **estructura de estela relevante para los atomizadores** — que es la pregunta que importa para
+**H3**, no la fidelidad aerodinámica en abstracto.
+
+> **El reparto `T_i` NO se toma como `mg/N` como verdad experimental.**
+> - **T25P (no coaxial):** `T_i ≈ mg/N` es aceptable como primera aproximación, y **aun así** se
+>   contrasta con el CG medido (C5).
+> - **T55 / T70P / T100 (coaxiales):** reparto **asimétrico**, determinado por `C_T`, `C_Q` y el
+>   factor de interferencia. Ver `geometry/coaxial_thrust_split.md`. Si la campaña demuestra que el
+>   reparto es prácticamente simétrico, se documenta como resultado y se justifica la simplificación
+>   (§54). **No se asume.**
 
 ### 6.1.2 Cómo medir RPM y empuje (en este orden)
 
@@ -234,11 +347,12 @@ representativa**: una RPM de motor descargado o inferida del KV es prácticament
 el modelo aerodinámico (context.md §42).
 
 1. **RPM en hover real**, con masa representativa: tacómetro óptico o cámara de alta velocidad
-   contando palas. Método directo y no invasivo.
+   contando palas. Método directo y no invasivo. **En coaxiales, medir los dos rotores del par a
+   la vez** (A11).
 2. **Telemetría autorizada** (requiere permiso escrito, §31) como contraste.
-3. **Bancada de empuje**: curva empuje–RPM–torque–corriente. Necesaria de todos modos para las
-   estrategias B/C y para resolver la ambigüedad de los valores publicados (**82 kg/brazo** en
-   T100 y **54,2 kg/eje** en T70P: no se sabe si son por rotor o por par coaxial).
+3. **Bancada de empuje**: curva empuje–RPM–torque–corriente. Necesaria para las estrategias B y C
+   y para resolver la ambigüedad de los valores publicados (**82 kg/brazo** en T100 y
+   **54,2 kg/eje** en T70P: no se sabe si son por rotor o por par coaxial).
 4. **Estimación inversa** (empuje = peso + momentum theory): solo como contraste.
 
 ### 6.1.3 Relación a construir en 1B
@@ -286,29 +400,66 @@ como resultado negativo (§54).
 
 ## 8. Criterios de cierre
 
-### GATE 1A — geometry validated
+### GATE 1A — geometry validated, **se cierra POR PLATAFORMA**
 
-- [ ] A1, A2, A3, A4, A5, A6, A8 resueltos con `M` para las 4 plataformas.
+Un conflicto en una plataforma **no debe bloquear a las demás**. Cada UAV se cierra de forma
+independiente y se congela su propia `geometry-v1`.
+
+**Criterios comunes (aplican a cada plataforma que se cierre):**
+
+- [ ] A1, A2, A3, A4, A5, A6, A8 resueltos con `M`, cada uno con `uncertainty` e `instrument`.
 - [ ] A7 (palas y geometría de pala) resuelto con `M` — o aceptado explícitamente como limitación
-      si se decide ir por la estrategia CFD B/C sin geometría de pala.
-- [ ] A9 resuelto: **conflicto 8 vs 16 rotores del T100 cerrado**.
+      si se va por la arquitectura principal C→B (actuator disk), que no necesita geometría de pala.
 - [ ] B1, B2, B3, B4 resueltos con `M` (posición, orientación y Δz de atomizadores).
 - [ ] C1, C2, C3 resueltos con `M`.
-- [ ] `geometry/manifests/*.json` sin `D` críticos en los bloques A/B.
-- [ ] Sistema de referencia (§3) declarado una sola vez y aplicado a todos los datos.
-- [ ] **Congelar `geometry-v1`**: hash de los manifiestos registrado en
-      `geometry/manifests/FROZEN_geometry_v1.sha256`.
+- [ ] Sistema de referencia declarado (§5.2) y aplicado a **todas** las filas.
+- [ ] Manifiesto sin `D` críticos en los bloques A/B.
+- [ ] `geometry-v1/<uav>/` creado, inmutable y verificado por hash (§8.2).
+
+**Bloqueos específicos por plataforma:**
+
+| Plataforma | Estado 1A | Bloqueo específico |
+|---|---|---|
+| **T25P** | candidato a cerrar primero | ninguno detectado: no coaxial, evidencia `S` de 4 rotores y 2 palas. **Es el candidato natural para el caso base.** |
+| **T55** | bloqueado | sin evidencia visual (`S`); requiere medición completa o localizar documentación propia |
+| **T70P** | bloqueado | separación axial del par (A6) + reparto de empuje del coaxial + discrepancia dimensional |
+| **T100** | **bloqueado hasta resolver A9** | **conflicto 8 vs 16 rotores sin cerrar** — cambia el modelo físico completo |
+
+- [ ] **A9 cerrado:** determinar si "8 pares" se refiere a pares coaxiales, a otra nomenclatura del
+      sistema propulsivo, o si una de las fuentes describe otra configuración o versión.
+- [ ] Registrado el motivo de la discrepancia, no solo el valor elegido.
 
 ### GATE 1B — rotor operating state
 
-- [ ] Estrategia de frontera CFD (§6.1.1) **decidida y documentada**.
+- [ ] Arquitectura CFD (§6.1.1) decidida y documentada: **C→B principal, A secundaria**.
 - [ ] RPM en hover real medida con masa representativa, con incertidumbre.
-- [ ] Empuje por rotor (o por par) medido en bancada; ambigüedad de 82 kg / 54,2 kg resuelta.
+- [ ] **A10 resuelto:** accionamiento del par coaxial (solidario o independiente).
+- [ ] **A11 resuelto:** RPM de ambos rotores del par medidas simultáneamente.
+- [ ] Curva empuje–RPM–torque–corriente **por rotor** (D5a/D5b) y del par coaxial (D5c).
+- [ ] **Reparto de empuje superior/inferior** determinado y contrastado
+      (`geometry/coaxial_thrust_split.md`). `mg/N` **no** se usa como verdad experimental.
 - [ ] Relación RPM ↔ masa ↔ empuje ↔ configuración ↔ atmósfera documentada.
-- [ ] Reparto de empuje entre rotores coherente con el CG medido (C5).
+- [ ] Reparto coherente con el CG medido (C5).
 
 **Mientras 1B esté abierto:** el CFD es exploratorio y se etiqueta como tal. Ningún resultado de
 esa fase entra al dataset ni al paper como dato de la plataforma real.
+
+### 8.2 Congelación inmutable de geometría
+
+Al cerrar 1A para una plataforma se crea `geometry-v1/<uav>/` con:
+
+```
+geometry-v1/<uav>/
+    manifest.json        manifiesto cerrado (sin D críticos)
+    model.stl            geometría de estudio
+    SOURCES.md           fuentes, clasificación e incertidumbre de cada cota
+    SHA256SUMS           hashes de los tres archivos anteriores
+    README.md            fecha de cierre, quién lo cerró, alcance y limitaciones
+```
+
+Generado y verificado por `scripts/freeze_geometry_v1.py`. Regla: **una vez creado, el
+directorio no se modifica**; cualquier cambio produce `geometry-v2/<uav>/` y obliga a
+re-ejecutar los casos que dependían de v1.
 
 ---
 
@@ -320,6 +471,7 @@ esa fase entra al dataset ni al paper como dato de la plataforma real.
 | `data/processed/geometry_master.csv` | `scripts/build_geometry_manifests.py` | ✅ |
 | `geometry/models/<uav>_control.stl` + `.meta.json` | `scripts/generate_control_geometry_v2.py` | ✅ geometría de control (no CAD fiel) |
 | `data/raw/media/`, `data/processed/media_inventory.csv`, `figures/contact_sheets/` | `scripts/extract_pptx_media.py` | ✅ 178 objetos catalogados |
-| `data/raw/mediciones_geometria.csv` | campaña de campo (bloques A–D) | ⬜ **cuello de botella** |
-| `geometry/manifests/FROZEN_geometry_v1.sha256` | tras cerrar 1A | ⬜ |
+| `geometry/coaxial_thrust_split.md` | análisis + plan de medición del par coaxial | ✅ abierto, con derivación |
+| `data/raw/mediciones_geometria.csv` | campaña de campo (bloques A–D, §5) | ⬜ **cuello de botella** |
+| `geometry-v1/<uav>/` | `scripts/freeze_geometry_v1.py` tras cerrar 1A | ⬜ |
 | `data/raw/dji_academy_01_FUENTE.md` | registro de fuentes P-A y S | ✅ |

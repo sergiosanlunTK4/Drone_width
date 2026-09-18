@@ -236,4 +236,62 @@ y masa del T100 (75 kg specs vs 73 kg Academy).
 - **Estado:** `PHASE_01_SPECIFICATIONS`. **El hito siguiente NO es ejecutar OpenFOAM**, sino cerrar
   **GATE 1A**.
 
+### Entry 010 | Arquitectura CFD compuesta, reparto coaxial y multimedia resuelto
+- **Date:** 2026-09-14
+- **Disparador:** segunda revisión del investigador, que corrige la disyuntiva B/C y señala el
+  punto ciego del reparto de empuje en coaxiales.
+- **Correcciones aceptadas:**
+  1. **B y C NO son alternativas excluyentes.** Arquitectura adoptada:
+     **C como restricción física global** (`Σ T_i + W ≈ 0`) **+ B como representación CFD local**
+     (actuator disk materializa el empuje en cada disco). **A (RPM prescrita)** queda como
+     **modelo secundario** para casos selectos, cuya finalidad es cuantificar si la simplificación
+     por disco reproduce la **estructura de estela relevante para los atomizadores** (H3), no la
+     fidelidad aerodinámica en abstracto.
+  2. **`mg/N` NO se adopta como verdad experimental.** Para T25P (no coaxial) es una primera
+     aproximación aceptable, contrastada con el CG medido. Para T55/T70P/T100 (coaxiales) **no**.
+  3. **GATE 1A se cierra POR PLATAFORMA**, no globalmente: un conflicto del T100 no debe bloquear
+     al T25P. Cada plataforma congela su propia `geometry-v1/<uav>/`.
+  4. **Esquema del CSV ampliado** (protocolo §5): `value`, `unit`, `uncertainty`, `method`,
+     `instrument`, `timestamp`, `operator`, `source_class`, `reference_frame`, `notes` — la
+     trazabilidad experimental se captura en el momento, no se reconstruye después.
+- **Punto ciego atacado — reparto de empuje del par coaxial** (`geometry/coaxial_thrust_split.md`):
+  - La restricción física real **no es `T_u = T_l`** sino el equilibrio de momento angular:
+    `Q_u(ω_u) = Q_l(ω_l)`.
+  - De teoría de elemento de pala: `ω_l/ω_u = sqrt(C_Qu/C_Ql)` y
+    `T_l/T_u = (C_Tl/C_Tu)·(C_Qu/C_Ql)`.
+  - **Consecuencia:** el rotor **superior gira más rápido** que el inferior para par neto nulo.
+    El reparto **depende del grado de interferencia**, no de una simetría.
+  - **Incógnita de accionamiento (nueva, ítem A10):** si el par es **solidario** (ω_u = ω_l forzado)
+    o **independiente** (dos motores/ESC por brazo). El material DJI **no lo declara**.
+    Sin esto el modelo de empuje del coaxial no está definido.
+  - **La separación axial del par (A6) deja de ser una cota decorativa:** es parámetro del modelo
+    de empuje.
+- **Multimedia resuelto:**
+  - Se intentó Inkscape primero: **no instalado y `winget` bloqueado** en este entorno (exit
+    -1978335231); sin ImageMagick ni LibreOffice. Se resolvió con **Pillow/GDI**, que sí rasteriza
+    WMF/EMF en Windows. Script nuevo `scripts/convert_vector_media.py`.
+  - **Hallazgo que refuta la premisa:** el EMF de 16 MB **no es vectorial útil** — es un **mapa de
+    bits envuelto en un metafile**. Renderizado a 5174×2558 px no hay trazados que escalar.
+    La idea de "escalar sin pérdida para leer posiciones" **no era viable por esa vía**.
+  - **Vía correcta:** los rótulos son **cuadros de texto superpuestos**, así que la geometría se
+    lee del **XML de la diapositiva** en EMU (dato exacto, no estimación de píxeles).
+    Script nuevo `scripts/extract_pptx_shape_geometry.py` → `data/processed/shape_geometry/`
+    (285 formas + extremos de los 17 conectores de la slide 09).
+  - **Limitación declarada:** el mapeo rótulo→componente por cercanía de línea guía es **ambiguo**
+    (17 conectores vs 22 rótulos; "Motor" y "ESC" colapsan). Lo exacto son las posiciones de las
+    formas; los pares rótulo–componente **no se citan como hechos**.
+- **Nuevo artefacto:** `scripts/freeze_geometry_v1.py` — valida el cierre de GATE 1A por plataforma
+  y congela `geometry-v1/<uav>/` con manifiesto, STL, `SOURCES.md`, `README.md` y `SHA256SUMS`.
+  **No existe flag de forzado**: para congelar hay que cerrar el gate de verdad.
+  Verificación con `--verify` (recalcula hashes y detecta alteraciones).
+- **Resultado de la validación (dry-run, estado real):**
+  | Plataforma | Bloqueantes |
+  |---|---|
+  | T25P | 1 — falta la campaña de medición (**es el candidato natural a cerrar primero**) |
+  | T55 | 3 — `blades_per_rotor` y `rotor_count` en D + medición |
+  | T70P | 1 — medición (coaxial: exige A6/A11 y reparto) |
+  | T100 | 2 — **conflicto 8 vs 16 rotores abierto** + medición |
+- **Estado:** `PHASE_01_SPECIFICATIONS`. Próximo hito sin cambios: **cerrar GATE 1A por plataforma**,
+  empezando por T25P.
+
 ---
