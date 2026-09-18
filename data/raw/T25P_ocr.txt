@@ -1,0 +1,277 @@
+--- PAGE 1 ---
+14/9/26, 12:36 a.m.
+DJI AGRAS T25P - Especificaciones - DJI
+AGRICULTURE
+Productos
+DJI Academy
+Perspectivas
+Asistencia
+Acerca de nosotros
+Especificaciones
+Aeronave
+Peso
+26 kg (pulverizacion sin bateria)
+33 kg (pulverizacion con bateria)
+Peso de despegue maximo[1]
+Peso maximo de despegue para la pulverizacion: 53 kg
+Peso maximo de despegue para el esparcido: 60 kg
+Distancia diagonal entre ejes
+1970 mm
+maxima
+Dimensiones
+Pulverizacion:
+2650x2700x820 mm (brazos y hélices desplegados)
+1520x1580x820 mm (brazos desplegados y hélices plegadas)
+1120x700x850 mm (brazos y hélices plegados)
+Dispersion:
+2650x2700x850 mm (brazos y hélices desplegados)
+1520x1580x850 mm (brazos desplegados y helices plegadas)
+1120x700x850 mm (brazos y hélices plegados)
+Rango de precision en vuelo
+RTK activado:
+estacionario (con senal GNsS
+Horizontal:
+fuerte)
+±10 cm, vertical: ±10 cmRTK desactivado:
+Horizontal:
+±60 cm, vertical: ±30 cm
+Radio de vuelo configurable
+2000 m
+maximo
+Temperatura de funcionamiento
+De 0 a 40 °C
+Resistencia maximaal viento
+Nivel 3 de viento (<6 m/s)
+Sistema de propulsion - Motores
+Tamano del estator
+100 × 28 mm
+KV
+59 RPM/V
+Sistema de propulsion - Hélices
+Material
+Fibra de carbono de nylon
+Dimensiones
+50 pulgadas
+https://ag.dji.com/es/t25p/specs
+1/5
+--- PAGE 2 ---
+14/9/26, 12:36 a.m.
+DJIAGRAS T25P - Especificaciones -DJI
+DJI AGRAS T25P
+Especificaciones
+Sistema de pulverizacion - Tanque de pulverizacion
+Material
+Plastico (HDPE)
+Volumen
+20 L
+Capacidad de carga
+20 kg
+Sistema de rociado - Aspersores
+Modelo
+LX07550SX
+Cantidad
+Configuracion estandar 2
+Distancia de las boquillas
+1420 mm (boquillas traseras)
+Tamano de microgotas
+50-500 μm
+Anchura de rociado efectiva[2]
+4-7 m (a una altura de 3 m sobre los cultivos)
+Sistema de pulverizacion - Bombas de entrega
+Tipo
+Bomba centrifuga (magnética)
+Cantidad
+Tasa de caudal maximo
+16 I/min (2 boquillas)
+24 I/min (4 boquillas)
+Sistema de esparcido 4.0
+Diametro de material compatible
+Granulos secos de 0.5-5 mm
+Volumen del tanque de esparcido
+30 L
+Tipo de estructura del esparcidor
+Disco centrifugo
+Tipo de estructura de descarga
+Alimentacion del alimentador
+Tasa de descarga maxima
+190 kg/min (fertilizante compuesto)
+Carga maxima dentro de la caja
+25 kg
+de operacion de esparcimiento
+Ancho de esparcimiento
+3-8 m
+efectivo[3]
+Sistema de Seguridad 3.0
+https://ag.dji.com/es/t25p/specs
+2/5
+--- PAGE 3 ---
+14/9/26, 12:36 a.m.
+DJIAGRAS T25P - Especificaciones -DJI
+DJI AGRAS T25P
+Especificaciones
+Temperatura de funcionamiento
+0° a 40 °C;
+Entorno de funcionamiento
+Luz adecuada y superficies reconocibles
+Frecuencia de funcionamiento
+24.05-24.25 GHz (NCC/FCC/MIC/KC/CE)
+Campo de vision
+Radar digital de matriz en fase trasera: Vertical 360°, Horizontal ±45°
+Sistema de vision con tres camaras: Horizontal: 90°; vertical: 180°
+Rango[4]
+w 09 ≥
+Velocidad efectiva del sistema
+≤ 10 m/s
+anticolision[5]
+Altura efectiva del sistema
+≥ 1.5 m
+anticolision
+Distancia de seguridad
+Control remoto
+Modelo
+TKPL 2
+Pantalla
+Pantalla tactil LCD de 7 pulgadas; resolucion: 1920x1200; brillo: 1400 cd/m2
+Rango de temperatura de
+Menos de un mes: De -30 a 45 °C (de -22 a 113 °F)
+almacenamiento
+De uno a tres meses: De -30 a 35 °C (de -22 a 95 °F)
+De tres meses a un ano: De -30 °C a 30 °C (de -22 °F a 86 °F)
+Temperatura de carga
+De 5 a 40 °C (de 41 a 104 °F)
+Tiempo de ejecucion de bateria
+3.8 horas
+interna
+Tiempo de ejecucion de bateria
+3.2 horas
+externa
+Tipo de carga
+Se recomienda utilizar un cargador UsB-C que cuente con la homologacion de alguna entidad certificadora
+a una potencia nominal maxima de 65 W y a una tension maxima de 20 V. Por ejemplo, el cargador portatil
+65 W DJI.
+Tiempo de carga
+Dos horas para la bateria interna o para la bateria interna y externa (si el control remoto esta apagado y se
+cargador estandar de DJI).
+Bateria de vuelo inteligente DB800
+Peso
+Aprox. 6.6 kg
+Capacidad
+15500 mAh
+Tension nominal
+52.22 V
+Generador inversor multifuncional D600oi
+https:/ag.dji.com/es/t25p/specs
+3/5
+--- PAGE 4 ---
+14/9/26, 12:36 a.m.
+DJIAGRAS T25P - Especificaciones -DJI
+DJIAGRAS T25P
+Especificaciones
+Capacidad del tanque de
+20 L
+combustible
+Método de arranque
+Arranque del generador mediante el interruptor de arranque de un solo boton
+Potencia maxima del motor
+6 kw
+Tipo de combustible
+Gasolina sin plomo con RON ≥91 (AKl ≥87) y contenido de alcohol inferior al 10 %
+(*Brasil: gasolina sin plomo con RON ≥ 91 y contenido de alcohol del 27 %)
+Consumo de combustible de
+600 ml/kWh
+referencia
+Capacidad de aceite del motor
+0.8 L
+Modelo de aceite del motor
+SJ 10W-40
+Fuente de alimentacion inteligente C8000
+Dimensiones
+300×280×230 mm
+Peso
+11.5 kg
+Entrada
+100-240 Vac
+Salida
+Voltaje de salida: 59.92 vCorriente de salida: 100 A max.
+Tiempo de carga[6]
+Carga completamente una bateria en 9 a 12 minutos (Bateria de vuelo inteligente DB800)
+Funciones de proteccion
+Proteccion contra sobretension, sobrecarga, subtension y exceso de temperatura.
+Seguridad durante la carga
+Proteccion del cable de CA, proteccion del cable de alimentacion y proteccion del conector de carga
+Anotacion
+[1] Cuando se mide la altura sobre el nivel del mar, la aplicacion DJi Agriculture recomendara inteligenteme
+peso de carga basado en el estado actual de la aeronave, las condiciones del entorno y las tareas operativa:
+maximo de los materiales cargados por el usuario no debe exceder el valor recomendado, ya que esto puer
+la seguridad del vuelo.
+[2] El ancho efectivo de pulverizacion del sistema de rociado depende de la escena de trabajo real.
+[3] El ancho de dispersion efectivo se mide a una altitud de vuelo de 3 m, y la operacion real esta relacionad
+velocidad de rotacion del disco, el tipo de material, el uso de mu del material y el entorno del sitio.
+[4] La distancia de observacion del sistema de seguridad 3.0 varia debido a la diferente luz ambiental, lluvia
+el material, ubicacion y forma del objeto objetivo.
+[5] Excepto en escenas de obstaculos lineales, el dano a la aeronave debido a fallos en la evitacion de obsta
+dentro de 10 m/s puede ser analizado a través del analisis de responsabilidad de registros, y las causas no 
+pueden ser reparadas de forma gratuita; si hay cables, tensores en postes de energia y otros obstaculos lin
+Nota:1. La percepcion hacia abajo se utiliza para ayudar en el vuelo a altitud siguiendo el terreno. Si ocurre
+colision con un obstaculo abajo, se considera responsabilidad del cliente.2. Debido a las limitaciones de ren
+del sistema de seguridad, la aeronave no puede esquivar activamente objetos que se mueven. Los accident
+tales escenas se consideran responsabilidad del cliente.
+30 % al 95 %; se admite carga rapida cuando la temperatura de la celda de bateria esta dentro del rango de
+https:/ag.dji.com/es/t25p/specs
+4/5
+--- PAGE 5 ---
+14/9/26, 12:36 a.m.
+DJI AGRAS T25P - Especificaciones - DJI
+DJI AGRAS T25P
+Especificaciones
+Donde Comprar
+Vuelo Seguro
+Descuento
+Categoriasdeproductos
+Comunidad
+Tienda Online
+DJI AGRAS T55
+Vuelo Seguro
+Productosreacondicionados
+SkyPixel
+Tienda Insignia
+DJI Flying TipS
+DJI AGRAS T100
+Foros DJI
+Explorar
+DJI AGRAS T7OP
+Distribuidores
+Developer
+Asistencia
+News
+DJI AGRAS T25P
+Distribuidores de Enterprise
+Asistencia deproducto
+STEAM Education
+Suscribirse
+DJI Mavic 3M
+DistribuidorDe Drones Agricolas
+Servicio de Reparacion
+Guias de Compra
+Recibe las ultimas notici
+Distribuidores de Pro
+Plan de servicio
+Ayudade Compra
+Programa de afiliados DJI
+Tu direccion de co
+Aplicacion DJI Store
+DJI Care
+Politicas de Servicio Postventa
+DJI Care Refresh
+Colaboracion
+Hazte Distribuidor
+Acerca de DJI
+Acerca de DJI Agricultura
+Contacto
+Dealer Portal
+Empleo
+Politica de privacidad .Uso de cookies .Términos de uso ·Mapa del sitio :Informacion comercial Preferencias de cookies
+Copyright@2026DJITodos los derechos reservados
+Danos tuopinion sobretuexperienciaenlaweb
+https://ag.dji.com/es/t25p/specs
+5/5

@@ -1,0 +1,353 @@
+--- PAGE 1 ---
+14/9/26, 12:36 a.m.
+DJIAGRAS T55- Especificaciones -DJI
+ingles
+espanol 
+AGRICULTURE
+Productos
+Apoyo
+Sala de prensa
+Perspectivas
+Academia DJI
+Sobre nosotros
+DJI AGRAS T55
+Video
+Descargas
+Especificaciones
+Preguntas frecuentes
+Ecosistema de granja inteligente
+Especificaciones
+Aeronave
+Peso (con bateria)
+45 kg (configuracion estandar: dos boquillas, deposito de 50 L y bateria DB1050)
+48,4 kg (configuracion estandar: dos boquillas, deposito de 50 L y bateria DB1580)
+Peso maximo al despegue
+Con la bateria DB1050 instalada:
+Peso maximo de despegue para pulverizacion: 95 kg (estandar con 2 boquillas de pulverizacion)
+Peso maximo de despegue para pulverizacion: 99 kg (con configuracion opcional de 4 boquillas)
+Peso maximo de despegue para elevacion: 84 kg (con sistema de elevacion instalado)
+Con la bateria DB1580 instalada:
+Peso maximo de despegue para pulverizacion: 103 kg (con 4 boquillas opcionales)
+Peso maximo de despegue para esparcimiento: 108 kg (con sistema de esparcimiento instalado)
+Peso maximo de despegue para elevacion: 89 kg (con sistema de elevacion instalado)
+Distancia maxima entre ejes
+2415 mm (distancia entre ejes diagonales)
+(distancia diagonal entre ejes)
+Dimensiones
+Brazo del bastidor desplegado, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;
+Brazo del bastidor desplegado, hélices plegadas: 1800 mm × 2170 mm × 934 mm;
+Valoramos su privacidad.
+Este sitio web utiliza cookies y tecnologias similares para mejorar tu experiencia de navegacion. Al seleccionar <Aceptar todas las cookies>, aceptas todas las cookies, que
+se utilizan para el analisis del comportamiento del usuario, publicidad y servicios personalizados. Haz clic en < Preferencias de cookies 》 para ver los detalles y gestionar
+qué cookies se permiten o bloquean. Al seleccionar <Rechazar todas las cookies>, solo se habilitaran las cookies esenciales, lo que podria limitar algunas funciones. Para
+obtenermas informacion,consultanuestra Politica decookies.
+Preferencias de cookies
+Rechazar todas las cookies
+Aceptar todas las cookies
+https://ag-dji-com.translate.goog/t55/specs?_x_tr_sl=en&_x_tr_tl=es&__tr_hl=es&_x_tr_pto=tc&_x_tr_hist=true
+1/8
+--- PAGE 2 ---
+14/9/26, 12:36 a.m.
+DJI AGRAS T55- Especificaciones -DJI
+Resistencia a la velocidad maxima
+6 m/s
+del viento
+Sistema de propulsion - Motores
+Dimensiones del estator
+155 × 16 mm
+KV
+55 rpm/V
+Sistema de propulsion - Helice
+Material
+Compuesto de fibra de carbono
+Dimensiones
+62 pulgadas
+Cantidad
+4 pares
+Sistema de pulverizacion - Deposito de pulverizacion
+Material
+HDPE
+Volumen
+50 L
+Carga util operativa
+50 kg
+Sistema de pulverizacion - Aspersores
+Modelo
+LX09050DX (boquilla centrifuga estandar) / LX09510DX (boquilla de nebulizacion opcional)
+Cantidad
+2 (estandar) / 4 (opcional)
+Distancia de la boquilla
+1800 mm (dos boquillas estandar)
+Tamano de la gota
+50 - 500 μm
+Ancho de pulverizacion efectivo
+4-11m
+Sistema de pulverizacion - Bombas de suministro
+Valoramos su privacidad.
+Este sitio web utiliza cookies y tecnologias similares para mejorar tu experiencia de navegacion. Al seleccionar <Aceptar todas las cookies>, aceptas todas las cookies, que
+se utilizan para el analisis del comportamiento del usuario, publicidad y servicios personalizados. Haz clic en < Preferencias de cookies 》 para ver los detalles y gestionar
+que cookies se permiten o bloquean. Al seleccionar <Rechazar todas las cookies>, solo se habilitaran las cookies esenciales, lo que podria limitar algunas funciones. Para
+obtenermas informacion,consultanuestra Politicadecookies.
+https://ag-dji-com.translate.goog/t55/specs?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc&_x_tr_hist=true
+2/8
+--- PAGE 3 ---
+14/9/26, 12:36 a.m.
+DJIAGRAS T55- Especificaciones -DJI
+Carga util operativa
+55 kg
+Diametro del material compatible
+Configuracion estandar:
+Barrena extragrande: granulos de 0,5 mm a 10 mm (fertilizante, trigo, pienso, etc.)
+Barrena mediana: granulos de 4 mm a 6 mm (arroz)
+Opcional:
+Barrena grande: granulos de 4 mm a 10 mm (arroz, fertilizante)
+Barrena pequena y mediana: granulos de O,5 mm a 2 mm (alimento para cangrejos y gambas)
+Barrena pequena: granulos de O,5 mm a 4 mm (colza, herbicidas granulados, insecticidas granulados)
+Tipo de estructura de esparcidor
+Disco centrifugo
+Tipo de estructura de descarga
+Alimentacion mediantealimentadordetornillo
+Caudal maximo de descarga
+400 kg/min (fertilizante compuesto)
+Ancho de propagacion efectivo
+3-10 m
+Sistema de elevacion DL100
+Carga util operativa
+ 40 kg
+Longitud del cable de elevacion
+10 metros
+Longitud de cable recomendada
+10-15 m
+Temperatura de funcionamiento
+De 0°a 40° C (de 32°a 104° F)
+Sistema de seguridad
+EIRP del radar
+< 20 dBm (NCC / KC / CE / FCC)
+< 13 dBm (MIC)
+Temperatura de funcionamiento
+De 0° a 40° C (de 32° a 104° F)
+Requisitos del entorno operativo
+Intensidad de luz normal, ricas caracteristicas de textura de escena y sin suciedad.
+Valoramos su privacidad.
+Este sitio web utiliza cookies y tecnologias similares para mejorar tu experiencia de navegacion. Al seleccionar <Aceptar todas las cookies>, aceptas todas las cookies, que
+se utilizan para el analisis del comportamiento del usuario, publicidad y servicios personalizados. Haz clic en < Preferencias de cookies 》 para ver los detalles y gestionar
+que cookies se permiten o bloquean. Al seleccionar <Rechazar todas las cookies>, solo se habilitaran las cookies esenciales, lo que podria limitar algunas funciones. Para
+obtenermas informacion, consulta nuestra Politica de cookies.
+https://ag-dji-com.translate.goog/t55/specs?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc&_x_tr_hist=true
+3/8
+--- PAGE 4 ---
+14/9/26, 12:36 a.m.
+DJI AGRAS T55 - Especificaciones - DJI
+Sistema de vision triple: horizontal 360°, vertical 180°
+Camara FPV:86°horizontal, 155°vertical
+Rango de medicion
+60 metros
+Obstaculo seguro efectivo
+≤ 13,8 m/s
+Velocidad de desvio
+Evitacion eficaz de obstaculos
+≥ 1,5 m
+Altura
+Distancia de seguridad
+2,5 m (distancia desde el obstaculo después de que la aeronave frene y se estabilice en vuelo estacionario)
+DJI RC PIus 2 AG
+Modelo
+TKPL 2
+Pantalla
+Pantalla tactil LCD de 7 pulgadas; Resolucion: 1920 × 1200; ILUMINACION: 1400 cd/m2
+Temperatura de almacenamiento
+En un mes: -30°a 45° C (-22°a 140° F)
+De uno a tres meses: -30° a 35° C (-22° a 113° F)
+De tres meses a un ano: -30° a 30° C (-22° a 86° F)
+Temperatura de recarga
+De 5° a 40°C (de 41°a 104° F)
+Duracion de la bateria interna
+3,8 horas
+Duracion de la bateria externa
+3,2 horas
+Tipo de carga
+Use a UsB-C Fast recharge charger with a Max Power output of 65 W (maximum voltage 2o V); the DjI Portal
+Charger is recommended.
+Charging Time
+2 hours for internal battery or internal and external battery (when remote controller is powered off and usil
+standard DJI charger)
+DB1050 Intelligent Flight Battery
+Weight
+8.3 ± 0.3 kg
+Capacity
+20000 mAh
+Valoramos su privacidad.
+Este sitio web utiliza cookies y tecnologias similares para mejorar tu experiencia de navegacion. Al seleccionar <Aceptar todas las cookies>, aceptas todas las cookies, que
+se utilizan para el analisis del comportamiento del usuario, publicidad y servicios personalizados. Haz clic en < Preferencias de cookies 》 para ver los detalles y gestionar
+qué cookies se permiten o bloquean. Al seleccionar <Rechazar todas las cookies>, solo se habilitaran las cookies esenciales, lo que podria limitar algunas funciones. Para
+obtenermas informacion,consulta nuestra Politicadecookies.
+https://ag-dji-com.translate.goog/t55/specs?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc&_x_tr_hist=true
+4/8
+--- PAGE 5 ---
+14/9/26, 12:36 a.m.
+DJIAGRAS T55- Especificaciones -DJI
+D800oiE Multifunctional Inverter Generator
+Output Channels
+1. DC recharge 0utput 42-61.6 V/6500 W
+2.Air-cooled radiator charge 12 V/6 A/4.5 A
+3.DC output 48 V/500 W
+Charging Time
+8-9 minutes (DB1050 Intelligent Flight Battery, 30%-95% level)
+Fuel tank capacity
+20 L
+Starting method
+One-button start
+Operating Temperature
+-20° to 40° C (-4° to 104° F)
+Compatible Battery
+DB1050 / DB1580 / DB2160 Intelligent Flight Battery
+Dimensions
+452 mm × 566 mm × 600 mm
+Weight
+46 ± 0.5 kg
+Fuel type
+Unleaded gasoline with RON ≥91 (AKl ≥87) and alcohol content less than 10%
+(*Brazil: unleaded gasoline with RON ≥ 91 and alcohol content of 27%)
+Reference fuel consumption
+500 mL/kWh
+Engine Oil Capacity
+0.8 L
+Engine Oil Type
+SN 15W-50
+C7000 Smart Charger
+Charger Model
+CSX711-7000
+Dimensions
+460 mm × 160 mm × 80 mm
+Weight
+8.5 kg
+Input Voltage
+Single-phase 220 - 240 V
+Three-phase 380 - 480 V
+Output Voltage
+50 - 62 V
+Valoramos su privacidad.
+Este sitio web utiliza cookies y tecnologias similares para mejorar tu experiencia de navegacion. Al seleccionar <Aceptar todas las cookies>, aceptas todas las cookies, que
+se utilizan para el analisis del comportamiento del usuario, publicidad y servicios personalizados. Haz clic en < Preferencias de cookies 》 para ver los detalles y gestionar
+que cookies se permiten o bloquean. Al seleccionar <Rechazar todas las cookies>, solo se habilitaran las cookies esenciales, lo que podria limitar algunas funciones. Para
+obtenermas informacion,consultanuestra Politicadecookies.
+https://ag-dji-com.translate.goog/t55/specs?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc&_x_tr_hist=true
+5/8
+--- PAGE 6 ---
+14/9/26, 12:36 a.m.
+DJI AGRAS T55 - Especificaciones - DJI
+Operating Temperature
+-20° to 40° C (-4° to 104° F)
+Output Channels
+Compatible Battery
+DB1050 / DB1580 / DB2160 Intelligent Flight Battery
+Relay
+Model
+RL0265
+Dimensions
+112 mm × 112 mm × 51 mm (no Antenna)
+120 mm × 112 mm × 101 mm (with Antenna)
+Weight
+630 g
+Input Voltage
+2.7 V to 24 V
+Power consumption
+10.48 W (FCC)
+Total Capacity
+6500 mAh
+Operating Time
+5 hours
+Operating Frequency
+2.4000-2.4835 GHz, 5.170-5.250 GHz, 5.725-5.850 GHz
+Signal range
+4 km (MIC/KCC/CE), 8 km (FCC)
+(in a None-interference, unobstructed environment, at a flight altitude of 2.5 m)
+Charging Time
+2.5 hours (30 W recharge)
+Ingress Protection Rating
+IP55
+D-RTK 3 AG
+Supports satellite systems
+GPS: L1/L2/L5
+BeiDou:B11/B2I/B3I/B1C/B2A/B2B
+Galileo:E1/E5a/E5b/E6
+GLONASS: G1/G2
+OZSS: L1CA/L2C/L5
+Valoramos su privacidad.
+Este sitio web utiliza cookies y tecnologias similares para mejorar tu experiencia de navegacion. Al seleccionar <Aceptar todas las cookies>, aceptas todas las cookies, que
+se utilizan para el analisis del comportamiento del usuario, publicidad y servicios personalizados. Haz clic en < Preferencias de cookies 》 para ver los detalles y gestionar
+que cookies se permiten o bloquean. Al seleccionar <Rechazar todas las cookies>, solo se habilitaran las cookies esenciales, lo que podria limitar algunas funciones. Para
+obtener mas informacion, consulta nuestra Politica de cookies .
+https://ag-dji-com.translate.goog/t55/specs?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc&_x_tr_hist=true
+6/8
+--- PAGE 7 ---
+14/9/26, 12:36 a.m.
+DJI AGRAS T55 - Especificaciones - DJI
+Operating Frequency
+Broadcast mode:
+O4: 2.4 GHz/5.8 GHz
+Signal range
+FCC: 15 km
+CE/JP: 8 km
+Charging Time
+2.5 hours (30W recharge)
+Ingress Protection Rating
+IP67
+Positioning Accuracy
+Precision del servicio satelital PPP:
+Tiempo de convergencia: 20 minutos
+Horizontal: 30 cm (RMS)
+Elevacion: 40 cm (RMS)
+Calibracion RTK de red:
+Horizontal: 0,8 cm + 1 ppm (RMS)
+Vertical: 1,5 cm + 1 ppm (RMS)
+1 ppm: Por cada 1 km adicional entre la aeronave y la estacion base, la precision disminuye en 1 mm. Por ej
+la aeronave esta a 1 km de la estacion base, la precision es de 1,1 cm.
+Notas a pie de pagina
+Los terminos HDMl, HDMI High-Definition Multimedia Interface, HDMI Trade dress y los logotipos de HDMI
+marcas comerciales o marcas registradas de HDMi Licensing Administrator, Inc.
+HDmI?
+Donde comprar
+Explorar
+Productos populares
+Comunidad
+DJI AGRAS T55
+Sala de prensa
+Tienda online de DJI
+SkyPixel
+DJI AGRAS T100
+Tiendas insignia
+Educacion STEAM
+Foro de DJI
+DJI AGRAS T70P
+Tiendas operadas por DJI
+Revelador
+Apoyo
+DIIAGRAS T25P
+Tiendas minnristas
+Valoramos su privacidad.
+Este sitio web utiliza cookies y tecnologias similares para mejorar tu experiencia de navegacion. Al seleccionar <Aceptar todas las cookies>, aceptas todas las cookies, que
+se utilizan para el analisis del comportamiento del usuario, publicidad y servicios personalizados. Haz clic en < Preferencias de cookies 》 para ver los detalles y gestionar
+que cookies se permiten o bloquean. Al seleccionar <Rechazar todas las cookies>, solo se habilitaran las cookies esenciales, lo que podria limitar algunas funciones. Para
+obtener mas informacion, consulta nuestra Politica de cookies .
+https://ag-dji-com.translate.goog/t55/specs?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc&_x_tr_hist=true
+7/8
+--- PAGE 8 ---
+14/9/26, 12:36 a.m.
+DJIAGRAS T55- Especificaciones -DJI
+Acerca de DJI
+Contactanos
+Acerca de DJI Agriculture
+Carrerasprofesionales
+Portal del concesionario
+RoboMaster
+Politica de privacidad de Dji : Uso de cookies : Condiciones de uso : Mapa del sitio . Informacion comercial : No venda ni comparta mi informacion personal.
+Ing
+: Preferencias de cookies
+Valoramos su privacidad.
+Este sitio web utiliza cookies y tecnologias similares para mejorar tu experiencia de navegacion. Al seleccionar <Aceptar todas las cookies>, aceptas todas las cookies, que
+se utilizan para el analisis del comportamiento del usuario, publicidad y servicios personalizados. Haz clic en < Preferencias de cookies 》 para ver los detalles y gestionar
+que cookies se permiten o bloquean. Al seleccionar <Rechazar todas las cookies>, solo se habilitaran las cookies esenciales, lo que podria limitar algunas funciones. Para
+obtenermas informacion,consultanuestra Politicadecookies.
+https://ag-dji-com.translate.goog/t55/specs?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_X_tr_pto=tc&_x_tr_hist=true
+8/8

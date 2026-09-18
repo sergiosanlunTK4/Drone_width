@@ -1,0 +1,455 @@
+--- PAGE 1 ---
+14/9/26, 12:37 a.m.
+DJIAGRAS T100 - Especificaciones -DJI
+AGRICULTURE
+Productos
+DJI Academy
+Perspectivas
+Asistencia
+Acerca de nosotros
+DJI AGRAS T100
+Videos
+Descargas
+FAQ
+Especificaciones
+Contacta cc
+Especificaciones
+Aeronave
+Peso
+Peso para pulverizacion: 75 kg (estandar con 2 boquillas)
+Peso para pulverizacion: 77 kg (opcional con 4 boquillas)
+Peso para esparcir: 75 kg (equipado con sistema de esparcido)
+Peso para levantar: 65 kg (equipado con sistema de elevacion)
+Peso para levantar: 90 kg (equipado con sistema de elevacion de doble bateria)
+Peso de despegue maximo[1]
+Peso maximo de despegue para la pulverizacion: 175 kg (estandar con 2 boquillas)
+Peso maximo de despegue para la pulverizacion: 177 kg (opcional con 4 boquillas)
+Peso maximo de despegue para el esparcido: 175 kg (equipado con sistema de dispersion)
+Peso maximo de despegue para la elevacion: 165 kg (equipado con sistema de elevacion)
+Peso maximo de despegue para la elevacion: 170 kg (equipado con sistema de elevacion de doble bateria)
+Distancia diagonal entre ejes
+2330 mm (diagonal)
+maxima
+Dimensiones
+3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados)
+1820 mm × 1840 mm × 975 mm (brazos desplegados y helices plegadas)
+1105 mm × 1265 mm × 975 mm (brazos y hélices plegados)
+Rangodeprecisionenvuelo
+RTK habilitado:
+estacionario (con senal GNsS
+±10 cm (horizontal), ±10 cm (vertical)
+fuerte)
+RTK no habilitado:
+Horizontal ± 0.6 m, vertical ± 0.3 m
+Radio de vuelo configurable
+2 km
+maximo
+Temperatura de funcionamiento
+0 °℃ a 40 °℃
+Resistencia maxima al viento
+<6 m/s
+Sistema de propulsion - Motores
+Tamano del estator
+155 × 16 mm
+KV
+60 rpm/V
+Sistema de propulsion - Hélices
+Material
+Compuesto de fibra de carbono
+Dimensiones
+62 pulgadas
+https://ag.dji.com/es/t100/specs
+1/8
+--- PAGE 2 ---
+14/9/26, 12:37 a.m.
+DJI AGRAS T100 - Especificaciones - DJI
+Cantidad
+8 pares
+Sistema de rociado
+Modelo
+LS100
+Dimensiones
+880 mm × 870 mm × 810 mm (barra de pulverizacion plegada)
+1020 mm × 1930 mm × 810 mm (barra de pulverizacion desplegada)
+Sistema de pulverizacion - Tanque de pulverizacion
+Material
+HDPE
+Volumen
+100 L
+Capacidad de carga
+100 kg
+Sistema de rociado - Aspersores
+Modelo
+LX07550SX (Boquilla estandar) / LX09510DX (Boquilla de niebla opcional)
+Cantidad
+2 (Estandar) / 4 (Opcional)
+Distancia de las boquillas
+1834 mm (Dos boquillas / Cuatro boquillas exteriores)
+Tamano de microgotas
+50 - 500 μm
+Anchura de rociado efectiva[2]
+5 - 13 m
+Sistema de pulverizacion - Bombas de entrega
+Tipo
+Bomba centrifuga (magnética)
+Cantidad
+Tasa de caudal maximo
+30 L/min (2 boquillas estandar), 40 L/min (4 boquillas opcionales)
+Sistema de pulverizacion con doble bateria
+Modelo
+LS100-DB
+Dimensiones
+1106 mm × 805 mm × 816 mm, con la barra de pulverizacion plegada
+1930 mm × 1011 mm × 816 mm, con la barra de pulverizacion desplegada
+Volumen del tanque de
+100 L
+pulverizacion
+Carga util operativa
+90 kg
+Carga de esparcimiento
+https://ag.dji.com/es/t100/specs
+2/8
+--- PAGE 3 ---
+14/9/26, 12:37 a.m.
+DJI AGRAS T100 - Especificaciones - DJI
+Dimensiones
+900 mm × 820 mm × 920 mm
+Diametro de material compatible
+Configuracion estandar:
+Tornillo sin fin extra grande: 0.5 mm - 10 mm granulos (fertilizante, trigo, alimento, etc.)
+Tornillo sin fin mediano: 4 mm - 6 mm granulos (arroz)
+Opcional:
+Gran auger: 4 mm - 10 mm granulos (arroz, fertilizante)
+Pequeno auger: 0.5 mm - 4 mm granulos (semillas de colza, herbicidas granulados, insecticidas granulados)
+Sistema de esparcido 4.0
+Volumen del tanque de esparcido
+150 L
+Tipo de estructura del esparcidor
+Disco centrifugo
+Tipo de estructura de descarga
+Alimentacion del alimentador de tipo tornillo
+Tasa de descarga maxima
+400 kg/min (fertilizante compuesto)
+Carga maxima dentro de la caja
+100 kg
+de operacion de esparcimiento
+Ancho de esparcimiento
+3 - 10m
+efectivo[3]
+Sistema de elevacion
+Dimensiones
+805 mm × 764 mm × 669 mm
+Capacidad de carga[4]
+100 kg
+Longitud del Cable de Elevacion
+10 m (configuracion estandar)
+Longitud recomendada del cable
+10-15m
+Temperatura de funcionamiento
+0°a 40 °℃
+Sistema de Elevacion de Doble Bateria
+Dimensiones
+805 mm × 960 mm × 669 mm
+Capacidad de carga[4]
+80 kg
+Longitud del Cable de Elevacion
+10 m (configuracion estandar)
+Modo de Escape de Emergencia
+Desconexion del Fusible del Cable y Escape
+Longitud recomendada del cable
+10 -15m
+Temperatura de funcionamiento
+0 °℃a 40 °℃
+Sistema de Seguridad 3.0
+https://ag.dji.com/es/t100/specs
+3/8
+--- PAGE 4 ---
+14/9/26, 12:37 a.m.
+DJI AGRAs T100 - Especificaciones - DJI
+PIRE del radar de onda
+< 20 dBm (NCC / MIC / KC / CE / FCC)
+milimétrica
+Temperatura de funcionamiento
+0 °℃ a 40 °℃
+Requisitos del entorno de trabajo
+Luz adecuada y superficies reconocibles
+Campo de vision
+Radar laser: 272°vertical, 60°horizontal
+Radar Delantera: Horizontal: 360°; vertical: ± 45°
+Radar Inferior: Izquierda y Derecha ± 12.5°, Delantera y Anterior ± 22.5°
+Radar Anterior: Izquierda y Derecha ± 45°, Delantera y Anterior ± 45°
+Sistema de vision cuadruple: Horizontal: 360°; vertical: 180°
+Camara FPV: Horizontal: ± 86°; vertical: 108°
+Rango de medicion[4]
+w 09 >
+Velocidad efectiva del sistema
+≤ 13.8 m/s
+anticolision[5]
+Altura efectiva del sistema
+≥ 1.5 m
+anticolision
+Distancia de seguridad
+Control remoto
+Modelo
+TKPL 2
+Pantalla
+Pantalla tactil LCD de 7 pulgadas; resolucion: 1920 × 1200; brillo: 1400 cd/m2
+Rango de temperatura de
+Menos de un mes: De -30 a 45 °C (de -22 a 113 °F)
+almacenamiento
+De uno a tres meses: De -30 a 35 °C (de -22 a 95 °F)
+Temperatura de carga
+De 5 a 40 °C (de 41 a 104 °F)
+Tiempo de ejecucion de bateria
+3.8 horas
+interna
+Tiempo de ejecucion de bateria
+3.2 horas
+externa
+Tipo de carga
+Utilice un cargador rapido UsB-C con una potencia maxima de 65 W (voltaje maximo 20 V), y se recomienda
+cargador portatil DJI.
+Tiempo de carga
+Dos horas para la bateria interna o para la bateria interna y externa (si el control remoto esta apagado y se
+cargador estandar de DJI).
+Bateria de vuelo inteligente DB2160
+Peso[1]
+14.7 ± 0.3 kg
+Capacidad
+41000 mAh
+Tension nominal
+52 v
+https:/ag.dji.com/es/t100/specs
+4/8
+--- PAGE 5 ---
+14/9/26, 12:37 a.m.
+DJI AGRAS T100 - Especificaciones - DJI
+Bateria de vuelo inteligente DB2212
+Peso[1]
+15 ± 0.3 kg
+Capacidad
+41000 mAh
+Tension nominal
+52 V
+Generador inversor multifuncional D14000iE
+Canales de salida
+1. Salida de recarga CC 42 - 61.6 V/11500 W
+2. Cargador con radiador por aire 12 V/6 A
+3. Salida CA 220 V/1500 W
+Tiempo de recarga[6]
+8 - 9 minutos (Bateria de vuelo inteligente DB2160, 30 % - 95 % de carga)
+Capacidad del tanque de
+30 L
+combustible
+Método de arranque
+Arranque del generador mediante el interruptor de arranque de un solo boton
+Temperatura de funcionamiento
+0 °℃a 40 °℃
+Bateria compatible
+Bateria de vuelo inteligente DB1580/DB2160
+Dimensiones
+757 mm × 704 mm × 677 mm
+Peso
+87 ± 0.5 kg
+Tipo de combustible
+Gasolina sin plomo con RON ≥91 (AKI ≥87) y contenido de alcohol inferior al 10 %
+(*Brasil: gasolina sin plomo con RON ≥ 91 y contenido de alcohol del 27 %)
+Consumo de combustible de
+500 mL/kWh
+referencia
+Capacidad de aceite del motor
+1.3 L
+Modelo de aceite del motor
+SJ 10W-40
+C12000 Smart Charger
+Modelo de cargador
+CSX901-12000
+Dimensiones
+456 mm × 291 mm × 107 mm
+Peso[1]
+13.13 kg
+Voltaje de entrada
+Entrada CA trifasica: 175 - 520 V
+Entrada CA monofasica: 200 - 264 V
+Voltaje de salida
+62 V
+Corriente de salida nominal
+194A
+https://ag.dji.com/es/t100/specs
+5/8
+--- PAGE 6 ---
+14/9/26, 12:37 a.m.
+DJI AGRAS T100 - Especificaciones - DJI
+Potencia nominal
+12000 W (entrada trifasica 380 V)
+3000 W (entrada monofasica de 220 V)
+Tiempo de recarga[6]
+8 - 9 minutos (Bateria de vuelo inteligente DB2160, 30 % - 95 % de carga)
+Funciones de proteccion
+Proteccion contra sobrecalentamiento, sobretension, subtension, cortocircuitos, calado del ventilador y otr:
+funciones de proteccion
+Temperatura de funcionamiento
+De 0 a 40 °C
+Canales de salida
+Compatible con Bateria de vuelo
+Bateria de vuelo inteligente DB1580 / DB2160
+inteligente
+Relé
+Dimensiones
+112 mm × 112 mm × 51 mm (sin antena)
+120 mm × 112 mm × 101 mm (con antena)
+Peso[1]
+630 g
+Entrada
+2.7 V - 24 V
+Consumo eléctrico
+10.48 W (FCC), 8.8 W (SRRC)
+Capacidad de la bateria
+6500 mAh
+Tiempo de funcionamiento
+5 horas
+Frecuencia de funcionamiento
+2.4000-2.4835 GHz, 5.150-5.250 GHz, 5.725-5.850 GHz
+Rango de senal efectivo
+5 km (SRRC), 4 km (MIC/KCC/CE), 8 km (FCC)
+(En un entorno sin interferencias y sin obstrucciones, altitud de vuelo 2.5 m)
+Tiempo de carga
+2.5 horas (recarga de 30 W)
+indice de proteccion de entrada
+IP55
+D-RTK 3 AG
+Admite sistemas satelitales
+GPS: L1/L2/L5
+BeiDou: B11/B21/B3I/B1C/B2A/B2B
+Galileo: E1/E5a/E5b/E6
+GLONASS: G1/G2
+QZSS: L1CA/L2C/L5
+L-BAND
+Dimensiones
+345 mm × 244 mm × 300 mm
+Peso[1]
+3.77 kg (incluyendo embalaje)
+Consumo eléctrico
+7W
+Capacidad de la bateria
+6500 mAh
+https://ag.dji.com/es/t100/specs
+--- PAGE 7 ---
+14/9/26, 12:37 a.m.
+DJIAGRAs T100 - Especificaciones - DJI
+Tiempo de funcionamiento
+7 horas
+Frecuencia de funcionamiento
+O4: 2.4G/5.8G
+Rango de senal efectivo
+FCC: 15 km
+SRRC: 12 km
+CE/JP: 8 km
+Tiempo de carga
+2.5 horas (recarga de 30 W)
+indice de proteccion de entrada
+IP67
+Precision de posicionamiento[7]
+Precision del servicio basado en satélites PPP:
+Tiempo de convergencia: 20 min
+Horizontal:
+30 cm (RMS)
+Elevacion:
+40 cm (RMS)
+Calibracion RTK de red:
+Horizontal:
+0.8 cm + 1 ppm (RMS)
+Vertical:
+1.5 cm + 1 ppm (RMS)
+1 ppm:
+La precision disminuye en 1 mm por cada aumento de 1 km en la distancia entre la aeronave y la estacion k
+ejemplo, si la aeronave esta a 1 km de la estacion base, la precision es de 1.1 cm.
+Notas de pie de pagina
+[1] Medido al nivel del mar, la aplicacion Dji Agriculture recomendara inteligentemente el peso de carga bas
+estado actual de la aeronave, las condiciones del entorno y las tareas operativas. Los usuarios no deben exi
+peso maximo de carga recomendado, ya que puede afectar la seguridad del vuelo.
+[2] El ancho efectivo de pulverizacion del sistema de rociado depende de la escena de trabajo real.
+(CV<30%) el ancho de transmision medido es de 10 m. Cuanto mas rapida sea la velocidad de rotacion del c
+mayor sera la altitud de vuelo, mayor sera el ancho de transmision.
+[4] Incluye el peso de las cuerdas y ganchos. Medido al nivel del mar, la aplicacion DJi Agriculture recomend
+inteligentemente el peso de carga basado en el estado actual de la aeronave, las condiciones del entorno y
+seguridad del vuelo.[5] El rango de trabajo efectivo de la distancia de deteccion, la evitacion de obstaculos y
+capacidades de desvio pueden variar debido a diferentes condiciones de iluminacion ambiental, lluvia, nieb
+material, ubicacion y forma del objeto objetivo. El sensor hacia abajo se utiliza para ayudar en el vuelo a alti
+siguiendo el terreno, mientras que los sensores en otras direcciones se utilizan para evitar obstaculos. Exce
+escenas sin obstaculos lineales, si ocurre una colision a velocidades de hasta 13.8 m/s que resulta en danos
+aeronave, la responsabilidad puede determinarse a traves del analisis de registros, y la aeronave puede ser
+para una garantia gratuita si se identifican causas no humanas. Si hay obstaculos lineales como cables o tir:
+postes de energia, por favor marquelos como obstaculos; de lo contrario, la falta de evitarlos sera responsa
+del cliente.
+Nota:1. La percepcion hacia abajo se utiliza para ayudar en el vuelo a altitud siguiendo el terreno. Si ocurre
+colision con un obstaculo abajo, se considera responsabilidad del cliente.2. Debido a las limitaciones de ren
+del sistema de seguridad, la aeronave no puede esquivar activamente objetos que se mueven. Los accident
+tales escenas se consideran responsabilidad del cliente.
+30 % al 95 %; se admite carga rapida cuando la temperatura de la celda de bateria esta dentro del rango de
+grados Celsius; el tiempo de carga varia dependiendo de la potencia de entrada, ASL, nivel de carga inicial y
+factores.
+[7] La precision y fiabilidad del posicionamiento se ven afectadas por varios factores, incluyendo la inclinaci
+equipo, obstruccion de la senal, multitrayectoria, numero de satelites, distribucion geometrica y condicione
+https://ag.dji.com/es/t100/specs
+7/8
+--- PAGE 8 ---
+14/9/26, 12:37 a.m.
+DJI AGRAS T100 - Especificaciones - DJI
+entornos de multitrayectoria.
+Los términos HDMi, HDMI High-Definition Multimedia Interface (Interfaz multimedia de alta definicion), HDr
+Dress (diseno e imagen comercial HDMi) y los logotipos HDMI son marcas comerciales o marcas registradas
+HDMI Licensing Administrator, Inc.
+HDmI?
+HIGH-DEFINITION MULTIMEDIA INTERFACE
+Donde Comprar
+Vuelo Seguro
+Descuento
+Categorias de productos
+Comunidad
+Tienda Online
+DJI AGRAS T55
+Vuelo Seguro
+Productos reacondicionados
+SkyPixel
+DJI Flying Tips
+DJI AGRAS T100
+Tienda Insignia
+Foros DJI
+Explorar
+DJI AGRAS T70P
+Distribuidores
+Developer
+Asistencia
+News
+DJIAGRAS T25P
+Distribuidores de Enterprise
+STEAM Education
+Asistencia de producto
+Suscribirse
+DJI Mavic 3M
+Distribuidor De Drones Agricolas
+Guias de Compra
+Servicio de Reparacion
+Recibe las Ultimas notici
+Distribuidores de Pro
+Plan de servicio
+Ayuda de Compra
+Programa de afiliados DJI
+Tu direccion de co
+Aplicacion DJI Store
+DJI Care
+Politicas de Servicio Postventa
+DJI Care Refresh
+Colaboracion
+Hazte Distribuidor
+Acerca de DJI
+Dealer Portal
+Acerca de DJI Agricultura
+Contacto
+Empleo
+Politica de privacidad .Uso de cookies Términos de uso ·Mapa delsitio ·Informacion comercial ·Preferencias de cookies
+Copyright @2026 DJI Todos los derechos reservados
+Danos tu opinion sobretu experiencia enlaweb
+https://ag.dji.com/es/t100/specs
+8/8

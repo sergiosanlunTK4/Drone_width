@@ -1,0 +1,137 @@
+# Extraccion de: 03 Recomendaciones para la Configuración de Parámetros  de aplicación en drones DJI AGRAS.pptx
+# slides=8  media=13  hojas_de_notas=8
+
+
+==============================================================================
+### SLIDE 1
+==============================================================================
+[forma: 文本框 3] Recomendaciones para la Configuración de Parámetros   de aplicación en drones DJI  AGRAS
+
+==============================================================================
+### SLIDE 2
+==============================================================================
+[forma: 文本框 7] Factores a Considerar para la Calidad de la Pulverización
+[forma: 文本框 5] Una mejor penetración se puede lograr mediante un flujo descendente más fuerte, un tamaño de gota más fino y una mayor tasa de aplicación.
+[forma: 文本框 8] La  cobertura  en la  pulverización  de productos químicos se logra mediante una configuración adecuada del ancho de  aplicación.
+[forma: 文本框 9] La deriva se puede reducir mediante un tamaño de gota mayor, una velocidad de vuelo  más lenta  y añadiendo un Agente Reductor de Deriva (DRA).
+
+==============================================================================
+### SLIDE 3
+==============================================================================
+[forma: 文本框 7] Factores a Considerar para la Calidad de la Pulverización
+[tabla 1]
+   |  | Interlineado o ancho de aplicación | Velocidad | Altura  sobre el cultivo | Tamaño  de gota | Tasa  de aplicación
+   | Recubrimiento | - | - | - | - | Una mayor tasa de aplicación genera  un  mayor  recubrimiento.
+   | Penetración | - | A  menor velocidad, mejor penetración | A  menor altura de vuelo, mejor penetración | A  menor tamaño de gota, mejor penetración | A  mayor tasa de aplicación, mejor penetración
+   | Cobertura | (Ancho de aplicación + Velocidad + Altura) en combinación afecta la uniformidad. Esta combinación debe ajustarse dentro de un rango razonable para lograr una alta uniformidad. |  |  | - | -
+   | Eficiencia | A  un ancho de aplicación mayor logramos una mejor eficiencia, sin embargo la uniformidad pudiera ser deficiente | A  mayor velocidad, mejor eficiencia | - | - | A  menor tasa de aplicación, mejor eficiencia.
+   | Deriva | - | A  menor velocidad, baja probabilidad de deriva. | A  menor altura, baja probabilidad de deriva. | A  mayor tamaño de gota, baja probabilidad de deriva | -
+   | Eficacia | - | - | - | Tamaño Óptimo de Gota Biológica  ( Biological Optimum Droplet Size  ) | -
+
+==============================================================================
+### SLIDE 4
+==============================================================================
+[forma: 文本框 12] ¿Qué tan rápido debo  volar? Vuela  despacio si se necesita una presión de flujo descendente fuerte para mejorar la penetración, por ejemplo, en la pulverización de  árboles. Vuela  despacio si la deriva química es una  preocupación. Vuela  despacio si hay muchos obstáculos en el campo .
+[forma: 文本框 7] Factores a Considerar para la Calidad de la Pulverización
+[forma: 1 CuadroTexto] Velocidad: 3 m/s, 140  µm
+[forma: 7 CuadroTexto] Velocidad: 5 m/s, 140  µm
+[forma: 8 CuadroTexto] Velocidad: 7 m/s, 140  µm
+[forma: 9 CuadroTexto] Velocidad: 10 m/s, 140  µm
+[forma: 10 CuadroTexto] Velocidad: 13 m/s, 140  µm
+
+==============================================================================
+### SLIDE 5
+==============================================================================
+[forma: 文本框 3] Ancho de franja efectivo del dron
+[forma: 文本框 41] Spraying gaps
+[forma: 文本框 42] Proper Spraying
+[forma: 文本框 44] Over Spraying
+[forma: 文本框 79] El CV es un índice para evaluar la uniformidad de la cobertura, cuanto menor sea el CV, más uniforme será la cobertura.  A continuación vemos  los CV  bajo diferentes anchos de  aplicación:
+[forma: 文本框 7] Factores a Considerar para la Calidad de la Pulverización
+
+==============================================================================
+### SLIDE 6
+==============================================================================
+[forma: 文本框 2] ¿En que casos  reducir el riesgo de deriva? El riesgo de daño causado por la deriva es alto cuando: Se pulveriza herbicida no  selectivo. Se  pulveriza herbicida selectivo pero con cultivos sensibles ( como frutas y verduras) cercanos. Se  pulveriza pesticida y hay acuicultura y ganadería cercanas . Prácticas para reducir los riesgos de deriva: No pulverizar cuando la velocidad del viento sea   mayor a 2 m/s (7.2  km/h). Velocidad de vuelo  menor o igual  6 m/s (21.6 km/h),  para aprovechar la fuerte presión descendente y aumentar la deposición. Utilizar tamaño de gota  “grueso”  o  “muy grueso”. Usar DRA (Agente Reductor de Deriva) para reducir la formación de gotas finas. Establecer una zona de amortiguamiento entre la zona de pulverización y la zona de protección, de al menos  9-20 m.  Consulte la normativa local y a un agrónomo para la configuración de la zona de amortiguamiento.
+[forma: 文本框 7] Factores a Considerar para la Calidad de la Pulverización
+[imagen: Picture 2] descr: 图片
+
+==============================================================================
+### SLIDE 7
+==============================================================================
+[forma: 文本框 7] Recomendaciones Generales para la Configuración de Parámetros
+[forma: 矩形 4] * Different Application rate for different  use
+[forma: 文本框 9] Pulverización de Insecticidas, Fungicidas, Fertilizantes Foliares y Reguladores de Crecimiento
+[forma: 文本框 10] Pulverización de herbicidas y defoliantes
+[forma: 文本框 13] Aspersión de semillas
+[forma: 文本框 14] Aspersión de fertilizantes
+[forma: 矩形 16] * El herbicida  requiere de una mejor  cobertura   y mayor riesgo de deriva, por lo que se recomienda una menor velocidad de vuelo, menor espaciamiento entre rutas y un tamaño de gota más grande.
+[forma: 文本框 30] Pulverización  de  Madurantes
+[forma: 矩形 31] * Generalmente se utiliza un tamaño de gota mediano, dependiendo del viento y la temperatura.
+[tabla 1]
+   | Modelo | Tasa  de aplicación | Tamaño  de gota | Velocidad | Ancho  de aplicación | Altura  sobre el  cultivo
+   | T40/T50 | 15 - 30  L/ha | 150 – 300  μm | 6  – 10m/s | 7.5 – 9 m | 3 – 4 m
+[tabla 2]
+   | Modelo | Tasa  de aplicación | Tamaño  de gota | Velocidad | Ancho  de aplicación | Altura  sobre el  cultivo
+   | T40/T50 | 20 - 30  L/ha | 400 - 500  μm | 5 – 6m/s | 6 – 7m | 3 – 3.5m
+[tabla 3]
+   | Modelo | Velocidad de giro del disco | Velocidad | Ancho  de aplicación | Altura  sobre el  cultivo
+   | T40/T50 | 800 – 1000 RPM | 6 – 10m/s | 4.5 – 5m | 3 – 4m
+[tabla 4]
+   | Modelo | Velocidad de giro del disco | Velocidad | Ancho  de aplicación | Altura  sobre el  cultivo
+   | T40/T50 | 800 – 1000 RPM | 6 – 10m/s | 6 – 7m | 3 – 4m
+[tabla 5]
+   | Modelo | Tasa  de aplicación | Tamaño  de gota | Velocidad | Ancho  de aplicación | Altura  sobre el  cultivo
+   | T40 / T50 | 15 – 30 L/ha | 200 - 350μm | 6 – 10m/s | 7 – 8m | 3 - 4m
+
+==============================================================================
+### SLIDE 8
+==============================================================================
+[forma: 矩形 5] Better Growth  Better Life
+
+
+==============================================================================
+### NOTAS DEL ORADOR
+==============================================================================
+
+--- notas slide 1000000 ---
+7
+
+--- notas slide 1000000 ---
+8
+
+--- notas slide 1000000 ---
+6
+
+--- notas slide 1000000 ---
+2
+
+--- notas slide 1000000 ---
+1
+
+--- notas slide 1000000 ---
+4
+
+--- notas slide 1000000 ---
+3
+
+--- notas slide 1000000 ---
+5
+
+
+==============================================================================
+### INVENTARIO DE MEDIA (no extraido)
+==============================================================================
+ppt/media/hdphoto1.wdp  76227 bytes
+ppt/media/image1.emf  62924 bytes
+ppt/media/image10.emf  34484 bytes
+ppt/media/image11.jpeg  33719 bytes
+ppt/media/image12.jpeg  1577345 bytes
+ppt/media/image2.emf  41160 bytes
+ppt/media/image3.emf  60484 bytes
+ppt/media/image4.png  264953 bytes
+ppt/media/image5.png  934 bytes
+ppt/media/image6.png  12159 bytes
+ppt/media/image7.jpeg  165754 bytes
+ppt/media/image8.jpeg  157893 bytes
+ppt/media/image9.png  65089 bytes

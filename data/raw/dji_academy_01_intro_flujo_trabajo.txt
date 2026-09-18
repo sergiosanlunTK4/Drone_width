@@ -1,0 +1,169 @@
+# Extraccion de: 01 Introducción al Flujo de Trabajo de Entrega de Productos DJI AGRAS.pptx
+# slides=10  media=15  hojas_de_notas=10
+
+
+==============================================================================
+### SLIDE 1
+==============================================================================
+[forma: 文本框 3] Flujo de trabajo en entrega de drones DJI serie Agras
+
+==============================================================================
+### SLIDE 2
+==============================================================================
+[forma: 文本框 7] Flujo de trabajo
+[forma: 矩形: 圆角 1] Pre-entrega
+[forma: 矩形: 圆角 5] Entrega
+[forma: 矩形: 圆角 6] Capacitación
+[forma: 矩形: 圆角 7] Certificación
+[forma: 文本框 4] Notas: El proceso de Pre-entrega se realiza un día antes de la entrega al cliente. El  proceso de  capacitación es de 2 días. El cliente tiene derecho a una licencia de pilo emitida por DJI.
+
+==============================================================================
+### SLIDE 3
+==============================================================================
+[forma: 矩形: 圆角 1] Inspección
+[forma: 文本框 7] 1  Pre-entrega
+[forma: 矩形: 圆角 8] Inspección exterior de la caja
+[forma: 矩形: 圆角 9] Inspección de producto
+[forma: 矩形 7] Compruebe que el exterior de la caja no presente daños.
+[forma: 矩形 12] Verifique si los dispositivos enumerados están completos. Verifique que los dispositivos se encuentren en correcto estado.
+[forma: 矩形 15] Verificar que se encuentren completos y en perfecto estado todos los componentes incluidos en el kit.
+
+==============================================================================
+### SLIDE 4
+==============================================================================
+[forma: 矩形: 圆角 1] Activación y actualización
+[forma: 文本框 7] 1 Pre-entrega
+[forma: 矩形: 圆角 9] Active el equipo
+[forma: 矩形 12] Active los dispositivos en el siguiente orden: control remoto, aeronave, estación D-RTK2 (si aplica), dispositivo de carga y batería.
+[forma: 矩形 15] Activar el equipo  y  actualizar  el  firmware de los dispositivos a las versiones recomendadas.
+[forma: 矩形: 圆角 9] Actualiza el firmware
+[forma: 矩形 12] Actualicé todos los dispositivos a las versiones de Firmware recomendados.
+[forma: 文本框 1] Notes:  Related operational material links:  https://www.youtube.com/@DJIAgriculture
+
+==============================================================================
+### SLIDE 5
+==============================================================================
+[forma: 矩形: 圆角 9] Sistema de carga
+[forma: 矩形: 圆角 9] Aspersión
+[forma: 矩形: 圆角 1] Pre-entrega
+[forma: 矩形: 圆角 8] Palancas del CR
+[forma: 矩形: 圆角 9] Vuelo
+[forma: 矩形 7] Pruebe el funcionamiento de las palancas del control remoto.
+[forma: 矩形 12] Prueba de despegue y aterrizaje.
+[forma: 矩形 15] Comprobar que  cada dispositivo funciona correctamente
+[forma: 矩形: 圆角 9] Pulverización
+[forma: 矩形 12] Verificar la pulverización y realizar la calibración de la bomba.
+[forma: 文本框 1] Notes:  Related operational material links:  https://www.youtube.com/@DJIAgriculture
+[forma: 矩形 12] Comprobar el sistema de aspersión (opcional)
+[forma: 矩形 12] El generador funciona correctamente. EL cargador funciona correctamente (opcional). Las baterías funcionan correctamente.
+[forma: 文本框 7] 1 Pre-entrega
+
+==============================================================================
+### SLIDE 6
+==============================================================================
+[forma: 矩形: 圆角 1] Entrega
+[forma: 矩形: 圆角 8] Realizar la entrega y firma de la documentación.
+[forma: 矩形: 圆角 9] Descarga la App
+[forma: 矩形 7] Documentación de entrega:  Factura del equipo. Carta de compromiso de uso final y usuario  final. Formato de Pre-entrega de drones. Formato de entrega de drones. Póliza de garantía. Periodos de garantía.
+[forma: 矩形 12] Descargue la APP DJI  SmartFarm  y registre su cuenta.
+[forma: 矩形 15] Entregar el equipo junto con los dispositivos incluidos, así como la entrega y firma de la documentación pertinente.
+[forma: 文本框 1] Notes:  Related operational material links:  https://www.youtube.com/@DJIAgriculture
+[forma: 文本框 7] 2 E ntrega
+[forma: 矩形: 圆角 9] Verificar  el registro del piloto
+[forma: 矩形 12] Verificar que el piloto se haya registrado correctamente en  la plataforma  https://www.uastc.com/mx /  y solicitar la apertura del examen de certificación con anticipación al equipo DJI  Dimasur .
+
+==============================================================================
+### SLIDE 7
+==============================================================================
+[forma: 矩形: 圆角 8] Presentación de las siguientes diapositivas
+[forma: 矩形: 圆角 1] Capacitación teórica
+[forma: 文本框 7] 3  Capacitación
+[forma: 矩形 7] Planificación de la misión y modos de funcionamiento de DJI  AGRAS Recomendaciones  para la Configuración de Parámetros  de aplicación en drones DJI  AGRAS Precauciones  para el uso de agroquímicos con drones AGRAS Capacitación sobre seguridad operativa Mantenimiento y cuidado de los equipos
+[forma: 矩形 15] Capacitación teórica sobre el uso correcto de drones DJI Agras.
+[forma: 文本框 1] Notes: Specific steps is in documents: 02-work-flow checklist and 03-advanced operation instruction.
+[imagen: Picture 2] descr: Exposición oral – Como hacer una buena exposición
+
+==============================================================================
+### SLIDE 8
+==============================================================================
+[forma: 矩形: 圆角 8] Entrenamiento de habilidades operativas
+[forma: 矩形: 圆角 1] Capacitación práctica
+[forma: 文本框 7] 3  Capacitación
+[forma: 矩形: 圆角 9] Operación práctica
+[forma: 矩形 7] Planificación de la misión y modos de funcionamiento de DJI  AGRAS Introducción  al uso del sistema de  alimentación. Seguridad operativa
+[forma: 矩形 12] Comprobación previa del  vuelo Calibración  del  dron Práctica  de vuelo  manual Práctica  del modo  M/M+ (Opcional) Modo ruta de vuelo A-B (Opcional) Práctica  del modo  ruta Configuración  de  seguridad Configuración  del sistema de  pulverización Configuración  del sistema de  esparcimiento (Opcional)
+[forma: 矩形 15] Capacitación en habilidades operativas y  prácticas utilizadas en campo con dron AGRAS.
+[forma: 文本框 1] Notes: Specific steps is in documents: 02-work-flow checklist and 03-advanced operation instruction.
+
+==============================================================================
+### SLIDE 9
+==============================================================================
+[forma: 矩形: 圆角 8] Indicaciones sobre el examen de certificación
+[forma: 矩形: 圆角 1] Certificación
+[forma: 文本框 7] 3  Certificación
+[forma: 矩形: 圆角 9] Aplicación del examen
+[forma: 矩形 7] Explicar al piloto la metodología del examen de certificación y dar algunos  tips  generales.
+[forma: 矩形 12] Pedirle al piloto que realice el examen de certificación y así poder obtener su licencia como piloto.
+[forma: 矩形 15] Aplicar el examen de certificación al piloto capacitado para poder emitir su licencia de piloto ante DJI.
+[forma: 文本框 1] Notes: Specific steps is in documents: 02-work-flow checklist and 03-advanced operation instruction.
+[imagen: Picture 2] descr: Cuota aplicación examen medio superior | IDR University
+
+==============================================================================
+### SLIDE 10
+==============================================================================
+[forma: 矩形 5] Better Growth  Better Life
+
+
+==============================================================================
+### NOTAS DEL ORADOR
+==============================================================================
+
+--- notas slide 1000000 ---
+9
+
+--- notas slide 1000000 ---
+8
+
+--- notas slide 1000000 ---
+10
+
+--- notas slide 1000000 ---
+1
+
+--- notas slide 1000000 ---
+2
+
+--- notas slide 1000000 ---
+3
+
+--- notas slide 1000000 ---
+7
+
+--- notas slide 1000000 ---
+4
+
+--- notas slide 1000000 ---
+6
+
+--- notas slide 1000000 ---
+5
+
+
+==============================================================================
+### INVENTARIO DE MEDIA (no extraido)
+==============================================================================
+ppt/media/image1.emf  62924 bytes
+ppt/media/image10.png  879205 bytes
+ppt/media/image11.png  553350 bytes
+ppt/media/image12.png  23871 bytes
+ppt/media/image13.png  1683931 bytes
+ppt/media/image14.png  220254 bytes
+ppt/media/image15.jpeg  1577345 bytes
+ppt/media/image2.emf  41160 bytes
+ppt/media/image3.emf  60484 bytes
+ppt/media/image4.png  3187109 bytes
+ppt/media/image5.png  4289718 bytes
+ppt/media/image6.png  296323 bytes
+ppt/media/image7.png  249451 bytes
+ppt/media/image8.png  358976 bytes
+ppt/media/image9.png  1309605 bytes

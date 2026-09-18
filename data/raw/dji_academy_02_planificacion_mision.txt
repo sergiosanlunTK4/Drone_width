@@ -1,0 +1,371 @@
+# Extraccion de: 02 Planificación de Misión y Modos de Operación en drones DJI AGRAS.pptx
+# slides=30  media=44  hojas_de_notas=29
+
+
+==============================================================================
+### SLIDE 1
+==============================================================================
+[forma: 文本框 3] Planificación de Misión y Modos de Operación DJI AGRAS
+
+==============================================================================
+### SLIDE 2
+==============================================================================
+[forma: 文本框 7] DJI AGRAS Mission Modes
+[forma: 文本框 11] 5 modos de misión para diferentes propósitos de aplicación : Aplicación de Pulverización y Distribución: Modo  de Ruta Modo Manual Modo de Árbol Frutal Mapeo  FPV: Mapeo  de Ruta Mapeo de Árbol Frutal
+[forma: 文本框 1] Nota: Este curso de capacitación no introducirá el Modo de Árbol Frutal. DJI ofrece un curso avanzado de operación para Árboles Frutales. .
+
+==============================================================================
+### SLIDE 3
+==============================================================================
+[forma: 文本框 7] Flujo  de trabajo general
+[forma: 文本框 4] Modo de Ruta
+[forma: 文本框 17] Modo Manual
+
+==============================================================================
+### SLIDE 4
+==============================================================================
+[forma: 文本框 20] Índice
+[forma: 文本框 3] Modo de Ruta Modo Manual Configuraciones de Seguridad Configuraciones de Pulverización Configuraciones de Aspersión Mapeo de Ruta
+
+==============================================================================
+### SLIDE 5
+==============================================================================
+[forma: 矩形 3] 1
+[forma: 矩形 25] Modo de Ruta
+[forma: 文本框 11] El  modo de ruta es adecuado para la pulverización y  aspersión  automática en campos de cultivos en hileras y cultivos  de cobertura  como maíz, soya, trigo, arroz, papa, caña de azúcar, plátano, etc. En el modo de ruta, se generará una ruta de vuelo dentro del campo preestablecido, y el dron ejecutará automáticamente la misión siguiendo esta ruta y los parámetros de misión definidos por el usuario. Durante la operación, el dron se basará en su sistema de radar y visión para seguir los cambios del terreno ,  evitar y rodear obstáculos automáticamente.
+
+==============================================================================
+### SLIDE 6
+==============================================================================
+[forma: 文本框 7] 1  Modo de Ruta
+[forma: 文本框 3] Ruta A-B
+[forma: 文本框 3] Planificación de campo
+[forma: 文本框 4] Vuele la aeronave para marcar los dos extremos de un lado del campo, y las demás rutas de vuelo se generarán en paralelo a ese  lado. Se  puede utilizar para configurar rápidamente una misión de ruta sin planificar todo el campo. Es más adecuado para campos de forma regular.
+[forma: 文本框 30] Preestablezca los límites de la parcela del campo y los obstáculos para generar rutas de vuelo dentro del  campo. El  modo de Planificación de Campo es adecuado para campos de forma irregular y campos con obstáculos que necesitan ser predefinidos.
+
+==============================================================================
+### SLIDE 7
+==============================================================================
+[forma: 文本框 3] Planificación de campo
+[forma: 文本框 11] Dibuje los límites del campo, obstáculos y áreas de no operación en el control remoto (RC) o en la APP  SmartFarm . Límite del campo:  el área destinada a la pulverización/distribución . Obstáculo :  objetos que el dron debe evitar y rodear . Área  de no operación:  áreas sobre las que el dron volará sin  pulverizar/esparcir.
+[forma: 文本框 11] 3 modos para planificar el campo en el control remoto (RC ): Punto de Mira: dibuje directamente sobre el mapa base . Caminar con CR: camine por el campo con el RC para marcar las ubicaciones . Aeronave: vuele el dron AGRAS para marcar las ubicaciones.
+[forma: 文本框 11] Dibuje directamente en la App  SmartFarm  y comparta el campo con la App  RC AGRAS .
+[forma: 文本框 7] 1  Modo de Ruta
+
+==============================================================================
+### SLIDE 8
+==============================================================================
+[forma: 文本框 24] Boundary  offset  rectification  video:   https://www.youtube.com/watch?v=SfTUi_wqGg8
+[forma: 文本框 11] Rectificar la compensación
+[forma: 文本框 24] Al usar la mira para crear campos, debido a que la precisión del mapa base de Google es limitada, el área  de pulverización/aspersión   podría estar desalineada con el campo. La función "Rectificar  la compensación"  se puede utilizar para resolver este problema : Mueva  el control remoto (RC) o la aeronave al punto real de la esquina del campo . Ajuste  la posición del campo en el RC para que coincida con el punto real de la esquina.
+[forma: 文本框 7] 1 Modo  de Ruta
+[forma: 文本框 3] Planificación de campo
+
+==============================================================================
+### SLIDE 9
+==============================================================================
+[forma: 文本框 11] Importe el archivo de forma de los límites del campo para generar el  campo. Guarde  los archivos . shp  y . dbf  en una tarjeta SD bajo la ruta de directorio:  DJI/ ShapeFile . Inserte  la tarjeta SD en el control remoto (RC) e importe el archivo de forma de los límites.
+[forma: 文本框 24] Shapefile boundary file import video:  https://www.youtube.com/watch?v=QwFc_T2lG9Q&t=11s
+[forma: 文本框 7] 1 Modo  de Ruta
+[forma: 文本框 3] Planificación de campo
+
+==============================================================================
+### SLIDE 10
+==============================================================================
+[forma: 文本框 24] Notes: The flight route and parameters could be configured individually for each single field.
+[forma: 文本框 24] Si las parcelas a  pulverizar/esparcir  son adyacentes, se pueden seleccionar y agrupar en una sola misión. En ese caso, estas parcelas se operarán en secuencia.
+[forma: 文本框 3] Planificación de ruta de vuelo
+[forma: 文本框 11] Operación  Multi  -tarea
+[forma: 文本框 7] 1 Modo  de Ruta
+[imagen: Picture 6] descr: A screenshot of a map
+
+Description automatically generated
+
+==============================================================================
+### SLIDE 11
+==============================================================================
+[forma: 文本框 11] La división del campo  se puede utilizar para dividir la parcela original en varias partes  rápidamente. Dibuja  una línea recta agregando dos puntos de anclaje; la parcela se dividirá automáticamente.
+[forma: 文本框 11] La segmentación de  trayectorias  se puede utilizar para seleccionar un segmento de la ruta de vuelo para una operación  parcial. Utilice  la barra deslizante para segmentar y seleccionar una sección de la  trayectoria  de vuelo para la operación.
+[forma: 文本框 11] División de campo y segmentación de trayectorias.
+[forma: 文本框 7] 1 Modo  de Ruta
+[forma: 文本框 3] Planificación de ruta de vuelo
+
+==============================================================================
+### SLIDE 12
+==============================================================================
+[forma: 文本框 24] Solo Límite:  Se genera una ruta de límite alrededor del campo, y solo se opera la ruta de límite.
+[forma: 矩形 1] Solo Ruta: Pulverizar/esparcir  siguiendo la ruta de cobertura completa.
+[forma: 矩形 6] Ruta y Límite:  Se genera una ruta de límite alrededor del campo, y tanto la ruta interior como la ruta de límite se operan.
+[forma: 文本框 11] Área de cobertura y aplicación en limites
+[forma: 文本框 7] 1 Modo  de Ruta
+[forma: 文本框 3] Planificación de ruta de vuelo
+
+==============================================================================
+### SLIDE 13
+==============================================================================
+[forma: 文本框 24] Optimización de la dirección de la ruta: La optimización automática de la dirección de la ruta ajustará la dirección de la ruta para diferentes secciones del campo para optimizar la eficiencia.
+[forma: 文本框 24] Smart resume demonstration video: https://www.youtube.com/watch?v=ay5gm9jScGw
+[forma: 矩形 8] Reinicio Inteligente: Calcula automáticamente y selecciona el mejor punto de reinicio después de rellenar para reducir la distancia de vuelo con la carga completa.
+[forma: 文本框 11] Optimización de la ruta de vuelo para mejorar la eficiencia
+[forma: 文本框 7] 1 Modo  de Ruta
+[forma: 文本框 3] Planificación de ruta de vuelo
+
+==============================================================================
+### SLIDE 14
+==============================================================================
+[forma: 文本框 24] Parámetros de vuelo definidos por el usuario:  tasa de aplicación, tamaño de las gotas, velocidad de vuelo, altura sobre el cultivo y separación de rutas . Todos  estos parámetros se pueden guardar como una plantilla. Utilizar una plantilla de parámetros de vuelo mejora la eficiencia en la configuración de misiones . Estas  plantillas se pueden guardar en tu cuenta AGRAS y descargar a un nuevo control remoto.
+[forma: 文本框 12] Saved template
+[forma: 文本框 3] Configuración de parámetros de vuelo
+[forma: 文本框 7] 1 Modo  de Ruta
+
+==============================================================================
+### SLIDE 15
+==============================================================================
+[forma: 矩形 3] 2
+[forma: 矩形 25] Modo manual
+
+==============================================================================
+### SLIDE 16
+==============================================================================
+[forma: 文本框 7] 2  Modo  manual
+[forma: 文本框 11] Modo Manual  permite al piloto preestablecer ciertos parámetros de vuelo, sin necesidad de definir un campo previamente. El  Modo Manual ofrece alta flexibilidad en cuanto al área de pulverización/esparcimiento y la ruta, pero requiere habilidades avanzadas en el control de la aeronave para pulverizar/esparcir de manera precisa, eficiente y segura.
+
+==============================================================================
+### SLIDE 17
+==============================================================================
+[forma: 矩形 3] 3
+[forma: 矩形 25] Configuraciones de seguridad
+[forma: 文本框 2] Configuración de evitación y desvío de  obstáculos Configuración  de márgenes de límite y  obstáculos Configuración  del escenario de seguimiento del  terreno Comprobación  previo al despegue
+
+==============================================================================
+### SLIDE 18
+==============================================================================
+[forma: 文本框 7] 3  Configuraciones de seguridad
+[forma: 文本框 2] Evitación de Obstáculos  Omnidireccional Se  recomienda  ampliamente  habilitar la evitación de obstáculos  omnidireccional El  radar de detección hacia abajo NO se utiliza para la evitación de obstáculos.  Esté  atento a los obstáculos debajo del dron al  descender.
+[forma: 文本框 11] Desvío de  Obstáculos Utilice  esta función en entornos con buena  visibilidad. NO  intente  esquivar  líneas eléctricas.
+[forma: 文本框 3] Configuración de evitación de obstáculos y  desvío automático
+
+==============================================================================
+### SLIDE 19
+==============================================================================
+[forma: 文本框 16] Ampliar los Márgenes del Campo:  El margen del campo se establece para crear una zona de amortiguamiento entre el área de  pulverización/aspersión  y el límite del campo.  Esta  configuración puede evitar obstáculos adyacentes al límite del campo. Por ejemplo, si hay árboles a lo largo del límite en el lado de giro del campo, puedes establecer el margen de un lado a 2.5 m, que es la distancia mínima de seguridad entre las puntas de las hélices y el objeto. Distancia  de Seguridad con Obstáculos:  la distancia entre las puntas de las hélices del dron y los obstáculos predefinidos en el campo. Nota :  Se recomienda mantener una distancia mínima de 2.5 m de seguridad entre las puntas de las hélices del dron y el objeto u obstáculo.
+[forma: 文本框 13] Trees along the boundary
+[forma: 文本框 3] Configuración de márgenes de límite y obstáculos
+[forma: 文本框 7] 3  Configuraciones de seguridad
+
+==============================================================================
+### SLIDE 20
+==============================================================================
+[forma: 文本框 11] T50 / T25
+[forma: 文本框 11] T40 / T20P
+[forma: 文本框 11] Para campos planos, seleccione “Plano ”. Para  huertos, seleccione “Huerto ”. Para  colinas con inclinación menor a 15°, seleccione “Colina”.
+[forma: 文本框 11] Para campos planos, seleccione  “Campos”. Para  colinas y huertos, seleccione “Colina/Huerto ”. Para  operaciones acuáticas, seleccione “Sobre el agua”.
+[forma: 文本框 3] Configuración del escenario de seguimiento del terreno
+[forma: 文本框 7] 3  Configuraciones de seguridad
+
+==============================================================================
+### SLIDE 21
+==============================================================================
+[forma: 文本框 3] Comprobación previa al vuelo
+[forma: 文本框 24] Recuerde  verificar todo  nuevamente antes del despegue final. En caso de pérdida de señal:  se recomienda continuar la tarea si no hay líneas eléctricas en el campo. Tarea  completada:  se recomienda regresar a casa si no hay líneas eléctricas en el campo; de lo contrario, mantenga el vuelo en suspensión y regrese manualmente.
+[forma: 文本框 7] 3  Configuraciones de seguridad
+
+==============================================================================
+### SLIDE 22
+==============================================================================
+[forma: 矩形 3] 4
+[forma: 矩形 25] Configuraciones de pulverización
+
+==============================================================================
+### SLIDE 23
+==============================================================================
+[forma: 文本框 7] 4 Configuraciones  de pulverización
+[forma: 文本框 24] Modo de Operación del  Aspersor: Modo  Alterno:  recomendado para operación manual, de modo que el piloto no necesita hacer un giro en U, sino que puede volar hacia atrás al cambiar de rutas de  vuelo. Modo  Completo:  recomendado para escenarios con una alta tasa de aplicación. Con 4  pulverizadores  encendidos, la tasa de flujo máxima alcanza los 24 L/min.
+[forma: 矩形 1] Notas: No se recomienda el desvío de obstáculos cuando se activan 4 aspersores para pulverización. Una vez que se haya instalado el adicional de 2  pulverizadores , calibre el sistema de pulverización antes de la aplicación.
+
+==============================================================================
+### SLIDE 24
+==============================================================================
+[forma: 矩形 3] 5
+[forma: 矩形 25] Configuraciones de aspersión
+
+==============================================================================
+### SLIDE 25
+==============================================================================
+[forma: 文本框 7] 5  Configuraciones de aspersión
+[forma: 文本框 19] Compuerta de Tolva Estándar: Urea  granulada (≥50 kg/ha)
+[forma: 文本框 20] T40: Compuerta  de Tolva Mediana:  semillas (~25 kg/ha) Compuerta de Tolva Más Pequeña:  herbicida y pesticida granulados (~10 kg/ha) T50 : Compuerta  de Tolva Mediana:  semillas (~25 kg/ha) y herbicida y pesticida granulados (~10 kg/ha)
+[forma: 矩形 1] Utilice una compuerta de tolva más pequeña para materiales de tamaño pequeño y con una baja tasa de aplicación.
+[forma: 文本框 3] Selección de la compuerta de la  t olva
+
+==============================================================================
+### SLIDE 26
+==============================================================================
+[forma: 文本框 5] La salida de la tolva se calibra en función del material específico . Las  partículas granulares varían en tamaño, densidad, forma, viscosidad, etc . Para  la urea granulada, se recomienda recalibrar si se ha almacenado en condiciones de humedad.
+[forma: 文本框 6] Granular urea
+[forma: 文本框 3] Calibración de Plantilla para Material Granulado
+[forma: 文本框 7] 5  Configuraciones de aspersión
+
+==============================================================================
+### SLIDE 27
+==============================================================================
+[forma: 矩形 3] 6
+[forma: 矩形 25] Mapeo de ruta
+
+==============================================================================
+### SLIDE 28
+==============================================================================
+[forma: 文本框 7] 6 Mapeo  de Ruta
+[forma: 文本框 1] El mapeo FPV genera un mapa de alta resolución del campo. Este mapa se puede utilizar como mapa base para la planificación del campo.
+
+==============================================================================
+### SLIDE 29
+==============================================================================
+[forma: 文本框 7] Recursos adicionales
+[forma: 文本框 24] Para obtener consejos de operación más avanzados y videos, por favor visite amablemente el canal de YouTube de DJI  Agriculture : https://www.youtube.com/@DJIAgriculture/featured
+
+==============================================================================
+### SLIDE 30
+==============================================================================
+[forma: 矩形 5] Better Growth  Better Life
+
+
+==============================================================================
+### NOTAS DEL ORADOR
+==============================================================================
+
+--- notas slide 1000000 ---
+29
+
+--- notas slide 1000000 ---
+15
+
+--- notas slide 1000000 ---
+16
+
+--- notas slide 1000000 ---
+17
+
+--- notas slide 1000000 ---
+18
+
+--- notas slide 1000000 ---
+14
+
+--- notas slide 1000000 ---
+12
+
+--- notas slide 1000000 ---
+13
+
+--- notas slide 1000000 ---
+19
+
+--- notas slide 1000000 ---
+25
+
+--- notas slide 1000000 ---
+26
+
+--- notas slide 1000000 ---
+27
+
+--- notas slide 1000000 ---
+28
+
+--- notas slide 1000000 ---
+30
+
+--- notas slide 1000000 ---
+24
+
+--- notas slide 1000000 ---
+20
+
+--- notas slide 1000000 ---
+21
+
+--- notas slide 1000000 ---
+22
+
+--- notas slide 1000000 ---
+23
+
+--- notas slide 1000000 ---
+11
+
+--- notas slide 1000000 ---
+2
+
+--- notas slide 1000000 ---
+1
+
+--- notas slide 1000000 ---
+3
+
+--- notas slide 1000000 ---
+7
+
+--- notas slide 1000000 ---
+8
+
+--- notas slide 1000000 ---
+9
+
+--- notas slide 1000000 ---
+10
+
+--- notas slide 1000000 ---
+6
+
+--- notas slide 1000000 ---
+5
+
+
+==============================================================================
+### INVENTARIO DE MEDIA (no extraido)
+==============================================================================
+ppt/media/image1.emf  62924 bytes
+ppt/media/image10.png  5043338 bytes
+ppt/media/image11.png  2182523 bytes
+ppt/media/image12.png  3557098 bytes
+ppt/media/image13.png  189909 bytes
+ppt/media/image14.png  417401 bytes
+ppt/media/image15.png  2578982 bytes
+ppt/media/image16.png  1738247 bytes
+ppt/media/image17.png  1648366 bytes
+ppt/media/image18.png  3096931 bytes
+ppt/media/image19.png  753808 bytes
+ppt/media/image2.emf  41160 bytes
+ppt/media/image20.jpeg  166551 bytes
+ppt/media/image21.png  755234 bytes
+ppt/media/image22.png  1636002 bytes
+ppt/media/image23.png  2618741 bytes
+ppt/media/image24.png  92907 bytes
+ppt/media/image25.png  1213558 bytes
+ppt/media/image26.png  1188470 bytes
+ppt/media/image27.png  1180883 bytes
+ppt/media/image28.png  1134063 bytes
+ppt/media/image29.png  912284 bytes
+ppt/media/image3.emf  60484 bytes
+ppt/media/image30.png  1952177 bytes
+ppt/media/image31.png  1508792 bytes
+ppt/media/image32.png  2524793 bytes
+ppt/media/image33.png  1651284 bytes
+ppt/media/image34.png  118113 bytes
+ppt/media/image35.png  779855 bytes
+ppt/media/image36.png  1948579 bytes
+ppt/media/image37.png  115133 bytes
+ppt/media/image38.png  153797 bytes
+ppt/media/image39.png  28731 bytes
+ppt/media/image4.png  1859074 bytes
+ppt/media/image40.png  1648846 bytes
+ppt/media/image41.png  129552 bytes
+ppt/media/image42.png  93086 bytes
+ppt/media/image43.png  1625095 bytes
+ppt/media/image44.jpeg  1577345 bytes
+ppt/media/image5.png  1683931 bytes
+ppt/media/image6.png  1172240 bytes
+ppt/media/image7.png  1667986 bytes
+ppt/media/image8.png  3379174 bytes
+ppt/media/image9.png  2174058 bytes

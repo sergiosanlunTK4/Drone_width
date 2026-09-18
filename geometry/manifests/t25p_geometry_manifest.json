@@ -1,0 +1,298 @@
+{
+  "platform": "DJI Agras T25P",
+  "schema_version": "2.0",
+  "principio": "cada valor lleva clasificacion P / P-A / I / E / D y su fuente; D no se rellena con supuestos",
+  "dimensiones": {
+    "wheelbase_diagonal_mm": {
+      "valor": 1970,
+      "clasificacion": "P",
+      "fuente": "docs/specs/T25P.md (ag.dji.com/es/T25P/specs, captura data/T25P.pdf)"
+    },
+    "desplegado_mm": {
+      "valor": [
+        2650,
+        2700,
+        820
+      ],
+      "clasificacion": "P",
+      "fuente": "docs/specs/T25P.md (ag.dji.com/es/T25P/specs, captura data/T25P.pdf)",
+      "nota": null
+    },
+    "rotor_diameter_m": {
+      "valor": 1.27,
+      "clasificacion": "P",
+      "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, 01 Conocimiento basico de un Dron)",
+      "nota": "50/62 in segun specs"
+    },
+    "blade_model_o_paso": {
+      "valor": "no declarado",
+      "clasificacion": "D",
+      "fuente": null
+    },
+    "blades_per_rotor": {
+      "valor": 2,
+      "clasificacion": "S",
+      "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, deck 01)",
+      "nota": "2 palas observadas en imagen de detalle; confirmar con medicion (M)"
+    },
+    "perfil_twist_pala": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "requiere medicion/reconstruccion CAD"
+    }
+  },
+  "masa": {
+    "sin_bateria_kg": {
+      "valor": 26.0,
+      "clasificacion": "P"
+    },
+    "con_bateria_kg": {
+      "valor": 33.0,
+      "clasificacion": "P",
+      "valor_alternativo": null,
+      "discrepancia": null
+    },
+    "tanque_kg": {
+      "valor": 20.0,
+      "clasificacion": "P"
+    },
+    "mtow_pulverizacion_kg": {
+      "valor": 53.0,
+      "clasificacion": "P"
+    },
+    "masa_total_a_carga_f": {
+      "formula": "33.0 + f*20.0 kg  (f = fraccion de tanque)",
+      "clasificacion": "P"
+    }
+  },
+  "modelo_geometrico": {
+    "tipo": "relacion geometrica CANDIDATA (prueba de consistencia, NO identidad demostrada)",
+    "descripcion": "distancia diagonal entre ejes (D_axis) = separacion entre EJES de rotores opuestos",
+    "lado_entre_ejes_adyacentes_m": 1.393,
+    "radio_centro_a_eje_m": 0.985,
+    "span_candidato_mm": 2663.0,
+    "span_oficial_mm": [
+      2650,
+      2700,
+      820
+    ],
+    "error_vs_ancho_pct": 0.49,
+    "error_vs_largo_pct": -1.37,
+    "clasificacion": "I (hipotesis de trabajo; la prueba de consistencia no la confirma en las 4 plataformas)",
+    "coincide_con_el_sobre": true,
+    "hipotesis_alternativas": "geometry/protocolo_geometria.md SS7.1",
+    "nota": "NO elevar a identidad hasta que A2/A8 expliquen o descarten la desviacion (GATE 1A)"
+  },
+  "topologia_rotores": {
+    "arm_count": {
+      "valor": 4,
+      "clasificacion": "I",
+      "razon": "geometria y dimensiones del sobre"
+    },
+    "coaxial": {
+      "valor": false,
+      "clasificacion": "S",
+      "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, deck 01)",
+      "nota": "elevado de I (hipotesis) a S (evidencia visual) por la imagen de la slide 12. Sigue pendiente de confirmacion por medicion (M)."
+    },
+    "rotor_count": {
+      "valor": 4,
+      "clasificacion": "S",
+      "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, deck 01)",
+      "nota": "elevado de I (hipotesis) a S (evidencia visual) por la imagen de la slide 12. Sigue pendiente de confirmacion por medicion (M).",
+      "hipotesis_previa": 4
+    },
+    "direccion_rotacion": {
+      "valor": null,
+      "clasificacion": "D",
+      "fuente": null
+    },
+    "posiciones_xyz": {
+      "valor": [
+        {
+          "arm": "A1",
+          "x_m": 0.6965,
+          "y_m": 0.6965,
+          "z_m": null
+        },
+        {
+          "arm": "A2",
+          "x_m": -0.6965,
+          "y_m": 0.6965,
+          "z_m": null
+        },
+        {
+          "arm": "A3",
+          "x_m": -0.6965,
+          "y_m": -0.6965,
+          "z_m": null
+        },
+        {
+          "arm": "A4",
+          "x_m": 0.6965,
+          "y_m": -0.6965,
+          "z_m": null
+        }
+      ],
+      "clasificacion": "I",
+      "nota": "plano XY hipotetico; z y posicion real pendientes de medicion (D)"
+    }
+  },
+  "propulsion": {
+    "motor_stator_mm": {
+      "valor": [
+        100,
+        28
+      ],
+      "clasificacion": "P"
+    },
+    "motor_kv": {
+      "valor": 59,
+      "clasificacion": "P"
+    },
+    "rpm_real": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "RIESGO R1. NO inferir de KV. Plan: telemetria autorizada / tachometro / camara / estimacion inversa empuje=peso"
+    },
+    "esc_peak_a": {
+      "valor": null,
+      "clasificacion": "D"
+    },
+    "empuje_declarado_kg": {
+      "valor": null,
+      "clasificacion": "P-A (ambiguo)",
+      "nota": "no se sabe si 'brazo'/'eje' = 1 rotor o el par coaxial; NO usar como salto de presion sin bancada"
+    }
+  },
+  "pulverizacion": {
+    "atomizers_std": {
+      "valor": 2,
+      "clasificacion": "P"
+    },
+    "atomizers_opt": {
+      "valor": 4,
+      "clasificacion": "P"
+    },
+    "nozzle_spacing_mm": {
+      "valor": 1420,
+      "clasificacion": "P"
+    },
+    "disposicion": {
+      "valor": "pendiente de medicion",
+      "clasificacion": "D"
+    },
+    "posiciones_xyz": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "CRITICO para H3. Requiere medicion directa."
+    },
+    "caudal_2_Lmin": {
+      "valor": 16.0,
+      "clasificacion": "P-A"
+    },
+    "caudal_4_Lmin": {
+      "valor": 24.0,
+      "clasificacion": "P-A"
+    },
+    "presion": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "bancada"
+    },
+    "espectro_gota_um": {
+      "valor": [
+        50,
+        500
+      ],
+      "clasificacion": "P"
+    },
+    "ancho_nominal_m": {
+      "valor": [
+        4,
+        7
+      ],
+      "clasificacion": "P",
+      "nota": "ANCHO NOMINAL DE FABRICANTE. No es ancho efectivo ni interlineado."
+    },
+    "boom": null
+  },
+  "operacion": {
+    "v_max_traslado_ms": {
+      "valor": null,
+      "clasificacion": "D"
+    },
+    "v_ascenso_ms": {
+      "valor": null,
+      "clasificacion": "D"
+    },
+    "v_descenso_ms": {
+      "valor": null,
+      "clasificacion": "D"
+    },
+    "v_aplicacion_ms": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "manual de usuario o medicion"
+    },
+    "altura_aplicacion_m": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "manual de usuario o medicion"
+    }
+  },
+  "derivados_nivel0": {
+    "aviso": "momentum theory: solo ordenes de magnitud (context.md SS12 nivel 0). No es resultado del estudio.",
+    "rho_aire_kg_m3": 1.1716,
+    "n_rotores_hipotesis": 4,
+    "area_disco_total_m2": 5.067,
+    "carga_disco_N_m2": 102.6,
+    "v_inducida_hover_ms": 6.62,
+    "carga_disco_por_rotor_N_m2": 102.6,
+    "relacion_empuje_peso_declarada": null
+  },
+  "pendiente_de_medicion": [
+    "numero real de rotores y de pares coaxiales",
+    "posicion XYZ real de cada rotor y z del plano de rotor",
+    "numero de palas y geometria de pala (cuerda, twist)",
+    "RPM real en hover y en traslacion  [RIESGO R1]",
+    "posicion XYZ y orientacion de cada atomizador",
+    "presion de pulverizacion y espectro real de gota",
+    "velocidad y altura de aplicacion"
+  ],
+  "validaciones": {
+    "errores": [],
+    "avisos": []
+  },
+  "evidencia_visual": {
+    "que_es": "evidencia documental visual (S): mas fuerte que una inferencia, NO es medicion",
+    "regla": "de una fotografia sin escala o cota NO se derivan dimensiones; solo hechos discretos",
+    "entradas": [
+      {
+        "clasificacion": "S",
+        "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, deck 01)",
+        "slide": 12,
+        "archivo": "data/raw/media/01a_conocimiento_basico/p12_24b31615128a.png",
+        "muestra": "vista completa de la aeronave (perfil) y panel de caracteristicas",
+        "observa": "configuracion de 4 brazos sin par coaxial (helicoptero convencional de 4 rotores)",
+        "corrobora": [
+          "dimensiones desplegadas 2650x2700x820 mm",
+          "distancia entre ejes maxima 1970 mm (diagonales)",
+          "peso 26 kg sin bateria / 32,8 kg con bateria",
+          "MTOW pulverizacion 52,8 kg"
+        ],
+        "no_permite": "obtener cotas: la imagen no tiene escala ni cota"
+      },
+      {
+        "clasificacion": "S",
+        "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, deck 01)",
+        "slide": 12,
+        "archivo": "data/raw/media/01a_conocimiento_basico/p12_9bf0ba34ec84.png",
+        "muestra": "panel de 4 detalles: 'Power System', 'Safety System', 'Spraying System', 'Spreading System'",
+        "observa": "el motor lleva impreso '10028/59KV', que coincide con la especificacion publica estator 100x28 mm y KV 59; el rotor muestra 2 PALAS; el atomizador aparece montado por debajo del plano del brazo/rotor",
+        "corrobora": null,
+        "no_permite": "obtener cotas ni la separacion exacta atomizador-rotor"
+      }
+    ]
+  }
+}

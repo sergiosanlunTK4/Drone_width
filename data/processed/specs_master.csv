@@ -1,0 +1,137 @@
+model,group,parameter,value,unit,classification,source_note
+T25P,geometry,wheelbase_diagonal,1970,mm,P,ag.dji.com/es/t25p/specs
+T25P,geometry,dims_deployed,2650x2700x820,mm,P,ag.dji.com/es/t25p/specs
+T25P,geometry,rotor_diameter,1270,mm,P,"50 in, oficial"
+T25P,geometry,rotor_count,,,D,pending measurement
+T25P,geometry,blades_per_rotor,,,D,"typical 2 (I)"
+T25P,geometry,rotor_positions_xyz,,,D,pending
+T25P,mass,weight_no_battery,26,kg,P,specs
+T25P,mass,weight_with_battery,33,kg,P,"DB800, 6.6 kg"
+T25P,mass,mtoW_spray,53,kg,P,specs
+T25P,mass,mtoW_spreading,60,kg,P,specs
+T25P,mass,tank_capacity_kg,20,kg,P,"20 L"
+T25P,mass,battery_db800_kg,6.6,kg,P,specs
+T25P,battery,db800_capacity_mAh,15500,mAh,P,specs
+T25P,battery,db800_volts,52.22,V,P,specs
+T25P,propulsion,motor_stator,100x28,mm,P,specs
+T25P,propulsion,motor_kv,59,RPM/V,P,specs
+T25P,propulsion,real_rpm,,,D,"RISK R1 - pending"
+T25P,atomizer,model,LX07550SX,,P,specs
+T25P,atomizer,count_std,2,,P,specs
+T25P,atomizer,count_optional,4,,P,"por caudales 16/24 L/min"
+T25P,atomizer,nozzle_spacing,1420,mm,P,"boquillas traseras"
+T25P,atomizer,drop_range_um,50-500,um,P,specs
+T25P,atomizer,nominal_swath_m,4-7,m,P,"a 3 m; nominal fabricante"
+T25P,atomizer,positions_xyz,,,D,pending
+T25P,pump,type,centrifuga_magnetica,,P,specs
+T25P,pump,flow_max,16,L/min,P,"2 boquillas"
+T25P,pump,flow_max4,24,L/min,P,"4 boquillas"
+T25P,pump,pressure,,,D,pending bench
+T25P,operation,wind_max,6,m/s,P,"nivel 3"
+T25P,operation,operating_temp,0-40,C,P,specs
+T25P,operation,speed_range,,,D,"typ 2-10 m/s (I)"
+T25P,operation,height_range,,,D,"typ 1.5-6 m (I)"
+T55,geometry,wheelbase_diagonal,2415,mm,P,ag.dji.com/es/t55/specs
+T55,geometry,dims_deployed,3190x3570x934,mm,P,translate page
+T55,geometry,rotor_diameter,1575,mm,P,"62 in, oficial"
+T55,geometry,rotor_count,8,,P+I,"4 pares coaxiales (I)"
+T55,geometry,blades_per_rotor,,,D,"typical 2 (I)"
+T55,geometry,rotor_positions_xyz,,,D,pending
+T55,mass,weight_with_battery,45,kg,P,"DB1050, 2 boq, 50L"
+T55,mass,weight_with_battery_db1580,48.4,kg,P,"2 boq, 50L"
+T55,mass,mtoW_spray_db1050_2noz,95,kg,P,specs
+T55,mass,mtoW_spray_db1050_4noz,99,kg,P,specs
+T55,mass,mtoW_spray_db1580_4noz,103,kg,P,specs
+T55,mass,mtoW_spreading,108,kg,P,"DB1580"
+T55,mass,mtoW_lifting,84,kg,P,"DB1050 (89 DB1580)"
+T55,mass,tank_capacity_kg,50,kg,P,"50 L"
+T55,mass,battery_db1050_kg,8.3,kg,P,"±0.3"
+T55,battery,db1050_capacity_mAh,20000,mAh,P,specs
+T55,propulsion,motor_stator,155x16,mm,P,specs
+T55,propulsion,motor_kv,55,RPM/V,P,specs
+T55,propulsion,real_rpm,,,D,"RISK R1 - pending"
+T55,atomizer,model,LX09050DX_LX09510DX,,P,"centrifug/std + nebulizer/opt"
+T55,atomizer,count_std,2,,P,specs
+T55,atomizer,count_optional,4,,P,specs
+T55,atomizer,nozzle_spacing,1800,mm,P,"2 std"
+T55,atomizer,drop_range_um,50-500,um,P,specs
+T55,atomizer,nominal_swath_m,4-11,m,P,"nominal fabricante"
+T55,atomizer,positions_xyz,,,D,pending
+T55,pump,type,,,D,"no capturado en PDF"
+T55,pump,flow_max,,L/min,,pending verify
+T55,pump,flow_max4,,L/min,,pending verify
+T55,pump,pressure,,,D,pending bench
+T55,operation,wind_max,6,m/s,P,specs
+T55,operation,operating_temp,0-40,C,P,specs
+T55,operation,speed_range,,,D,"typ 2-10 m/s (I)"
+T55,operation,height_range,,,D,"typ 1.5-6 m (I)"
+T70P,geometry,wheelbase_diagonal,2440,mm,P,ag.dji.com/es/t70p/specs
+T70P,geometry,dims_deployed,3200x3520x960,mm,P,specs
+T70P,geometry,rotor_diameter,1575,mm,P,"62 in, oficial"
+T70P,geometry,rotor_count,,,D,"Cantidad no visible en captura; probable 8 (I)"
+T70P,geometry,blades_per_rotor,,,D,"typical 2 (I)"
+T70P,geometry,rotor_positions_xyz,,,D,pending
+T70P,mass,weight_with_battery_db1580,52,kg,P,specs
+T70P,mass,weight_with_battery_db2160,56,kg,P,specs
+T70P,mass,mtoW_spray_db1580_2noz,102,kg,P,specs
+T70P,mass,mtoW_spray_db1580_4noz,105,kg,P,specs
+T70P,mass,mtoW_spray_db2160_2noz,126,kg,P,specs
+T70P,mass,mtoW_spray_db2160_4noz,130,kg,P,specs
+T70P,mass,mtoW_spreading,126,kg,P,"DB1580 (130 DB2160)"
+T70P,mass,mtoW_lifting,115,kg,P,"DB1580 (118.5 DB2160)"
+T70P,mass,tank_capacity_kg,70,kg,P,"70 L"
+T70P,mass,battery_db1580_kg,11.7,kg,P,"±0.3; 30000 mAh; 52V"
+T70P,mass,battery_db2160_kg,14.7,kg,P,"±0.3; 41000 mAh; 52V"
+T70P,mass,battery_db2212_kg,15,kg,P,"±0.3; 41000 mAh; 52V"
+T70P,propulsion,motor_stator,155x22,mm,P,specs
+T70P,propulsion,motor_kv,65,RPM/V,P,specs
+T70P,propulsion,real_rpm,,,D,"RISK R1 - pending"
+T70P,atomizer,model,LX07550SX_LX09550SX,,P,"std + niebla opt"
+T70P,atomizer,count_std,2,,P,specs
+T70P,atomizer,count_optional,4,,P,specs
+T70P,atomizer,nozzle_spacing,1874,mm,P,"boquillas traseras"
+T70P,atomizer,drop_range_um,50-500,um,P,specs
+T70P,atomizer,nominal_swath_m,4-11,m,P,"nominal fabricante"
+T70P,atomizer,positions_xyz,,,D,pending
+T70P,pump,type,centrifuga_magnetica,,P,specs
+T70P,pump,flow_max,30,L/min,P,"2 rociadores"
+T70P,pump,flow_max4,40,L/min,P,"4 rociadores"
+T70P,pump,pressure,,,D,pending bench
+T70P,operation,wind_max,6,m/s,P,specs
+T70P,operation,operating_temp,0-40,C,P,specs
+T70P,operation,speed_range,,,D,"typ 2-10 m/s (I)"
+T70P,operation,height_range,,,D,"typ 1.5-6 m (I)"
+T100,geometry,wheelbase_diagonal,2330,mm,P,ag.dji.com/es/t100/specs
+T100,geometry,dims_deployed,3220x3224x975,mm,P,specs
+T100,geometry,rotor_diameter,1575,mm,P,"62 in, oficial"
+T100,geometry,rotor_count,16,,P+I,"8 pares (I)"
+T100,geometry,blades_per_rotor,,,D,"typical 2 (I)"
+T100,geometry,rotor_positions_xyz,,,D,pending
+T100,geometry,spray_boom_ls100,880x870x810_folded_1020x1930x810_deployed,mm,P,"barra de pulverizacion"
+T100,mass,weight_spray_2noz,75,kg,P,specs
+T100,mass,weight_spray_4noz,77,kg,P,specs
+T100,mass,mtoW_spray_2noz,175,kg,P,specs
+T100,mass,mtoW_spray_4noz,177,kg,P,specs
+T100,mass,mtoW_spreading,175,kg,P,specs
+T100,mass,mtoW_lifting,165,kg,P,"170 doble bateria"
+T100,mass,tank_capacity_kg,100,kg,P,"100 L"
+T100,mass,battery_db2160_kg,14.7,kg,P,"±0.3; 41000 mAh; 52V"
+T100,mass,battery_db2212_kg,15,kg,P,"±0.3; 41000 mAh; 52V"
+T100,propulsion,motor_stator,155x16,mm,P,specs
+T100,propulsion,motor_kv,60,RPM/V,P,specs
+T100,propulsion,real_rpm,,,D,"RISK R1 - pending"
+T100,atomizer,model,LX07550SX_LX09510DX,,P,"std + niebla opt"
+T100,atomizer,count_std,2,,P,specs
+T100,atomizer,count_optional,4,,P,specs
+T100,atomizer,nozzle_spacing,1834,mm,P,"2 boq / 4 exteriores"
+T100,atomizer,drop_range_um,50-500,um,P,specs
+T100,atomizer,nominal_swath_m,5-13,m,P,"nominal fabricante; mayor de los 4"
+T100,atomizer,positions_xyz,,,D,pending on boom
+T100,pump,type,centrifuga_magnetica,,P,specs
+T100,pump,flow_max,30,L/min,P,"2 boq"
+T100,pump,flow_max4,40,L/min,P,"4 boq"
+T100,pump,pressure,,,D,pending bench
+T100,operation,wind_max,6,m/s,P,specs
+T100,operation,operating_temp,0-40,C,P,specs
+T100,operation,speed_range,,,D,"typ 2-10 m/s (I)"
+T100,operation,height_range,,,D,"typ 1.5-6 m (I)"

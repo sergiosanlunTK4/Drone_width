@@ -1,0 +1,92 @@
+/*
+--------------------------------------------------------------------------------
+OpenFOAM Actuator Disk & MRF CFD Template Framework
+Study: DJI Agras Aerodynamics & Spray Deposition (T25P, T55, T70P, T100)
+--------------------------------------------------------------------------------
+*/
+
+// --- 01. constant/g ---
+// Standard gravity vector
+gravity [0 1 -2 0 0 0 0] (0 0 -9.81);
+
+// --- 02. constant/transportProperties ---
+// Water properties at 28 deg C
+transportModel Newtonian;
+nu [0 2 -1 0 0 0 0] 8.547e-07; // Kinematic viscosity of water at 28 C (m^2/s)
+rho [1 -3 0 0 0 0 0] 996.2;     // Density of water at 28 C (kg/m^3)
+
+// --- 03. constant/turbulenceProperties ---
+simulationType RAS;
+RAS
+{
+    rasModel kOmegaSST;
+    turbulence on;
+    printCoeffs on;
+}
+
+// --- 04. system/controlDict ---
+application     pisoFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         500;
+deltaT          0.001;
+writeControl    timeStep;
+writeInterval   100;
+runTimeModifiable true;
+
+// --- 05. system/fvSchemes ---
+ddtSchemes
+{
+    default     backward;
+}
+gradSchemes
+{
+    default     gauss linear;
+}
+divSchemes
+{
+    default             none;
+    div(phi,U)          gauss linearUpwind grad(U);
+    div(phi,k)          gauss upwind;
+    div(phi,omega)      gauss upwind;
+    div((nuEff*dev2(T(grad(U))))) gauss linear;
+}
+laplacianSchemes
+{
+    default     gauss linear corrected;
+}
+interpolationSchemes
+{
+    default     linear;
+}
+sngradSchemes
+{
+    default     corrected;
+}
+
+// --- 06. system/fvSolution ---
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        smoother        GaussSeidel;
+        tolerance       1e-06;
+        relTol          0.01;
+    }
+    "(U|k|omega)"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-07;
+        relTol          0.01;
+    }
+}
+PISO
+{
+    nCorrectors     3;
+    nNonOrthogonalCorrectors 1;
+    pRefCell        0;
+    pRefValue       0;
+}

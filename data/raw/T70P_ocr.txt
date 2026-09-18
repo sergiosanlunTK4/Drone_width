@@ -1,0 +1,419 @@
+--- PAGE 1 ---
+14/9/26, 12:37 a.m.
+DJI AGRAS T70P - Especificaciones - DJI
+AGRICULTURE
+Productos
+DJI Academy
+Perspectivas
+Asistencia
+Acerca de nosotros
+DJI AGRAS T70P
+Videos
+Descargas
+FAQ
+Especificaciones
+Contacta cc
+Especificaciones
+Aeronave
+Peso
+Equipado con Bateria de vuelo inteligente DB1580: 52 kg (incluyendo bateria)
+Equipado con Bateria de vuelo inteligente DB2160: 56 kg (incluyendo bateria)
+Peso de despegue maximo[1]
+Equipado con Bateria devuelo inteligente DB1580:
+Peso maximo de despegue para pulverizacion (estandar con 2 boquillas): 102 kg
+Peso maximo de despegue para pulverizacion (opcional con 4 boquillas): 105 kg
+Peso maximo de despegue para el esparcido: 126 kg
+Peso maximo de despegue para la elevacion: 115 kg
+Equipado con Bateria de vuelo inteligente DB2160:
+Peso maximo de despegue para pulverizacion (estandar con 2 boquillas): 126 kg
+Peso maximo de despegue para pulverizacion (4 boquillas opcionales): 130 kg
+Peso maximo de despegue para el esparcido: 130 kg
+Peso maximo de despegue para la elevacion: 118.5 kg
+Distancia diagonal entre ejes
+2440 mm
+maxima
+Dimensiones
+3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados)
+1820 mm × 2100 mm × 960 mm (brazos desplegados y helices plegadas)
+1160 mm × 900 mm × 960 mm (brazos y helices plegadas)
+Rango de precision en vuelo
+RTK habilitado:
+estacionario (con senal GNss
+±10 cm (horizontal), ±10 cm (vertical)
+fuerte)
+RTK no habilitado:
+Horizontal ± 0.6 m, vertical ± 0.3 m
+Radio de vuelo configurable
+2 km
+maximo
+Temperatura de funcionamiento
+0 °℃ a 40 °℃
+Resistencia maxima al viento
+<6 m/s
+Sistema de propulsion - Motores
+Tamano del estator
+155 × 22 mm
+KV
+65 rpm/
+Sistema de propulsion - Hélices
+Material
+Compuesto de fibra de carbono
+https://ag.dji.com/es/t70p/specs
+1/7
+--- PAGE 2 ---
+14/9/26, 12:37 a.m.
+DJIAGRAS T7OP - Especificaciones -DJI
+Dimensiones
+62 pulgadas
+Cantidad
+Sistema de pulverizacion - Tanque de pulverizacion
+Material
+HDPE
+Volumen
+70 L
+Capacidad de carga
+70 kg
+Sistema de rociado - Aspersores
+Modelo
+LX07550SX (Boquilla estandar) / LX09550SX (Boquilla de niebla opcional)
+Cantidad
+2 (Estandar) / 4 (Opcional)
+Distancia de las boquillas
+1874 mm (boquillas traseras)
+Tamano de microgotas
+50 - 500 μm
+Anchura de rociado efectiva[2]
+4-11m
+Sistema de pulverizacion - Bombas de entrega
+Tipo
+Bomba centrifuga (magnética)
+Cantidad
+Tasa de caudal maximo
+30 L/min (Estandar 2 pulverizaciones)
+40 L/min (Opcional 4 pulverizaciones)
+Sistema de esparcido 4.0
+Diametro de material compatible
+Configuracion estandar:
+Tornillo sinfin extra grande: 0.5 mm - 10 mm granulos (fertilizante, trigo, alimento, etc.)
+Tornillo sinfin mediano: 4 mm - 6 mm granulos (arroz)
+Opcional:
+Gran auger: 4 mm - 10 mm granulos (arroz, fertilizante)
+Pequeno auger: 0.5 mm - 4 mm granulos (semillas de colza, herbicidas granulados, insecticidas granulados)
+Volumen del tanque de esparcido
+100 L
+Tipo de estructura del esparcidor
+Disco centrifugo
+Tipo de estructura de descarga
+Alimentacion del alimentador
+Tasa de descarga maxima
+400 kg/min (fertilizante compuesto)
+Carga maxima dentro de la caja
+70 kg
+de operacion de esparcimiento
+https://ag.dji.com/es/t70p/specs
+2/7
+--- PAGE 3 ---
+14/9/26, 12:37 a.m.
+DJI AGRAS T70P - Especificaciones - DJI
+Ancho de esparcimiento
+3 -10 m
+efectivo[3]
+Sistema de elevacion
+Capacidad de carga[4]
+65 kg
+Longitud del Cable de Elevacion
+10 m (configuracion estandar)
+Longitud recomendada del cable
+10 - 15 m
+Temperatura de funcionamiento
+0 °℃ a 40 °℃
+Sistema de Seguridad 3.0
+PIRE del radar de onda
+< 20 dBm (NCC / MIC / KC / CE / FCC)
+milimétrica
+Temperatura de funcionamiento
+0 °℃a40 °℃
+Entorno de funcionamiento
+Luz adecuada y superficies reconocibles
+Campo de vision
+Radar de onda milimétrica delantera: 360° horizontal, ± 45° vertical, Arriba ± 45° (cono)
+Radar de onda milimétrica trasera: 360°vertical, ± 45° horizontal
+Inteligencia Visionaria Tri-eye: Horizontal: 90°; vertical: 180°
+Rango[4]
+w 09 ≤
+Velocidad efectiva del sistema
+≤ 13.8 m/s
+anticolision[5]
+Altura efectiva del sistema
+≥ 1.5 m
+anticolision
+Distancia de seguridad
+2,5 m (Distancia entre la aeronave y el obstaculo después de frenar y mantenerse estable en el aire)
+Control remoto
+Modelo
+TKPL 2
+Pantalla
+Pantalla tactil LCD de 7 pulgadas; resolucion: 1920 × 1200; brillo: 1400 cd/m2
+Rango de temperatura de
+Menos de un mes: De -30 a 45 °C (de -22 a 113 °F)
+almacenamiento
+De tres meses a un ano: De -30 °C a 30 °C (de -22 °F a 86 °F)
+Temperatura de carga
+De 5 a 40 °C (de 41 a 104 °F)
+Tiempo de ejecucion de bateria
+3.8 horas
+interna
+Tiempo de ejecucion de bateria
+3.2 horas
+externa
+https://ag.dji.com/es/t70p/specs
+3/7
+--- PAGE 4 ---
+14/9/26, 12:37 a.m.
+DJIAGRAS T7OP - Especificaciones-DJI
+Tipo de carga
+Utilice un cargador rapido USB-C con una potencia maxima de 65 W (voltaje maximo 20 V), y se recomienda
+cargador portatil DJI.
+Tiempo de carga
+Dos horas para la bateria interna o para la bateria interna y externa (si el control remoto esta apagado y se
+cargador estandar de DJI),
+Bateria de vuelo inteligente DB1580
+Peso[1]
+11.7 ± 0.3 kg
+Capacidad
+30 000 mAh
+Tension nominal
+52 V
+Bateria de vuelo inteligente DB2160
+Peso[1]
+14.7 ± 0.3 kg
+Capacidad
+41000 mAh
+Tension nominal
+52 V
+Bateria de vuelo inteligente DB2212
+Peso[1]
+15 ± 0.3 kg
+Capacidad
+41000 mAh
+Tension nominal
+52 v
+Generador inversor multifuncional D14000iE
+Canales de salida
+1. Salida de recarga CC 42 - 61.6 V/9650W
+2. Radiador con refrigeracion por aire carga 12 V/6A
+3. Salida CA 220 V/1500 W
+Tiempo de recarga[6]
+7 - 8 minutos (Bateria de vuelo inteligente DB1580, 30 % - 95 % de potencia)
+8 - 9 minutos (Bateria de vuelo inteligente DB2160, 30 % - 95 % de potencia)
+Capacidad del tanque de
+30 L
+combustible
+Método de arranque
+Arranque del generador mediante el interruptor de arranque de un solo boton
+Temperatura de funcionamiento
+0 °℃a 40 °℃
+Bateria compatible
+Bateria de vuelo inteligente DB1580 / DB2160
+Dimensiones
+757 mm × 704 mm × 677 mm
+Peso[1]
+87 ± 0.5 kg
+https://ag.dji.com/es/t70p/specs
+4/7
+--- PAGE 5 ---
+14/9/26, 12:37 a.m.
+DJI AGRAS T70P - Especificaciones - DJI
+Tipo de combustible
+Gasolina sin plomo con RON ≥91 (AKl ≥87) y contenido de alcohol inferior al 10 %(*Brasil: gasolina sin plom
+RON ≥ 91 y contenido de alcohol del 27 %)
+Consumo de combustible de
+500 mL/kWh
+referencia
+Modelo de aceite del motor
+SJ 10W-40
+Capacidad de aceite del motor
+1.3 L
+C12000 Smart Charger
+Modelo de cargador
+CSX901-12000
+Dimensiones
+456 mm × 291 mm × 107 mm
+Peso[1]
+13.13 kg
+Entrada
+Entrada CA trifasica: 175 - 520 V
+Entrada CA monofasica: 200 - 264 V
+Salida
+62 V
+Corriente de salida nominal
+194A
+Potencia nominal
+12000 W (entrada trifasica 380 V)
+3000 W (entrada monofasica 220 V)
+Tiempo de carga[6]
+7 - 8 mins (Bateria de vuelo inteligente DB1580, 30 % - 95 % de carga)
+8 - 9 mins (Bateria de vuelo inteligente DB2160, 30 % - 95 % de carga)
+Funciones de proteccion
+Proteccion contra sobretension, sobrecarga, subtension y exceso de temperatura.
+Temperatura de funcionamiento
+De 0 a 40 °
+Canales de salida
+Compatible con Bateria de vuelo
+Bateria de vuelo inteligente DB1580 / DB2160
+inteligente
+Relé
+Dimensiones
+112 mm × 112 mm × 51 mm (sin antena)
+120 mm × 112 mm × 101 mm (con antena)
+Peso[1]
+630 g
+Entrada
+2.7V - 24V
+Consumo eléctrico
+10.48 W (FCC), 8.8 W (SRRC)
+Capacidad de la bateria
+6500 mAh
+Tiempo de funcionamiento
+5 horas
+Frecuencia de funcionamiento
+2.4000-2.4835 GHz,5.150-5.250 GHz,5.725-5.850 GHz
+https://ag.dji.com/es/t70p/specs
+5/7
+--- PAGE 6 ---
+14/9/26, 12:37 a.m.
+DJI AGRAS T70P - Especificaciones - DJI
+Rango de senal efectivo
+5 km (SRRC), 4 km (MIC/KCC/CE), 8 km (FCC)
+(En un entorno sin interferencias y sin obstrucciones, altitud de vuelo 2.5 m)
+Tiempo de carga
+2.5 horas (recarga de 30 W)
+indice de proteccion de entrada
+IP55
+D-RTK 3 AG
+Admite sistemas satelitales
+GPS: L1/L2/L5
+BeiDou:B11/B2I/B3I/B1C/B2A/B2B
+Galileo: E1/E5a/E5b/E6
+GLONASS: G1/G2
+QZSS: L1CA/L2C/L5
+L-BAND
+Dimensiones
+345 mm × 244 mm × 300 mm
+Peso[1]
+3.77 kg (incluyendo embalaje)
+Consumo eléctrico
+7W
+Capacidad de la bateria
+6500 mAh
+Tiempo de funcionamiento
+7 horas
+Frecuencia de funcionamiento
+Modo de transmision:
+O4: 2.4G/5.8G
+Rango de senal efectivo
+FCC: 15 km
+SRRC: 12 km
+CE/JP: 8 km
+Tiempo de carga
+2.5 horas (recarga de 30 W)
+indice de proteccion de entrada
+IP67
+Precision de posicionamiento[7]
+Precision del servicio satelital PPP:
+Tiempo de convergencia: 20 min
+Horizontal: 30 cm (RMS)
+Elevacion: 40 cm (RMS)
+Calibracion RTK de red:
+Horizontal: 0.8 cm + 1 ppm (RMS)
+Vertical: 1.5 cm + 1 ppm (RMS)
+si la aeronave esta a 1 km de la estacion base, la precision es de 1.1 cm.
+Notas de pie de pagina
+[1] Medido al nivel del mar, la aplicacion DJI Agriculture recomendara inteligentemente el peso de carga bas
+estado actual de la aeronave, las condiciones del entorno y las tareas operativas. Los usuarios no deben exi
+peso maximo de carga recomendado, ya que puede afectar la seguridad del vuelo.
+[2] El ancho efectivo de pulverizacion del sistema de rociado depende de la escena de trabajo real.
+[3] La altura de trabajo es de 3 m, la velocidad de rotacion del disco es de 1100 rpm, el requisito de uniform
+(CV<30%) el ancho de transmision medido es de 10 m. Cuanto mas rapida sea la velocidad de rotacion del c
+mayor sera la altitud de vuelo, mayor sera el ancho de transmision.
+[4] Incluye el peso de las cuerdas y ganchos. Medido al nivel del mar, la aplicacion DJI Agriculture recomend
+https://ag.dji.com/es/t70p/specs
+6/7
+--- PAGE 7 ---
+14/9/26, 12:37 a.m.
+DJIAGRAS T7OP- Especificaciones -DJI
+inteligentemente el peso de carga basado en el estado actual de la aeronave, las condiciones del entorno y
+operativas. El peso maximo del material cargado no debe exceder el valor recomendado, ya que puede afer
+seguridad del vuelo.
+[5] El rango de trabajo efectivo de la distancia de deteccion, la evitacion de obstaculos y las capacidades de
+pueden variar debido a diferentes condiciones de iluminacion ambiental, Iluvia, niebla y el material, ubicaci
+forma del objeto objetivo. El sensor hacia abajo se utiliza para ayudar en el vuelo a altitud siguiendo el terre
+mientras que los sensores en otras direcciones se utilizan para evitar obstaculos. Excepto en escenas sin ok
+lineales, si ocurre una colision a velocidades de hasta 13.8 m/s que resulta en danos a la aeronave, la
+responsabilidad puede determinarse a través del analisis de registros, y la aeronave puede ser elegible par:
+energia, por favor marquelos como obstaculos; de lo contrario, la falta de evitarlos sera responsabilidad de
+Nota:1. La percepcion hacia abajo se utiliza para ayudar en el vuelo a altitud siguiendo el terreno. Si ocurre
+colision con un obstaculo abajo, se considera responsabilidad del cliente.2. Debido a las limitaciones de ren
+del sistema de seguridad, la aeronave no puede esquivar activamente objetos que se mueven. Los accident
+tales escenas se consideran responsabilidad del cliente.
+[6] Altura sobre el nivel del mar, temperatura ambiental entre 15-40 grados Celsius, tiempo para cargar la b
+30 % al 95 %; se admite carga rapida cuando la temperatura de la celda de bateria esta dentro del rango de
+grados Celsius; el tiempo de carga varia dependiendo de la potencia de entrada, ASL, nivel de carga inicial y
+factores.
+[7] La precision y fiabilidad del posicionamiento se ven afectadas por varios factores, incluyendo la inclinaci
+equipo, obstruccion de la senal, multitrayectoria, numero de satélites, distribucion geométrica y condicione
+entornos de multitrayectoria.
+Dress (diseno e imagen comercial HDMi) y los logotipos HDMI son marcas comerciales o marcas registradas
+HDMI Licensing Administrator, Inc.
+HDmI?
+HIGH-DEFINITION MULTIMEDIA INTERFACE
+Categorias de productos
+Donde Comprar
+Vuelo Seguro
+Descuento
+Comunidad
+DJI AGRAS T55
+Tienda Online
+Vuelo Seguro
+Productos reacondicionados
+SkyPixel
+DJI AGRAS T100
+Tienda Insignia
+DJI Flying Tips
+Foros DJI
+Explorar
+DJI AGRAS T70P
+Distribuidores
+Developer
+Asistencia
+News
+DJI AGRAS T25P
+Distribuidores de Enterprise
+Asistencia de producto
+STEAM Education
+Suscribirse
+DJI Mavic 3M
+Distribuidor De Drones Agricolas
+Servicio de Reparacion
+Guias de Compra
+Recibe las Ultimas notici
+Distribuidores de Pro
+Programa de afiliados DJI
+Plan de servicio
+Ayuda de Compra
+Tu direccion de co
+Aplicacion DJI Store
+DJI Care
+Politicas de Servicio Postventa
+DJI Care Refresh
+Colaboracion
+Hazte Distribuidor
+Acerca de DJI
+Dealer Portal
+Contacto
+Acerca de DJI Agricultura
+Empleo
+Politica de privacidad . Uso de cookies .Términos de uso .Mapa delsitio . Informacion comercial .Preferencias de cookies
+Copyright @2026 DJI Todos los derechos reservadosDanos tu opinion sobre tu experiencia en la web
+https:/ag.dji.com/es/t70p/specs
+7/7

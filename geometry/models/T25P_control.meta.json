@@ -1,0 +1,55 @@
+{
+  "uav": "T25P",
+  "generado_por": "scripts/generate_control_geometry_v2.py",
+  "advertencia": "geometria de CONTROL para verificar dominio/malla/contornos. NO es CAD fiel.",
+  "cotas": {
+    "rotor_diameter_m": {
+      "valor": 1.27,
+      "clasificacion": "P",
+      "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, 01 Conocimiento basico de un Dron)"
+    },
+    "rotor_plane_z_m": {
+      "valor": 0.08,
+      "clasificacion": "E",
+      "nota": "sin medicion"
+    },
+    "coaxial_dz_m": {
+      "valor": 0.0,
+      "clasificacion": "n/a"
+    },
+    "atomizer_z_m": {
+      "valor": -0.2,
+      "clasificacion": "E",
+      "nota": "sin medicion"
+    },
+    "atomizer_spacing_m": {
+      "valor": 1.42,
+      "clasificacion": "P",
+      "nota": "separacion entre boquillas (DJI)"
+    },
+    "atomizer_x_m": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "las boquillas son TRASERAS: su x debe ser negativa. Magnitud SIN MEDIR -> el STL las coloca en x=0 marcado como pendiente"
+    },
+    "body_est_m": {
+      "valor": {
+        "dx": 0.42,
+        "dy": 0.42,
+        "dz": 0.16
+      },
+      "clasificacion": "E",
+      "nota": "prisma simplificado, estimacion de planificacion"
+    },
+    "blade_sweep_thickness_m": {
+      "valor": 0.04,
+      "clasificacion": "E",
+      "nota": "solo para dar volumen al disco de barrido"
+    },
+    "n_rotores_modelados": {
+      "valor": 4,
+      "clasificacion": "I",
+      "nota": "hipotesis: numero real de rotores PENDIENTE DE MEDICION"
+    }
+  }
+}

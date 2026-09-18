@@ -1,0 +1,111 @@
+/*
+--------------------------------------------------------------------------------
+OpenFOAM snappyHexMeshDict Template for DJI Agras T25P Baseline CFD
+--------------------------------------------------------------------------------
+*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+castellatedMesh true;
+snap            true;
+addLayers       true;
+
+geometry
+{
+    t25p_airframe.stl
+    {
+        type triSurfaceMesh;
+        name airframe;
+    }
+    rotor_disks.stl
+    {
+        type triSurfaceMesh;
+        name rotors;
+    }
+}
+
+castellatedMeshControls
+{
+    maxLocalCells 1000000;
+    maxGlobalCells 5000000;
+    minRefinementCells 10;
+    maxLoadUnbalance 0.10;
+    nCellsBetweenLevels 3;
+
+    features
+    (
+        { file "t25p_airframe.eMesh"; level 3; }
+        { file "rotor_disks.eMesh"; level 4; }
+    );
+
+    refinementBoxes
+    {
+        rotor_wake_zone
+        {
+            mode inside;
+            levels ((1.0 3) (3.0 2) (6.0 1));
+            box (-2.0 -2.0 -1.5) (2.0 2.0 0.5);
+        }
+    }
+
+    refinementSurfaces
+    {
+        airframe { level (3 4); }
+        rotors   { level (4 5); }
+    }
+
+    resolveFeatureAngle 30;
+    locationInMesh (0 0 2.0);
+}
+
+snapControls
+{
+    nSmoothPatch 3;
+    tolerance 2.0;
+    nSolveIter 30;
+    nRelaxIter 5;
+}
+
+addLayersControls
+{
+    relativeSizes true;
+    layers
+    {
+        airframe
+        {
+            nSurfaceLayers 3;
+        }
+    }
+    expansionRatio 1.2;
+    finalThickness 0.7;
+    minThickness 0.1;
+}
+
+meshQualityControls
+{
+    maxNonOrtho 65;
+    maxBoundarySkewness 20;
+    maxInternalSkewness 4;
+    maxConcave 80;
+    minVol 1e-13;
+    minTetQuality 1e-3;
+    minArea 1e-3;
+    minTwist 0.01;
+    minDeterminant 0.001;
+    minFaceWeight 0.02;
+    minVolRatio 0.01;
+    pTolerance 1e-3;
+    nRelaxedIter 20;
+}
+
+writeFlags
+{
+    scalarLevels;
+    layerSets;
+    layerFields;
+}

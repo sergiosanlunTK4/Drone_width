@@ -1,0 +1,46 @@
+# --- Datos crudos aportados por el investigador (inmutables, no versionar binarios grandes)
+data/*.pdf
+
+# --- Extracciones y material de terceros
+#     Los .txt extraidos de los PPTX y el volcado de imagenes son regenerables con
+#     scripts/extract_pptx_text.py y scripts/extract_pptx_media.py.
+#     SI se versionan: data/processed/media_inventory.csv (catalogo) y
+#     figures/contact_sheets/ (derivados, utiles para revision).
+data/raw/dji_academy_*.txt
+data/raw/media/
+
+# --- Casos CFD: la malla y los campos son regenerables desde los diccionarios.
+#     Se versionan los diccionarios (system/, constant/*.dict, 0/), NO la malla ni los resultados.
+cfd/cases/*/constant/polyMesh/
+cfd/cases/*/constant/extendedFeatureEdgeMesh/
+# el STL/triSurface del caso es regenerable desde geometry/models/
+cfd/cases/*/constant/triSurface/
+cfd/cases/*/0/polyMesh/
+cfd/cases/*/0/pointLevel
+cfd/cases/*/0/cellLevel
+cfd/cases/*/[1-9]*/
+cfd/cases/*/[1-9]*.*/
+cfd/cases/*/postProcessing/
+cfd/cases/*/log.*
+cfd/cases/*backup*/
+cfd/results/
+
+# --- Entornos y temporales
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# --- Sistema operativo / macOS
+.DS_Store
+._*
+Thumbs.db
+
+# --- Salidas grandes de post-proceso
+*.foam
+*.vtk
+*.vtu
+*.vtp
+*.raw
+*.h5
+*.hdf5

@@ -1,0 +1,285 @@
+{
+  "platform": "DJI Agras T55",
+  "schema_version": "2.0",
+  "principio": "cada valor lleva clasificacion P / P-A / I / E / D y su fuente; D no se rellena con supuestos",
+  "dimensiones": {
+    "wheelbase_diagonal_mm": {
+      "valor": 2415,
+      "clasificacion": "P",
+      "fuente": "docs/specs/T55.md (ag.dji.com/es/T55/specs, captura data/T55.pdf)"
+    },
+    "desplegado_mm": {
+      "valor": [
+        3190,
+        3570,
+        934
+      ],
+      "clasificacion": "P",
+      "fuente": "docs/specs/T55.md (ag.dji.com/es/T55/specs, captura data/T55.pdf)",
+      "nota": null
+    },
+    "rotor_diameter_m": {
+      "valor": 1.575,
+      "clasificacion": "P",
+      "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, 01 Conocimiento basico de un Dron)",
+      "nota": "50/62 in segun specs"
+    },
+    "blade_model_o_paso": {
+      "valor": "no declarado",
+      "clasificacion": "D",
+      "fuente": null
+    },
+    "blades_per_rotor": {
+      "valor": null,
+      "clasificacion": "D",
+      "fuente": null,
+      "nota": "sin evidencia visual"
+    },
+    "perfil_twist_pala": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "requiere medicion/reconstruccion CAD"
+    }
+  },
+  "masa": {
+    "sin_bateria_kg": {
+      "valor": null,
+      "clasificacion": "D"
+    },
+    "con_bateria_kg": {
+      "valor": 45.0,
+      "clasificacion": "P",
+      "valor_alternativo": null,
+      "discrepancia": null
+    },
+    "tanque_kg": {
+      "valor": 50.0,
+      "clasificacion": "P"
+    },
+    "mtow_pulverizacion_kg": {
+      "valor": 95.0,
+      "clasificacion": "P"
+    },
+    "masa_total_a_carga_f": {
+      "formula": "45.0 + f*50.0 kg  (f = fraccion de tanque)",
+      "clasificacion": "P"
+    }
+  },
+  "modelo_geometrico": {
+    "tipo": "relacion geometrica CANDIDATA (prueba de consistencia, NO identidad demostrada)",
+    "descripcion": "distancia diagonal entre ejes (D_axis) = separacion entre EJES de rotores opuestos",
+    "lado_entre_ejes_adyacentes_m": 1.7077,
+    "radio_centro_a_eje_m": 1.2075,
+    "span_candidato_mm": 3282.7,
+    "span_oficial_mm": [
+      3190,
+      3570,
+      934
+    ],
+    "error_vs_ancho_pct": 2.9,
+    "error_vs_largo_pct": -8.05,
+    "clasificacion": "I (hipotesis de trabajo; la prueba de consistencia no la confirma en las 4 plataformas)",
+    "coincide_con_el_sobre": false,
+    "hipotesis_alternativas": "geometry/protocolo_geometria.md SS7.1",
+    "nota": "NO elevar a identidad hasta que A2/A8 expliquen o descarten la desviacion (GATE 1A)"
+  },
+  "topologia_rotores": {
+    "arm_count": {
+      "valor": 4,
+      "clasificacion": "I",
+      "razon": "geometria y dimensiones del sobre"
+    },
+    "coaxial": {
+      "valor": null,
+      "clasificacion": "D",
+      "fuente": null,
+      "nota": "sin evidencia visual en el deck 01; las specs DJI mencionan '4 pares de helices'. Requiere medicion o localizacion de material propio del T55."
+    },
+    "rotor_count": {
+      "valor": null,
+      "clasificacion": "D",
+      "hipotesis_trabajo": 8,
+      "conflicto": null,
+      "nota": "NO confirmado. Usar la hipotesis solo marcandola como tal en CFD."
+    },
+    "direccion_rotacion": {
+      "valor": null,
+      "clasificacion": "D",
+      "fuente": null
+    },
+    "posiciones_xyz": {
+      "valor": [
+        {
+          "arm": "A1",
+          "x_m": 0.8538,
+          "y_m": 0.8538,
+          "z_m": null
+        },
+        {
+          "arm": "A2",
+          "x_m": -0.8538,
+          "y_m": 0.8538,
+          "z_m": null
+        },
+        {
+          "arm": "A3",
+          "x_m": -0.8538,
+          "y_m": -0.8538,
+          "z_m": null
+        },
+        {
+          "arm": "A4",
+          "x_m": 0.8538,
+          "y_m": -0.8538,
+          "z_m": null
+        }
+      ],
+      "clasificacion": "I",
+      "nota": "plano XY hipotetico; z y posicion real pendientes de medicion (D)"
+    }
+  },
+  "propulsion": {
+    "motor_stator_mm": {
+      "valor": [
+        155,
+        16
+      ],
+      "clasificacion": "P"
+    },
+    "motor_kv": {
+      "valor": 55,
+      "clasificacion": "P"
+    },
+    "rpm_real": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "RIESGO R1. NO inferir de KV. Plan: telemetria autorizada / tachometro / camara / estimacion inversa empuje=peso"
+    },
+    "esc_peak_a": {
+      "valor": null,
+      "clasificacion": "D"
+    },
+    "empuje_declarado_kg": {
+      "valor": null,
+      "clasificacion": "P-A (ambiguo)",
+      "nota": "no se sabe si 'brazo'/'eje' = 1 rotor o el par coaxial; NO usar como salto de presion sin bancada"
+    }
+  },
+  "pulverizacion": {
+    "atomizers_std": {
+      "valor": 2,
+      "clasificacion": "P"
+    },
+    "atomizers_opt": {
+      "valor": 4,
+      "clasificacion": "P"
+    },
+    "nozzle_spacing_mm": {
+      "valor": 1800,
+      "clasificacion": "P"
+    },
+    "disposicion": {
+      "valor": "pendiente de medicion",
+      "clasificacion": "D"
+    },
+    "posiciones_xyz": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "CRITICO para H3. Requiere medicion directa."
+    },
+    "caudal_2_Lmin": {
+      "valor": null,
+      "clasificacion": "D"
+    },
+    "caudal_4_Lmin": {
+      "valor": null,
+      "clasificacion": "D"
+    },
+    "presion": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "bancada"
+    },
+    "espectro_gota_um": {
+      "valor": [
+        50,
+        500
+      ],
+      "clasificacion": "P"
+    },
+    "ancho_nominal_m": {
+      "valor": [
+        4,
+        11
+      ],
+      "clasificacion": "P",
+      "nota": "ANCHO NOMINAL DE FABRICANTE. No es ancho efectivo ni interlineado."
+    },
+    "boom": null
+  },
+  "operacion": {
+    "v_max_traslado_ms": {
+      "valor": null,
+      "clasificacion": "D"
+    },
+    "v_ascenso_ms": {
+      "valor": null,
+      "clasificacion": "D"
+    },
+    "v_descenso_ms": {
+      "valor": null,
+      "clasificacion": "D"
+    },
+    "v_aplicacion_ms": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "manual de usuario o medicion"
+    },
+    "altura_aplicacion_m": {
+      "valor": null,
+      "clasificacion": "D",
+      "nota": "manual de usuario o medicion"
+    }
+  },
+  "derivados_nivel0": {
+    "aviso": "momentum theory: solo ordenes de magnitud (context.md SS12 nivel 0). No es resultado del estudio.",
+    "rho_aire_kg_m3": 1.1716,
+    "n_rotores_hipotesis": 8,
+    "area_disco_total_m2": 15.586,
+    "carga_disco_N_m2": 59.8,
+    "v_inducida_hover_ms": 5.05,
+    "carga_disco_por_rotor_N_m2": 59.8,
+    "relacion_empuje_peso_declarada": null
+  },
+  "pendiente_de_medicion": [
+    "numero real de rotores y de pares coaxiales",
+    "posicion XYZ real de cada rotor y z del plano de rotor",
+    "numero de palas y geometria de pala (cuerda, twist)",
+    "RPM real en hover y en traslacion  [RIESGO R1]",
+    "posicion XYZ y orientacion de cada atomizador",
+    "presion de pulverizacion y espectro real de gota",
+    "velocidad y altura de aplicacion"
+  ],
+  "validaciones": {
+    "errores": [],
+    "avisos": [
+      "prueba de consistencia FALLA: span_candidato=3283 mm vs sobre oficial 3190x3570 mm (err +2.90 % / -8.05 %): el wheelbase y las dimensiones desplegadas no cierran. NO asumir error de la especificacion: contrastar las hipotesis alternativas (protocolo SS7.1) con medicion directa (A2/A8, GATE 1A)"
+    ]
+  },
+  "evidencia_visual": {
+    "que_es": "evidencia documental visual (S): mas fuerte que una inferencia, NO es medicion",
+    "regla": "de una fotografia sin escala o cota NO se derivan dimensiones; solo hechos discretos",
+    "entradas": [
+      {
+        "clasificacion": "S",
+        "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, deck 01)",
+        "slide": null,
+        "archivo": null,
+        "muestra": "NO LOCALIZADO en el deck 01",
+        "observa": "el deck 01 se centra en T100, T70P y T25P; no se hallo una seccion propia del T55",
+        "corrobora": null,
+        "no_permite": "nada; el T55 sigue requiriendo medicion o busqueda en otro deck"
+      }
+    ]
+  }
+}
