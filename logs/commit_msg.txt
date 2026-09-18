@@ -1,51 +1,48 @@
-piloto T25P: campana en dos jornadas, reglas de medicion y QA con no-circularidad
+piloto T25P: convencion de rotores desacoplada y residuo del vector completo
 
-Se cierra la fase documental (rendimiento decreciente) y se arranca el piloto T25P.
+Se implementan las tres correcciones de la ultima revision y, por indicacion explicita,
+SE DEJA DE REFINAR EL PROTOCOLO hasta tener datos reales: seguir agregando controles
+preventivos sin datos arriesga disenar metodologia alrededor de problemas imaginarios.
 
-CAMPANA EN DOS JORNADAS con PARADA OBLIGATORIA:
-  Bloque 1 - Metrologia estatica (UAV apagado): sistema de referencia documentado y
-    fotografiado, identificacion R1-R4 y A1-A2, centros XYZ, normales, diametro efectivo,
-    posiciones/vectores de atomizadores y cotas para contrastar wheelbase/alcance.
-    Cierra GATE 1A.
-  >> PARADA: procesar filas, calcular cierres, simetrias y residuos. Si no pasa, NO se vuela. <<
-  Bloque 2 - Estado operativo: masa real por estado de carga, CG/actitud, ambiente, RPM hover.
-    Cierra GATE 1B. Solo si el bloque 1 paso el post-mortem.
+1. LA NUMERACION DEJA DE PRETENDERSE "DE DJI"
+   No se fija PARES_OPUESTOS sobre una numeracion DJI no demostrada. Se adopta una
+   convencion GEOMETRICA INTERNA (vista cenital, +X adelante, +Y izquierda, +Z arriba):
+     R1=FL  R2=RL  R3=RR  R4=FR
+   y `position_role` pasa a ser COLUMNA OBLIGATORIA del CSV.
+   Razon: R1..R4 son identificadores; FL/RL/RR/FR contienen la semantica geometrica. Si un
+   manual DJI numera los motores de otra forma, no habra que reinterpretar mediciones
+   antiguas: es la clase de decision que, tomada tarde, obliga a rehacer una campana.
 
-REGLAS DE MEDICION INCORPORADAS:
-  - Repetibilidad != resolucion. Repeticiones con RECOLOCACION del instrumento y distinto
-    setup_id. Tres lecturas seguidas sin moverse miden resolucion, y la QA lo marca.
-  - Los RESIDUOS NO SE CORRIGEN. Contraste x1+x3 ~ 0 e y1+y3 ~ 0 reportando el residuo como
-    informacion. Si sale grande: el CG real no coincide con el origen, la planta no es
-    simetrica, o error de medicion. Prohibido ajustar coordenadas para forzar la simetria.
-  - MASA NOMINAL != MASA MEDIDA. Los puntos 33/38/43/48/53 kg son nominales derivados
-    (33+20f, clase E), no masas experimentales. Antes de cada vuelo se pesa la configuracion
-    efectiva. El CSV incorpora DOS variables distintas: nominal_total_mass_kg y
-    measured_total_mass_kg. La diferencia entre ambas es un resultado.
-  - RPM INDIVIDUAL POR ROTOR (R1-R4), no una sola RPM del T25P: diferencias entre rotores son
-    evidencia directa contra el reparto uniforme mg/4 y se pierden al promediar.
-  - Sistema de referencia DOCUMENTADO y fotografiado, no solo declarado.
+2. LA QA DEJA DE ESTAR HARDCODEADA
+   Los pares diametralmente opuestos se DERIVAN de `position_role` (FL<->RR, FR<->RL), no
+   de una lista de identificadores. Se elimina otra fuente de error humano.
 
-REGLA DE NO-CIRCULARIDAD (nueva): GATE 1A debe poder cerrarse exclusivamente con geometria y
-evidencia experimental. Si el script que decide el gate usara valores derivados de CFD se
-introduciria circularidad antes de simular. Implementado como comprobacion automatica en la
-QA, que inspecciona SOLO codigo (descarta comentarios y literales para no detectarse a si
-misma) y verifica que ningun script del gate construya rutas a cfd/results ni cfd/cases.
-Resultado: OK. Nota: los manifiestos incluyen derivados_nivel0 (momentum theory), que es
-fisica analitica y no CFD; no rompe la no-circularidad pero NO es criterio de cierre.
+3. CORRECCION DE FONDO: RESIDUO DEL VECTOR COMPLETO
+   Comprobar solo x1+x3 ~ 0 NO demuestra oposicion. Ahora se comprueba
+     r_i + r_j ~ 2*r_c     (con r_c = 0 si el origen esta en el centro geometrico esperado)
+   y se reportan residuos X, Y, Z, norma 3D y norma XY, sin usarlos para corregir.
+   En la prueba, una pareja con residuo puramente en Z (X=Y=0, Z=+10 mm) habria pasado
+   desapercibida con dos pruebas aisladas en X e Y, y ahora aparece.
 
-QA IMPLEMENTADA: scripts/audit_measurement_csv.py — reporta sin escribir nunca en el CSV ni
-en los manifiestos: esquema/trazabilidad, repetibilidad entre repeticiones independientes,
-residuos de simetria, cierre de distancias vs wheelbase 1970 mm y alcance 2650 mm, cobertura
-de parametros para GATE 1A, y no-circularidad.
+4. EVIDENCIA FOTOGRAFICA OBLIGATORIA
+   Foto cenital con etiquetas fisicas R1-R4 y flecha +X, asociada al reference_frame.
+   Queda como checklist del bloque 1 y como comprobacion en la QA. Es lo que impide
+   discutir dentro de meses que significaba exactamente "R1".
 
-QA VERIFICADA: scripts/selftest_measurement_qa.py inyecta 8 problemas conocidos en un CSV
-desechable y comprueba que todos se detectan: par simetrico correcto, par con residuo de
-30 mm, fila M sin trazabilidad, fila sin reference_frame, repeticiones con el mismo setup_id,
-repeticiones correctas y cota de separacion de ejes. Detecta los 6 grupos, incluido el
-residuo de -0,030 m marcado como RESIDUO GRANDE y el cierre de +0,56% frente al wheelbase.
-El CSV real se restaura tras la prueba.
+5. AUTOTEST CORREGIDO — Y UNA LECCION
+   El autotest pasa de 7 a 8 comprobaciones. Al ejecutarlo una fallo: se esperaba la marca
+   "fila M sin uncertainty" y no salia. LA QA ERA CORRECTA; MI CASO DE PRUEBA ESTABA MAL
+   CONSTRUIDO: tenia instrument = "-" (no vacio), asi que solo debia dispararse la marca de
+   instrument. Corregido el caso (ambos campos vacios), las 8 se detectan.
+   El fallo aparecio porque el autotest comparaba marcas concretas, no porque "la QA
+   pareciera funcionar": es el argumento a favor de haber probado la QA antes de usarla.
 
-Entrega: geometry/campana_T25P.md (bloques 1 y 2 con parada), CSV con cabecera ampliada
-(setup_id incluido) y 0 filas.
+6. LIMITE CONOCIDO, NO CORREGIDO A PROPOSITO
+   La deteccion de "foto cenital registrada" da un falso positivo cuando el CSV tiene filas
+   malformadas o vacias (aparece un reference_frame espurio con valor M). No se corrige
+   ahora: sin datos reales, refinar contra un CSV vacio es disenar para un problema
+   imaginario. Se anota para corregirlo cuando existan las primeras filas reales, que es
+   cuando se sabra que forma tienen de verdad.
 
-Nada medido. Ningun gate cerrado. CFD no ejecutado. El cuello de botella pasa a ser fisico.
+Nada medido. Ningun gate cerrado. CFD no ejecutado. La metodologia queda congelada hasta
+tener datos: el siguiente paso es ejecutar el bloque 1 del T25P.

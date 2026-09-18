@@ -59,14 +59,39 @@ Z       = hacia arriba
 > Un error aquí invalida todo el bloque. Ninguna cota por debajo de esta sección es interpretable
 > si el origen no está documentado.
 
-## 1.2 Identificación de elementos
+## 1.2 Convención de numeración de rotores (interna y explícita)
 
-- [ ] Rotores **R1–R4** identificados de forma inequívoca y **fotografiados** (vista cenital con
-      los rótulos visibles). Definir el criterio: p. ej. R1 = delantero izquierdo, y el sentido
-      de numeración (horario/antihorario).
+**No se usa ninguna numeración de DJI**: no está demostrada. Se adopta una **convención
+geométrica interna**, vista desde arriba, con `+X = adelante`, `+Y = izquierda`, `+Z = arriba`:
+
+| id | `position_role` | posición |
+|---|---|---|
+| `R1` | `FL` | delantero izquierdo |
+| `R2` | `RL` | trasero izquierdo |
+| `R3` | `RR` | trasero derecho |
+| `R4` | `FR` | delantero derecho |
+
+**`R1…R4` son identificadores; `FL/RL/RR/FR` contienen la semántica geométrica.** Por eso la
+columna `position_role` es obligatoria en las filas de rotor: si más adelante un manual DJI
+numera los motores de otra forma, **no habrá que reinterpretar mediciones antiguas**.
+
+Con esta convención, los pares **diametralmente opuestos** son `FL↔RR` y `FR↔RL`. La QA **deriva
+los pares de `position_role`**, no de una lista fija de identificadores, para eliminar esa fuente
+de error humano.
+
+- [ ] Rotores **R1–R4** identificados de forma inequívoca.
 - [ ] Atomizadores **A1–A2** (configuración estándar) y **A3–A4** (opcional) identificados igual.
-- [ ] Registrar en `notes` el criterio de numeración elegido. **Sin esto, las coordenadas no son
-      comparables ni siquiera consigo mismas entre jornadas.**
+- [ ] **Criterio de numeración registrado en `notes`.** Sin esto las coordenadas no son
+      comparables ni consigo mismas entre jornadas.
+
+## 1.2.1 Evidencia fotográfica obligatoria de la convención
+
+- [ ] **Foto cenital del UAV con las etiquetas físicas `R1`–`R4` visibles y una flecha `+X`.**
+- [ ] Esa foto queda **asociada al `reference_frame`** (ruta en `raw_file`, y el nombre del
+      `reference_frame` en la fila).
+
+> Parece trivial, pero dentro de meses **es la evidencia que impide discutir qué significaba
+> exactamente "R1"**. Es la única defensa contra la reinterpretación retroactiva de la campaña.
 
 ## 1.3 Medición de rotores (una fila por campo y por rotor)
 
@@ -77,6 +102,8 @@ Z       = hacia arriba
 | `diametro` | diámetro de barrido efectivo | ±5 mm |
 | `sentido_giro` | CW / CCW | binario |
 | `n_palas` | confirmar 2 (evidencia `S`) | exacto |
+
+**Toda fila de rotor lleva `position_role`** (`FL`/`RL`/`RR`/`FR`), además de `element_id`.
 
 **Método:** cinta/calibre desde las referencias del cuerpo; plomada al suelo para XY; nivel digital
 para la normal. **Fotografiar cada punto medido.**

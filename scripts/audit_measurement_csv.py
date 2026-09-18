@@ -46,9 +46,15 @@ FUENTE_GEOMETRIA = ["scripts/build_geometry_manifests.py",
 REQ_ROTOR = ["posicion_x", "posicion_y", "posicion_z", "eje_normal", "diametro", "sentido_giro"]
 REQ_ATOMIZER = ["posicion_x", "posicion_y", "posicion_z", "vector_descarga",
                 "altura_rel_plano_rotor"]
+# ademas, toda fila de rotor debe declarar position_role (ver §5b)
 
-# pares de rotores opuestos para el contraste de simetria (numeracion por defecto)
-PARES_OPUESTOS = [("R1", "R3"), ("R2", "R4")]
+# Roles y pares DIAMETRALMENTE OPUESTOS expresados como SEMANTICA GEOMETRICA, no como
+# identificadores. La QA deriva los pares de la columna `position_role`, de modo que cambiar
+# la numeracion (o que un manual DJI numere distinto) no obliga a reinterpretar mediciones.
+#   FL = delantero izquierdo   RL = trasero izquierdo
+#   RR = trasero derecho       FR = delantero derecho
+ROLES_VALIDOS = {"FL", "RL", "RR", "FR"}
+PARES_OPUESTOS_POR_ROL = [("FL", "RR"), ("FR", "RL")]
 
 
 def leer(path: Path) -> list[dict]:
@@ -136,8 +142,12 @@ def main() -> int:
             problemas["fila sin reference_frame"] += 1
         if not (f.get("method") or "").strip():
             problemas["fila sin method"] += 1
+        if not (f.get("value") or "").strip():
+            problemas["fila sin value"] += 1
+        if not (f.get("parameter") or "").strip():
+            problemas["fila sin parameter"] += 1
     if problemas:
-        for k, v in problemas.items():
+        for k, v in sorted(problemas.items()):
             print(f"    {v:4d}  {k}")
     else:
         print("    OK: sin problemas de trazabilidad.")
@@ -172,32 +182,66 @@ def main() -> int:
             print("           Eso mide resolucion instrumental, NO repetibilidad. Para repetibilidad")
             print("           hace falta RECOLOCAR el instrumento y usar otro setup_id.")
 
-    # ---- 3. simetrias: reportar residuos, NO corregir ----
-    print("\n[3] SIMETRIAS DE ROTORES — RESIDUOS (no se corrigen)")
-    pos = defaultdict(dict)
+    # ---- 3. simetrias: VECTOR COMPLETO, residuos reportados, NUNCA corregidos ----
+    print("\n[3] OPOSICION DIAMETRAL DE ROTORES — residuo del VECTOR COMPLETO")
+    print("    Para cada pareja opuesta:  r_i + r_j ~ 2·r_c   (con r_c = centro esperado)")
+    print("    Si el origen esta en el centro geometrico esperado, r_c = 0.")
+    print("    Los pares se derivan de `position_role` (FL<->RR, FR<->RL), no de los ids.\n")
+
+    # recoger posiciones por rol y comprobar consistencia id<->rol
+    roles: dict[str, dict[str, float]] = {}
+    ids_por_rol: dict[str, set] = defaultdict(set)
+    roles_sin_declarar = set()
     for f in filas:
         if (f.get("block") or "").lower() != "rotor":
             continue
+        rol = (f.get("position_role") or "").strip().upper()
         p, v = f.get("parameter"), num(f.get("value"))
-        if v is None:
+        if not rol:
+            if p in ("posicion_x", "posicion_y", "posicion_z"):
+                roles_sin_declarar.add((f.get("element_id") or "").strip())
             continue
-        if p in ("posicion_x", "posicion_y", "posicion_z"):
-            pos[(f.get("element_id") or "").strip()][p] = v
-    if not pos:
-        print("    sin filas de posicion de rotor.")
-    else:
-        print(f"    rotores con posicion: {', '.join(sorted(pos))}")
-        for r1, r3 in PARES_OPUESTOS:
-            if r1 in pos and r3 in pos:
-                for eje in ("posicion_x", "posicion_y"):
-                    if eje in pos[r1] and eje in pos[r3]:
-                        res = pos[r1][eje] + pos[r3][eje]
-                        marca = "OK" if abs(res) <= a.tol_m else "RESIDUO GRANDE"
-                        print(f"    {r1}+{r3}  {eje:11s} = {res:+.4f} m   [{marca}]")
-        print(f"\n    tolerancia usada: ±{a.tol_m*1000:.0f} mm")
-        print("    RECORDATORIO: un residuo grande es INFORMACION, no un error a corregir.")
-        print("    Lecturas posibles: (a) el CG real no coincide con el origen; (b) la planta no es")
-        print("    simetrica; (c) error de medicion. Se documenta y se decide con el residuo.")
+        ids_por_rol[rol].add((f.get("element_id") or "").strip())
+        if v is not None and p in ("posicion_x", "posicion_y", "posicion_z"):
+            roles.setdefault(rol, {})[p] = v
+
+    if roles_sin_declarar:
+        print(f"    AVISO: {len(roles_sin_declarar)} rotores con posicion pero sin position_role:")
+        print(f"           {', '.join(sorted(roles_sin_declarar))}")
+        print("           -> sin el rol no se puede derivar la oposicion. Anadelo al CSV.")
+
+    raros = {r: s for r, s in ids_por_rol.items() if len(s) > 1}
+    for r, s in raros.items():
+        print(f"    AVISO: el rol {r} aparece con varios ids: {', '.join(sorted(s))}")
+
+    def vec(rol: str) -> dict:
+        return roles.get(rol, {})
+
+    encontrados = False
+    for ra, rb in PARES_OPUESTOS_POR_ROL:
+        va, vb = vec(ra), vec(rb)
+        comunes = [e for e in ("posicion_x", "posicion_y", "posicion_z") if e in va and e in vb]
+        if not comunes:
+            print(f"    {ra}<->{rb}: sin datos suficientes (faltan ambos o uno)")
+            continue
+        encontrados = True
+        resid = {e: va[e] + vb[e] for e in comunes}
+        norm3 = math.sqrt(sum(resid[e] ** 2 for e in comunes))
+        detalle = "  ".join(f"{e.split('_')[1].upper()}={resid[e]:+.4f}" for e in comunes)
+        marca = "OK" if norm3 <= a.tol_m else "RESIDUO GRANDE"
+        planos = [e for e in comunes if e != "posicion_z"]
+        norm2 = math.sqrt(sum(resid[e] ** 2 for e in planos)) if planos else float("nan")
+        print(f"    {ra}<->{rb}: {detalle}   |residuo|_3D={norm3:.4f} m  "
+              f"|residuo|_XY={norm2:.4f} m   [{marca}]")
+
+    if not encontrados:
+        print("    sin parejas opuestas evaluables todavia.")
+
+    print(f"\n    tolerancia usada: ±{a.tol_m*1000:.0f} mm  (--tol-m para cambiarla)")
+    print("    RECORDATORIO: un residuo grande es INFORMACION, no un error a corregir.")
+    print("    Lecturas posibles: (a) el CG real no coincide con el origen declarado; (b) la planta")
+    print("    no es simetrica; (c) error de medicion. Se documenta y se decide con el residuo.")
+    print("    El vector completo detecta lo que dos pruebas aisladas en X e Y pueden esconder.")
 
     # ---- 4. cierre de distancias vs wheelbase declarado ----
     print("\n[4] CIERRE DE DISTANCIAS")
@@ -240,6 +284,38 @@ def main() -> int:
                  if (f.get("parameter") or "") == "rpm_hover"}
     if rpm_rotor:
         print(f"    rpm_hover por rotor: {len(rpm_rotor)} rotores ({', '.join(sorted(x for x in rpm_rotor if x))})")
+
+    # ---- 5b. convencion de numeracion y evidencia fotografica ----
+    print("\n[5b] CONVENCION DE ROTORES Y EVIDENCIA FOTOGRAFICA")
+    ids_rol = {r: sorted(s) for r, s in ids_por_rol.items()}
+    if ids_rol:
+        print(f"    roles declarados: {', '.join(f'{r}={ids_rol[r][0]}' for r in sorted(ids_rol))}")
+    faltan_roles = ROLES_VALIDOS - set(ids_rol)
+    if faltan_roles:
+        print(f"    roles sin datos: {', '.join(sorted(faltan_roles))}")
+    invalidos = {f.get("position_role") for f in filas
+                 if (f.get("position_role") or "").strip()
+                 and (f.get("position_role") or "").strip().upper() not in ROLES_VALIDOS}
+    if invalidos:
+        print(f"    AVISO: position_role no reconocido: {', '.join(sorted(x for x in invalidos if x))}")
+    if not ids_rol:
+        print("    sin position_role declarado todavia (anadelo en las filas de rotor).")
+
+    # foto cenital con etiquetas y flecha +X asociada al reference_frame
+    refs = {(f.get("reference_frame") or "").strip() for f in filas if (f.get("reference_frame") or "").strip()}
+    con_foto = set()
+    for f in filas:
+        blob = " ".join(str(f.get(k) or "") for k in ("raw_file", "notes", "method")).lower()
+        if ("foto" in blob or "photo" in blob or "cenital" in blob or "raw_file" in f and (f.get("raw_file") or "").strip()):
+            if "cenital" in blob or "top" in blob or "+x" in blob or (f.get("raw_file") or "").strip():
+                con_foto.add((f.get("reference_frame") or "").strip())
+    for r in sorted(refs):
+        estado = "con evidencia fotografica" if r in con_foto else "SIN foto cenital etiquetada registrada"
+        print(f"    reference_frame '{r}': {estado}")
+    if refs and not (refs & con_foto):
+        print("    AVISO: falta la foto cenital con etiquetas R1-R4 y flecha +X asociada al")
+        print("           reference_frame. Es la evidencia que impide discutir que significaba 'R1'.")
+
     print("\n" + "=" * 80)
     print("Este script NO escribe nada. Los residuos se reportan; no se corrigen.")
     return 0

@@ -500,7 +500,48 @@ campaña completa. Se parte en dos bloques con **parada obligatoria** entre ello
 **Parada obligatoria:** procesar el bloque 1 con `scripts/audit_measurement_csv.py` **antes de
 volar**. Solo si pasa el post-mortem se ejecuta el bloque 2.
 
-### 10.1 Reglas de medición que no se relajan
+### 10.1 Convención de numeración de rotores (interna, no de DJI)
+
+**No se usa numeración de DJI**: no está demostrada. Se adopta una **convención geométrica
+interna** — vista desde arriba, `+X` adelante, `+Y` izquierda, `+Z` arriba:
+
+| id | `position_role` | posición |
+|---|---|---|
+| `R1` | `FL` | delantero izquierdo |
+| `R2` | `RL` | trasero izquierdo |
+| `R3` | `RR` | trasero derecho |
+| `R4` | `FR` | delantero derecho |
+
+`R1…R4` son **identificadores**; `FL/RL/RR/FR` contienen la **semántica geométrica** y van en la
+columna `position_role` (obligatoria en filas de rotor). Así, si un manual DJI numera los motores
+de otra forma, **no hay que reinterpretar mediciones antiguas**.
+
+La QA **deriva los pares diametralmente opuestos de `position_role`** (`FL↔RR`, `FR↔RL`), no de una
+lista fija de identificadores.
+
+**Evidencia fotográfica obligatoria:** foto cenital con las etiquetas físicas `R1`–`R4` visibles y
+una flecha `+X`, asociada al `reference_frame`. Es lo que impide discutir dentro de meses qué
+significaba exactamente "R1".
+
+### 10.2 Contraste de oposición: vector completo, no ejes sueltos
+
+Comprobar solo `x₁+x₃ ≈ 0` **no demuestra oposición**. Para cada pareja se comprueba el **vector
+completo**:
+
+```
+r_FL + r_RR ≈ 2·r_c        r_FR + r_RL ≈ 2·r_c
+```
+
+y si el origen está en el centro geométrico esperado, `r_c = 0`:
+
+```
+r_i + r_j ≈ 0
+```
+
+Se reportan los residuos **X, Y, Z y la norma 3D (y la XY)**, y **nunca se usan para corregir las
+mediciones**. Eso detecta lo que dos pruebas aisladas en X e Y pueden esconder.
+
+### 10.3 Reglas de medición que no se relajan
 
 1. **Repetibilidad ≠ resolución.** Las repeticiones críticas exigen **recolocar el instrumento**
    entre lecturas y usar **otro `setup_id`**. Tres lecturas seguidas sin moverse miden resolución

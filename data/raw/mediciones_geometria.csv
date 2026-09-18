@@ -1,1 +1,1 @@
-uav,block,element_id,parameter,value,unit,uncertainty,method,instrument,timestamp,operator,source_class,reference_frame,configuracion,repetitions,setup_id,raw_file,notes
+uav,block,element_id,position_role,parameter,value,unit,uncertainty,method,instrument,timestamp,operator,source_class,reference_frame,configuracion,repetitions,setup_id,raw_file,notes

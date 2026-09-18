@@ -529,6 +529,62 @@ del +0,56 % frente al wheelbase. El CSV real se restaura tras la prueba.
 La hoja `geometry/campana_T25P.md` está lista para ejecutar el bloque 1; el CSV
 (`data/raw/mediciones_geometria.csv`) tiene la cabecera ampliada (`setup_id` incluido) y **0 filas**.
 
-- **Estado:** `PHASE_01_SPECIFICATIONS`. **Siguiente acción: ejecutar el bloque 1 del T25P.**
+### Entry 014 | Convención de rotores desacoplada y residuo del vector completo
+- **Date:** 2026-09-14
+- **Disparador:** sexta revisión del investigador, con el corte metodológico explícito:
+  **"ya no tocaría el protocolo antes de medir"** — el riesgo es diseñar metodología alrededor de
+  problemas imaginarios. Se implementan sus tres correcciones y **se deja de refinar** hasta tener
+  datos reales.
+
+**1. La numeración deja de pretenderse "de DJI"**
+
+No se fija `PARES_OPUESTOS` sobre una numeración DJI no demostrada. Se adopta una **convención
+geométrica interna** (vista cenital, `+X` adelante, `+Y` izquierda, `+Z` arriba):
+`R1=FL`, `R2=RL`, `R3=RR`, `R4=FR`, y **`position_role` pasa a ser columna obligatoria** del CSV.
+
+Razón registrada: **`R1…R4` son identificadores; `FL/RL/RR/FR` contienen la semántica geométrica.**
+Si un manual DJI numera los motores de otra forma, no habrá que reinterpretar mediciones antiguas.
+Es exactamente la clase de decisión que, tomada tarde, obliga a rehacer una campaña.
+
+**2. La QA deja de estar hardcodeada**
+
+Los pares opuestos se **derivan de `position_role`** (`FL↔RR`, `FR↔RL`), no de una lista de
+identificadores. Se elimina así una fuente de error humano.
+
+**3. Corrección de fondo: el residuo se comprueba como VECTOR COMPLETO**
+
+Tenías razón: comprobar solo `x₁+x₃ ≈ 0` **no demuestra oposición**. Ahora se comprueba
+`r_i + r_j ≈ 2·r_c` para cada pareja (con `r_c = 0` si el origen está en el centro geométrico
+esperado) y se reportan **residuos X, Y, Z, norma 3D y norma XY**, sin usarlos para corregir.
+En la prueba: una pareja con residuo puramente en Z (`X=Y=0`, `Z=+10 mm`) **habría pasado
+desapercibida** con las dos pruebas aisladas en X e Y, y ahora aparece.
+
+**4. Evidencia fotográfica obligatoria**
+
+Foto cenital con etiquetas físicas `R1`–`R4` y flecha `+X`, **asociada al `reference_frame`**.
+Queda como checklist del bloque 1 y como comprobación en la QA.
+
+**5. Autotest corregido — y una lección**
+
+El autotest pasó de 7 a **8 comprobaciones**. Al ejecutarlo, una falló: yo esperaba la marca
+"fila M sin uncertainty" y no salía. **La QA era correcta; mi caso de prueba estaba mal
+construido**: había puesto `instrument = "-"` (no vacío), así que solo debía dispararse la marca de
+`instrument`. Se corrigió el caso (ambos campos vacíos) y ahora **las 8 se detectan**.
+
+> Lección de método: el fallo apareció **porque el autotest comparaba marcas concretas**, no porque
+> "la QA pareciera funcionar". Es el argumento a favor de haber probado la QA antes de usarla.
+
+**6. Límite conocido de la comprobación [5b], para la próxima iteración**
+
+La detección de "foto cenital registrada" da un **falso positivo** cuando el CSV tiene filas
+malformadas o vacías (aparece un `reference_frame` espurio con valor `M`). **No se corrige ahora**:
+no hay datos reales todavía y refinar contra un CSV vacío es diseñar para un problema imaginario
+—exactamente lo que el investigador advirtió—. Se anota para corregirlo **cuando existan las
+primeras filas reales**, que es cuando se sabrá qué forma tienen de verdad.
+
+**7. Decisión de parada:** **no se añade ningún control preventivo más.** El siguiente paso es
+ejecutar el bloque 1 del T25P.
+
+- **Estado:** `PHASE_01_SPECIFICATIONS`. **La metodología queda congelada hasta tener datos.**
 
 ---
