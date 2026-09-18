@@ -460,4 +460,75 @@ de estado.
 
 - **Estado:** `PHASE_01_SPECIFICATIONS`. **Siguiente paso acordado: campaña física del T25P.**
 
+### Entry 013 | Piloto T25P: campaña en dos jornadas, reglas de medición y QA con no-circularidad
+- **Date:** 2026-09-14
+- **Disparador:** quinta revisión del investigador. Decisión aceptada: **se deja de investigar
+  documentación** (rendimiento decreciente) y **se arranca el piloto T25P**. Antes de tocar el
+  dron, dos correcciones estructurales a la hoja de campaña.
+
+**1. El piloto se parte en DOS jornadas con parada obligatoria forzando la división por bloques**
+
+| | Bloque 1 — Metrología estática | Bloque 2 — Estado operativo |
+|---|---|---|
+| UAV | **apagado** | energizado / hover |
+| Mide | sistema de referencia, rotores, atomizadores, cotas | masas reales, CG, ambiente, RPM |
+| Cierra | **GATE 1A** | **GATE 1B** |
+
+**Parada obligatoria** entre bloques: procesar las filas, calcular cierres y residuos, y **solo si
+el bloque 1 pasa el post-mortem se vuela**. El motivo es evitar que un error metodológico
+contamine toda la campaña.
+
+**2. Reglas de medición incorporadas**
+
+- **Repetibilidad ≠ resolución.** Cada magnitud crítica con **≥3 mediciones con RECOLOCACIÓN del
+  instrumento** y **distinto `setup_id`**. Tres lecturas consecutivas sin moverse solo miden
+  resolución instrumental; la QA detecta ese caso y lo marca.
+- **Los residuos no se corrigen.** Contraste de simetría para rotores opuestos
+  (`x1+x3 ≈ 0`, `y1+y3 ≈ 0`) **reportando el residuo como información**. Lecturas posibles si sale
+  grande: el CG real no coincide con el origen, la planta no es simétrica, o error de medición.
+  **Prohibido ajustar coordenadas para forzar la simetría** — queda escrito en la hoja y en la QA.
+- **Masa nominal ≠ masa medida.** Los puntos 33/38/43/48/53 kg son **nominales derivados**
+  (33 + 20·f, clase `E`), **no** masas experimentales. Antes de cada vuelo se pesa la configuración
+  efectiva. El CSV incorpora **dos variables distintas**: `nominal_total_mass_kg` y
+  `measured_total_mass_kg`. **La diferencia entre ambas es un resultado.**
+- **RPM individual por rotor (R1–R4)**, no una sola "RPM del T25P": diferencias entre rotores son
+  evidencia directa contra el supuesto de reparto uniforme `mg/4`, y se pierden al promediar.
+- **Sistema de referencia documentado, no solo declarado:** registrar **cómo** se materializa el
+  origen y **fotografiarlo**. Un origen no documentado invalida todas las cotas del bloque.
+
+**3. Regla de no-circularidad (nueva)**
+
+**GATE 1A debe poder cerrarse exclusivamente con geometría y evidencia experimental.** Si el script
+que decide el gate usara valores derivados de CFD, se introduciría circularidad antes de empezar a
+simular. Implementado como comprobación automática en la QA, que inspecciona **solo código**
+(descartando comentarios y literales, para no detectarse a sí misma) y verifica que ningún script
+del gate construya rutas a `cfd/results` ni `cfd/cases`. **Resultado: OK.**
+
+> Aclaración de alcance: los manifiestos incluyen `derivados_nivel0` (momentum theory). Es **física
+> analítica**, no CFD, y está marcada como orden de magnitud. No rompe la no-circularidad, pero
+> **no** es criterio de cierre del gate: solo contraste.
+
+**4. QA implementada y verificada** — `scripts/audit_measurement_csv.py`
+
+Reporta, **sin escribir nunca en el CSV ni en los manifiestos**:
+1. esquema y trazabilidad (filas `M` sin `uncertainty`/`instrument`, sin `reference_frame`, sin `method`);
+2. repetibilidad entre repeticiones independientes, distinguiendo del caso "mismo `setup_id`";
+3. **residuos de simetría**, con recordatorio explícito de que no se corrigen;
+4. cierre de distancias vs wheelbase (1970 mm) y alcance (2650 mm) declarados;
+5. cobertura de parámetros exigidos por GATE 1A, y obligación de que exista masa **medida**;
+6. no-circularidad del gate.
+
+**Verificación de que la QA sirve:** `scripts/selftest_measurement_qa.py` inyecta 8 problemas
+conocidos en un CSV desechable (par simétrico correcto, par con residuo de 30 mm, fila `M` sin
+trazabilidad, fila sin `reference_frame`, repeticiones con el mismo `setup_id`, repeticiones
+correctas, cota de separación de ejes) y comprueba que **todos** se detectan. Resultado: detecta
+los 6 grupos, incluido el residuo de −0,030 m marcado como `RESIDUO GRANDE` y el error de cierre
+del +0,56 % frente al wheelbase. El CSV real se restaura tras la prueba.
+
+**5. Estado:** la documentación se cierra. **El cuello de botella es ahora físico, no documental.**
+La hoja `geometry/campana_T25P.md` está lista para ejecutar el bloque 1; el CSV
+(`data/raw/mediciones_geometria.csv`) tiene la cabecera ampliada (`setup_id` incluido) y **0 filas**.
+
+- **Estado:** `PHASE_01_SPECIFICATIONS`. **Siguiente acción: ejecutar el bloque 1 del T25P.**
+
 ---

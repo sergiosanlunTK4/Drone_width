@@ -1,61 +1,166 @@
-# Hoja de campaña física — DJI Agras T25P (plataforma piloto)
+# Campaña física — DJI Agras T25P (plataforma piloto)
 
-> ⚠ **ESTADO: PREPARADA, NO EJECUTADA.** Este documento es el plan de medición.
-> No contiene ningún valor medido. Las filas se registran en
-> `data/raw/mediciones_geometria.csv` durante el trabajo de campo.
+> ⚠ **ESTADO: PREPARADA, NO EJECUTADA.** Plan de medición. No contiene ningún valor medido.
+> Las filas se registran en `data/raw/mediciones_geometria.csv` durante el trabajo de campo.
 
-## 0. Por qué el T25P es la plataforma piloto
+## 0. Qué debe demostrar este piloto
 
-No es solo "la primera que se puede cerrar". El T25P **elimina de la primera iteración toda la
-incertidumbre coaxial** (no tiene par coaxial), así que sirve para **ensayar el propio método
-experimental** de punta a punta antes de enfrentar los coaxiales:
+**No** una curva aerodinámica. Debe demostrar que esta cadena funciona **sin intervención manual
+oportunista**:
 
 ```
-documentación → medición M → incertidumbre → manifest → GATE 1A → freeze → SHA256 → malla
+medición cruda → CSV (clase M) → incertidumbre → QA → manifest → GATE 1A → freeze → SHA256 → --verify
 ```
 
-Si aparecen problemas de **sistema de referencia, repetibilidad, instrumentos, nomenclatura o
-incertidumbre**, se corrigen aquí y no en T55/T70P/T100.
+Si esto funciona en el T25P, queda probado que **el método** —no solo el código— es reproducible,
+y recién entonces se clona a los coaxiales.
 
-## 1. Estado de partida (todo público, clasificación P)
+**Regla de no-circularidad:** el cierre de GATE 1A **no puede depender de ningún valor derivado de
+CFD**. Ese gate debe poder cerrarse exclusivamente con geometría y evidencia experimental; de lo
+contrario se introduce circularidad antes de empezar a simular. Verificado: los manifiestos y el
+congelador no leen `cfd/` (ver `scripts/audit_measurement_csv.py`, comprobación de no-circularidad).
 
-| Parámetro | Valor | Clase |
+## 1. Dos jornadas, con parada obligatoria
+
+El piloto **no mide todo de una vez**. Un error metodológico en la metrología contaminaría toda la
+campaña, así que se parte en dos bloques y **se procesa el primero antes de volar**.
+
+| | Bloque 1 — Metrología estática | Bloque 2 — Estado operativo |
 |---|---|---|
-| Masa sin batería | 26.0 kg | P |
-| Batería DB800 | 6.6 kg | P |
-| Masa con batería | 33.0 kg | P |
-| Tanque | 20.0 kg (20 L) | P |
-| MTOW pulverización | 53.0 kg | P |
-| Diámetro de rotor | 1.27 m (50 in) | P |
-| Nº de rotores | 4 | **S** (deck 01, slide 12: 4 brazos sin coaxial) |
-| Palas por rotor | 2 | **S** |
-| Distancia diagonal entre ejes | 1970 mm | P |
-| Motor | estator 100 × 28 mm, KV 59 | P-A + S (imagen rotulada "10028/59KV") |
-| Atomizadores | 2 estándar / 4 opcional, separación 1420 mm | P |
-| Gota | 50–500 µm | P |
+| UAV | **apagado**, sobre caballete/superficie nivelada | energizado / en vuelo estacionario |
+| Mide | sistema de referencia, rotores, atomizadores, cotas | masas reales, CG, actitud, ambiente, RPM |
+| Salida | filas `block=rotor|atomizer|geometry` | filas `block=mass|operation` |
+| Cierra | **GATE 1A** | **GATE 1B** |
+| Siguiente | **PARADA: post-mortem de residuos** | solo si el bloque 1 pasó |
 
-### 1.1 Referencias de nivel 0 (momentum theory) — para CONTRASTAR, no para sustituir
+---
 
-> Solo órdenes de magnitud (context.md §12 nivel 0), calculados con `scripts/prepare_t25p_campaign.py`.
-> **Nunca** se reportan como resultado del estudio.
+# BLOQUE 1 — METROLOGÍA ESTÁTICA (UAV apagado)
 
-| Derivado | Valor |
+## 1.1 Fijar el sistema de referencia (lo primero, antes de medir nada)
+
+```
+nombre  = CG_tank50
+origen  = CG en configuración de pulverización con tanque al 50 %
+X       = hacia adelante (dirección de vuelo)
+Y       = hacia la izquierda
+Z       = hacia arriba
+```
+
+**Documentar cómo se materializa el origen**, no solo declararlo:
+
+- [ ] Registrar **cómo** se ubicó el origen: punto físico elegido, referencias del cuerpo usadas,
+      marcas con cinta, plantilla o trípode.
+- [ ] **Fotografiar la materialización del origen** (ingresar la ruta en `raw_file`).
+- [ ] Registrar si el origen se fijó **antes o después** de conocer el CG medido. Si se fijó antes,
+      anotar el desplazamiento posterior y **no re-medir todo** sin dejarlo documentado.
+- [ ] Dejar el dron **nivelado y bloqueado**; registrar la nivelación (burbuja digital o similar).
+
+> Un error aquí invalida todo el bloque. Ninguna cota por debajo de esta sección es interpretable
+> si el origen no está documentado.
+
+## 1.2 Identificación de elementos
+
+- [ ] Rotores **R1–R4** identificados de forma inequívoca y **fotografiados** (vista cenital con
+      los rótulos visibles). Definir el criterio: p. ej. R1 = delantero izquierdo, y el sentido
+      de numeración (horario/antihorario).
+- [ ] Atomizadores **A1–A2** (configuración estándar) y **A3–A4** (opcional) identificados igual.
+- [ ] Registrar en `notes` el criterio de numeración elegido. **Sin esto, las coordenadas no son
+      comparables ni siquiera consigo mismas entre jornadas.**
+
+## 1.3 Medición de rotores (una fila por campo y por rotor)
+
+| parámetro | descripción | objetivo |
+|---|---|---|
+| `posicion_x` `posicion_y` `posicion_z` | centro del disco de cada rotor en `CG_tank50` | ±5 mm |
+| `eje_normal` | vector normal del disco (dirección de empuje), normalizado | ±1° |
+| `diametro` | diámetro de barrido efectivo | ±5 mm |
+| `sentido_giro` | CW / CCW | binario |
+| `n_palas` | confirmar 2 (evidencia `S`) | exacto |
+
+**Método:** cinta/calibre desde las referencias del cuerpo; plomada al suelo para XY; nivel digital
+para la normal. **Fotografiar cada punto medido.**
+
+## 1.4 Medición de atomizadores (una fila por campo y por atomizador)
+
+| parámetro | descripción |
 |---|---|
-| Área de disco total (4 rotores) | 5.067 m² |
-| Carga de disco a MTOW | 102.6 N/m² |
-| Empuje por rotor a MTOW (si reparto uniforme) | 130.0 N = 13.3 kg |
-| Velocidad inducida en hover a MTOW | 6.62 m/s |
-| Lado entre ejes (D_axis/√2) | 1.393 m |
+| `posicion_x` `posicion_y` `posicion_z` | centro del disco de atomización, en `CG_tank50` |
+| `vector_descarga` | orientación del eje del cono de pulverización |
+| `altura_rel_plano_rotor` | **Δz respecto al plano de rotor más próximo** |
+| `rotor_mas_cercano` | a qué rotor(es) cae su estela (derivado de 1.3 + 1.4) |
+| `punto_efectivo_emision` | si es determinable (foto macro) |
+| `soporte_cota_eje` | cota del soporte al eje del brazo |
 
-**Uso:** si la RPM medida implica una velocidad inducida que se aparta mucho de
-6.62 m/s, hay que revisar antes de construir el modelo — no ajustar el
-modelo para que encaje.
+## 1.5 Cotas para contrastar la relación candidata
 
-## 2. Puntos de carga a caracterizar (bloque C)
+Medir lo necesario para **discriminar** las hipótesis alternativas de
+`geometry/protocolo_geometria.md` §7.1, no solo para "cuadrar un número":
 
-Masa total = 33.0 + 20.0 · f (kg). Sanity check: f = 1 → 53.0 kg ≈ MTOW 53.0 kg ✓
+| parámetro | para qué |
+|---|---|
+| `separacion_ejes_adyacentes_x`, `_y` | ¿la planta es cuadrada? |
+| `separacion_ejes_opuestos_x`, `_y` | contraste directo con el wheelbase declarado (1970 mm) |
+| `posicion_longitudinal_brazo` | ¿algún brazo desplazado hacia delante/atrás? |
+| `alcance_desplegado_x`, `_y` | contraste con 2650 × 2700 mm oficiales |
+| `cota_disco_a_cuerpo` | por si el "desplegado" se mide con/sin guardas |
 
-| f (tanque) | Masa total (kg) | Empuje por rotor si reparto uniforme (N) |
+## 1.6 Repetibilidad: repeticiones INDEPENDIENTES
+
+**No** tres lecturas consecutivas sin moverse: eso mide resolución instrumental, no repetibilidad.
+
+- [ ] Cada magnitud crítica se mide **≥3 veces con RECOLOCACIÓN del instrumento** entre lecturas
+      (soltar y volver a montar el útil, volver a plomar, volver a nivelar).
+- [ ] Cada repetición es **una fila propia** del CSV, con distinto `setup_id`.
+- [ ] Registrar **resolución instrumental** (una vez) y **dispersión entre repeticiones**
+      (calculada en la QA). Son cosas distintas y se reportan por separado.
+
+---
+
+# ⛔ PARADA OBLIGATORIA — post-mortem del bloque 1
+
+**No se pasa al bloque 2 sin procesar estas filas.** Ejecutar:
+
+```powershell
+python scripts/audit_measurement_csv.py --uav T25P
+```
+
+La QA calcula y reporta, **sin corregir**:
+
+1. **Esquema y trazabilidad:** filas `M` sin `uncertainty`/`instrument`; filas sin
+   `reference_frame`; `source_class` faltante.
+2. **Repetibilidad:** dispersión entre repeticiones independientes por magnitud crítica.
+3. **Cierres geométricos y simetrías.** Para rotores opuestos, si el sistema de referencia es
+   simétrico respecto del CG cabe esperar:
+
+   ```
+   x1 + x3 ≈ 0        y1 + y3 ≈ 0
+   x2 + x4 ≈ 0        y2 + y4 ≈ 0
+   ```
+
+   > ⚠ **El residuo es información, no un error a corregir.** Si sale grande, las lecturas
+   > posibles son: (a) el CG real no coincide con el origen elegido; (b) la planta no es simétrica;
+   > (c) error de medición. **Está prohibido ajustar las coordenadas para forzar la simetría.**
+   > Se documenta el residuo y se decide con él.
+
+4. **Cierre de distancias:** separación entre ejes adyacentes/opuestos medida vs el wheelbase
+   declarado (1970 mm) y vs la relación candidata de §7 del protocolo.
+5. **Criterio de paso al bloque 2:** dispersión repetible dentro de lo declarado, sin residuos de
+   simetría inexplicados, y sistema de referencia documentado con fotografías.
+
+**Si el bloque 1 no pasa:** se corrige el método y se repite el bloque 1. **No se vuela.**
+
+---
+
+# BLOQUE 2 — ESTADO OPERATIVO
+
+*(Solo si el bloque 1 pasó el post-mortem.)*
+
+## 2.1 Masas: nominal ≠ medida
+
+Los puntos de carga son **nominales derivados** de datos públicos:
+
+| f (tanque) | `nominal_total_mass_kg` | Empuje por rotor **si** reparto uniforme (N) |
 |---|---|---|
 | 1.00 | 53.0 | 130.0 |
 | 0.75 | 48.0 | 117.7 |
@@ -63,106 +168,81 @@ Masa total = 33.0 + 20.0 · f (kg). Sanity check: f = 1 → 53.0 kg ≈ MTOW 53.
 | 0.25 | 38.0 | 93.2 |
 | 0.00 | 33.0 | 80.9 |
 
-> ⚠ El reparto uniforme de la última columna es **hipótesis de partida**, no verdad experimental.
-> El T25P no es coaxial, así que `mg/N` es una aproximación razonable — **pero se contrasta con el
-> CG medido (C5)**: si el CG está desplazado (tanque, batería, atomizadores), el reparto real no
-> será uniforme y hay que declararlo.
-
-## 3. Sistema de referencia (se declara UNA vez)
+> 🔴 **Estos valores NO se tratan como masas experimentales reales.**
+> Antes de **cada** vuelo hay que **pesar la configuración efectiva** (batería concreta, agua
+> realmente cargada, atomizadores instalados). En el CSV deben existir **como variables distintas**:
 
 ```
-origen  = CG en configuración de pulverización con tanque al 50 %
-X       = hacia adelante (dirección de vuelo)
-Y       = hacia la izquierda
-Z       = hacia arriba
-nombre  = CG_tank50
+nominal_total_mass_kg    ← el valor de la tabla de arriba (derivado, clase E)
+measured_total_mass_kg   ← lo que marca la báscula ese día   (clase M, con incertidumbre)
 ```
 
-Toda fila del CSV lleva `reference_frame = CG_tank50`. **Determinar la posición del CG (C5) antes
-de fijar el origen**; si el CG se mide después, hay que anotar el desplazamiento.
+La diferencia entre ambas **es un resultado**, no un detalle: es la primera cuantificación de
+cuánto se desvía el planning de la realidad.
 
-## 4. Bloques a ejecutar
+## 2.2 CG y actitud
 
-### Bloque A — sistema propulsivo (bloquea GATE 1A)
+- [ ] `cg_x`, `cg_y`, `cg_z` medidos en cada estado de carga (punto de equilibrio / 4 células).
+- [ ] Actitud (cabeceo/alabeo) en hover si es registrable.
+- [ ] Contraste: el reparto `mg/4` es **hipótesis**, y el CG medido es lo que puede refutarla.
 
-| # | Medición | Método | Objetivo |
-|---|---|---|---|
-| A1 | Nº de brazos y rotores; verificar ausencia de coaxial | inspección + foto cenital | exacto (confirma la evidencia `S`) |
-| A2 | **Centro XYZ de los 4 discos de rotor** | cinta/calibre desde referencias del cuerpo; plomada para XY | ±5 mm |
-| A3 | **Vector normal del disco** de cada rotor | nivel digital | ±1° |
-| A4 | Diámetro de barrido real | cinta punta a punta | ±5 mm |
-| A5 | Sentido de giro de cada rotor | manual / arranque controlado | binario |
-| A7 | Nº de palas (confirmar 2) y geometría de pala | medición + fotos ortogonales | ±2 mm |
-| A8 | **Separación entre ejes**, X e Y | cinta entre centros de buje | ±5 mm |
+## 2.3 Ambiente
 
-**A6 (separación axial del par) y A10/A11 no aplican al T25P**: no hay par coaxial.
-Eso es exactamente lo que lo hace buen piloto.
+- [ ] `temp_ambiente_C`, `humedad_relativa_pct`, `presion_hPa`: para poder referir ρ.
+- [ ] `viento_ms` (debe ser ~0 para el caso base).
 
-### Bloque B — atomizadores (bloquea H3)
+## 2.4 RPM en hover — INDIVIDUAL POR ROTOR
 
-| # | Medición | Método |
+| parámetro | descripción |
+|---|---|
+| `rpm_hover` | **una fila por rotor** (`element_id` = R1, R2, R3, R4), simultáneas, con `configuracion` = estado de carga |
+| `rpm_hover_metodo` | tacómetro óptico de 2 canales / cámara de alta velocidad |
+
+> 🔴 **No registrar una sola "RPM del T25P".** El T25P no es coaxial, pero **diferencias de RPM
+> entre R1–R4 son precisamente una de las cosas que pueden falsar el supuesto de reparto uniforme
+> `mg/4`**. Es evidencia directa contra una de las hipótesis del modelo, y se pierde si se promedia.
+
+**Orden:** RPM en hover real **primero**; bancada después (context.md §42).
+
+## 2.5 Instrumentos y condiciones
+
+- [ ] Instrumentos **calibrados**, con certificado o fecha de calibración registrada.
+- [ ] Resolución de cada instrumento declarada.
+- [ ] **Seguridad (R11):** hélices retiradas o bloqueadas en toda medición con el dron energizado;
+      bancada de RPM solo si el fabricante lo permite; protocolo de prueba no invasivo.
+
+---
+
+# Criterio de cierre
+
+| Gate | Se cierra con | Artefacto |
 |---|---|---|
-| B1 | Nº real por configuración (2 y 4) | inspección |
-| B2 | **Centro XYZ de cada atomizador**, en config. 2 y 4 | cinta desde referencias |
-| B3 | **Vector de descarga** | foto ortogonal con referencia angular |
-| B4 | **Δz al plano de rotor más próximo** y rotor cuya estela recibe | derivado de A2 + B2 |
-| B5 | Punto efectivo de emisión, si es determinable | foto macro / patrón en banco |
-| B6 | Geometría de soporte (brazo), cota al eje | cinta |
-
-### Bloque C — masas y CG (bloquea GATE 1A)
-
-| # | Medición | Método |
-|---|---|---|
-| C1 | Masa sin batería | báscula |
-| C2 | Masa de la batería DB800 | báscula |
-| C3 | Masa total en los 5 puntos de carga de §2 | báscula + agua medida |
-| C5 | **Posición del CG** en cada estado de carga | punto de equilibrio / 4 células de carga |
-
-### Bloque D — bancada y vuelo (GATE 1B; puede ir después)
-
-| # | Medición | Método |
-|---|---|---|
-| D1 | Caudal por atomizador a cada ajuste | caudalímetro / báscula + cronómetro |
-| D2 | Presión de pulverización | manómetro |
-| D3 | Espectro real (D10/D50/D90) | PDI/Sympatec o hidrosensibles (ordinal) |
-| D4 | RPM del motor del atomizador | tacómetro óptico |
-| D5 | Curva empuje–RPM–torque–corriente **por rotor** | bancada |
-| — | **RPM en hover real** en los 5 puntos de carga (medir ANTES de la bancada) | tacómetro óptico / cámara de alta velocidad |
-
-## 5. Requisitos previos a la ejecución
-
-- [ ] Instrumentos disponibles y **calibrados**, con su certificado o fecha de calibración.
-- [ ] Báscula con resolución declarada; cinta con clase de exactitud; nivel digital.
-- [ ] Definir el **número de repeticiones** (mínimo 3 en los puntos críticos) y el criterio de
-      repetibilidad (p. ej. dispersión ≤ incertidumbre instrumental declarada).
-- [ ] Condiciones ambientales registradas (T, HR, presión) para poder referir ρ.
-- [ ] **Protocolo de seguridad**: hélices retiradas o bloqueadas en toda medición con el dron
-      energizado; bancada de RPM solo si el fabricante lo permite. Riesgo R11 (garantía).
-- [ ] Dron sobre caballete o superficie plana nivelada, para que Z sea reproducible.
-
-## 6. Entregable de la campaña
-
-`data/raw/mediciones_geometria.csv` (cabecera ya creada, **0 filas**) con los campos:
-
-```
-uav, block, element_id, parameter, value, unit, uncertainty, method, instrument, timestamp, operator, source_class, reference_frame, configuracion, repetitions, raw_file, notes
-```
-
-Reglas:
-- Ninguna fila `M` sin `uncertainty` e `instrument`.
-- Ninguna fila sin `reference_frame`.
-- Si una medición contradice la ficha oficial, **gana la medición** y la discrepancia se anota
-  en `notes`.
-- Guardar las fotos y hojas de banco en `raw_file`.
-
-## 7. Criterio de cierre y congelación
-
-Al completar los bloques A, B y C:
+| **GATE 1A** | bloques 1.1–1.6 con `M`, sin residuos inexplicados | `geometry-v1/T25P/` |
+| **GATE 1B** | masas medidas, CG, ambiente y RPM por rotor | se documenta en el log |
 
 ```powershell
-python scripts/freeze_geometry_v1.py --uav T25P --dry-run     # debe salir sin bloqueantes
+# QA del CSV (sin corregir nada)
+python scripts/audit_measurement_csv.py --uav T25P
+
+# el gate debe salir sin bloqueantes
+python scripts/freeze_geometry_v1.py --uav T25P --dry-run
 python scripts/freeze_geometry_v1.py --uav T25P --by "<quien>"
 python scripts/freeze_geometry_v1.py --uav T25P --verify
 ```
 
-Si el dry-run sigue dando bloqueantes, **no se congela**: el script no tiene flag de forzado.
+Si el dry-run sigue dando bloqueantes, **no se congela**: el congelador no tiene flag de forzado.
+
+## Referencias de nivel 0 (momentum theory) — para CONTRASTAR
+
+> Órdenes de magnitud (context.md §12 nivel 0). **Nunca** se reportan como resultado del estudio.
+
+| Derivado | Valor |
+|---|---|
+| Área de disco total (4 rotores) | 5.067 m² |
+| Carga de disco a MTOW | 102.6 N/m² |
+| Empuje por rotor a MTOW si reparto uniforme | 130.0 N = 13.3 kg |
+| Velocidad inducida en hover a MTOW | 6.62 m/s |
+| Lado entre ejes (D_axis/√2) | 1.393 m |
+
+Si la RPM medida implica una velocidad inducida muy alejada de 6.62 m/s,
+**se revisa antes de construir el modelo** — no se ajusta el modelo para que encaje.

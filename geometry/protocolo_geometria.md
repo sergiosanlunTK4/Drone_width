@@ -475,5 +475,58 @@ re-ejecutar los casos que dependían de v1.
 | `data/processed/shape_geometry/` | `scripts/extract_pptx_shape_geometry.py` | ✅ 285 formas + conectores en EMU (clase `S`) |
 | `geometry/coaxial_thrust_split.md` | análisis + plan de medición del par coaxial | ✅ abierto, con derivación |
 | `data/raw/mediciones_geometria.csv` | campaña de campo (bloques A–D, §5) | ⬜ **cuello de botella** |
+| `geometry/campana_T25P.md` | `scripts/prepare_t25p_campaign.py` | ✅ **dos jornadas con parada obligatoria** |
+| `scripts/audit_measurement_csv.py` | QA del CSV: trazabilidad, repetibilidad, residuos de simetría, cobertura, no-circularidad | ✅ |
+| `scripts/selftest_measurement_qa.py` | autotest de la QA: inyecta 8 problemas conocidos y verifica que los detecta | ✅ |
 | `geometry-v1/<uav>/` | `scripts/freeze_geometry_v1.py` tras cerrar 1A | ⬜ |
 | `data/raw/dji_academy_01_FUENTE.md` | registro de fuentes P-A y S | ✅ |
+| `evidence/CONFLICTS.md` | registro único de conflictos con evidencia citada | ✅ |
+| `data/raw/specs_captures/` | capturas forenses de fichas oficiales con sha256 | ✅ |
+
+---
+
+## 10. Campaña en dos jornadas (aplicable a T25P y, tras el piloto, a las demás)
+
+El piloto **no mide todo de una vez**: un error metodológico en la metrología contaminaría la
+campaña completa. Se parte en dos bloques con **parada obligatoria** entre ellos.
+
+| | Bloque 1 — Metrología estática | Bloque 2 — Estado operativo |
+|---|---|---|
+| UAV | **apagado** | energizado / en hover |
+| Mide | sistema de referencia, rotores, atomizadores, cotas | masas reales, CG, ambiente, RPM |
+| Cierra | **GATE 1A** | **GATE 1B** |
+| Salida | `block=rotor\|atomizer\|geometry` | `block=mass\|operation` |
+
+**Parada obligatoria:** procesar el bloque 1 con `scripts/audit_measurement_csv.py` **antes de
+volar**. Solo si pasa el post-mortem se ejecuta el bloque 2.
+
+### 10.1 Reglas de medición que no se relajan
+
+1. **Repetibilidad ≠ resolución.** Las repeticiones críticas exigen **recolocar el instrumento**
+   entre lecturas y usar **otro `setup_id`**. Tres lecturas seguidas sin moverse miden resolución
+   instrumental, no repetibilidad, y la QA lo marca.
+2. **Los residuos no se corrigen.** Si `x1 + x3 ≠ 0`, el residuo **es el dato**. Lecturas posibles:
+   el CG real no coincide con el origen; la planta no es simétrica; error de medición. **Está
+   prohibido ajustar coordenadas para forzar la simetría.**
+3. **Masa nominal ≠ masa medida.** Los puntos 33/38/43/48/53 kg son **nominales derivados**
+   (clase `E`). Antes de cada vuelo se pesa la configuración efectiva. En el CSV son **variables
+   distintas**: `nominal_total_mass_kg` y `measured_total_mass_kg`. La diferencia es un resultado.
+4. **RPM por rotor, no una sola del UAV.** Se registra `rpm_hover` con `element_id` = R1…R4.
+   Diferencias entre rotores son evidencia directa contra el supuesto de reparto uniforme `mg/N`,
+   y se pierden si se promedian.
+5. **Sistema de referencia documentado, no solo declarado.** Hay que registrar **cómo** se
+   materializó el origen y fotografiarlo. Un origen no documentado invalida todas las cotas.
+
+### 10.2 No-circularidad del gate
+
+**GATE 1A debe poder cerrarse exclusivamente con geometría y evidencia experimental.** Si el
+script que decide el gate usara valores derivados de CFD, se introduciría circularidad antes de
+empezar a simular.
+
+Verificado automáticamente: `scripts/audit_measurement_csv.py` comprueba que ningún script del
+gate (`build_geometry_manifests.py`, `annotate_manifests_with_media_evidence.py`,
+`freeze_geometry_v1.py`) construya rutas a `cfd/results` ni `cfd/cases`.
+
+> Nota: los manifiestos incluyen `derivados_nivel0` (momentum theory). Son **física analítica**,
+> no CFD, y están marcados como órdenes de magnitud (§12 nivel 0). No crean circularidad, pero
+> **no** son criterio de cierre del gate: solo contraste.

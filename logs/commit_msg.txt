@@ -1,54 +1,51 @@
-docs: recaptura forense de fichas oficiales — A9 gana precision, A10 no se resuelve
+piloto T25P: campana en dos jornadas, reglas de medicion y QA con no-circularidad
 
-Recaptura forense (scripts/capture_official_specs.py): T100/T70P/T55 x es/zh, con URL,
-fecha UTC, user-agent, cabeceras, HTML crudo y sha256. Manifiesto en
-data/raw/specs_captures/capturas_manifest.json.
+Se cierra la fase documental (rendimiento decreciente) y se arranca el piloto T25P.
 
-Via de red registrada: PowerShell y curl.exe fallan (schannel SEC_E_NO_CREDENTIALS),
-pero Python/urllib funciona.
+CAMPANA EN DOS JORNADAS con PARADA OBLIGATORIA:
+  Bloque 1 - Metrologia estatica (UAV apagado): sistema de referencia documentado y
+    fotografiado, identificacion R1-R4 y A1-A2, centros XYZ, normales, diametro efectivo,
+    posiciones/vectores de atomizadores y cotas para contrastar wheelbase/alcance.
+    Cierra GATE 1A.
+  >> PARADA: procesar filas, calcular cierres, simetrias y residuos. Si no pasa, NO se vuela. <<
+  Bloque 2 - Estado operativo: masa real por estado de carga, CG/actitud, ambiente, RPM hover.
+    Cierra GATE 1B. Solo si el bloque 1 paso el post-mortem.
 
-HALLAZGO FORENSE: /es/ y /cn/ devuelven BYTES IDENTICOS (mismo sha256), lang="es" y el
-payload en espanol; el contenido se hidrata por JavaScript (0 tablas HTML). Probado
-ademas Accept-Language zh-CN, cookie de locale y www.dji.com/cn (404). El texto chino
-original NO es accesible por HTTP: el punto de conservar 对 sin traducir queda sin
-satisfacer por esta via, y asi se registra en intentos_chino.json.
+REGLAS DE MEDICION INCORPORADAS:
+  - Repetibilidad != resolucion. Repeticiones con RECOLOCACION del instrumento y distinto
+    setup_id. Tres lecturas seguidas sin moverse miden resolucion, y la QA lo marca.
+  - Los RESIDUOS NO SE CORRIGEN. Contraste x1+x3 ~ 0 e y1+y3 ~ 0 reportando el residuo como
+    informacion. Si sale grande: el CG real no coincide con el origen, la planta no es
+    simetrica, o error de medicion. Prohibido ajustar coordenadas para forzar la simetria.
+  - MASA NOMINAL != MASA MEDIDA. Los puntos 33/38/43/48/53 kg son nominales derivados
+    (33+20f, clase E), no masas experimentales. Antes de cada vuelo se pesa la configuracion
+    efectiva. El CSV incorpora DOS variables distintas: nominal_total_mass_kg y
+    measured_total_mass_kg. La diferencia entre ambas es un resultado.
+  - RPM INDIVIDUAL POR ROTOR (R1-R4), no una sola RPM del T25P: diferencias entre rotores son
+    evidencia directa contra el reparto uniforme mg/4 y se pierden al promediar.
+  - Sistema de referencia DOCUMENTADO y fotografiado, no solo declarado.
 
-Via que si funciono: extraer el payload JSON embebido (scripts/extract_spec_payload.py
--> spec_tables.json), que da la fila completa con encabezados key/value y texto literal.
+REGLA DE NO-CIRCULARIDAD (nueva): GATE 1A debe poder cerrarse exclusivamente con geometria y
+evidencia experimental. Si el script que decide el gate usara valores derivados de CFD se
+introduciria circularidad antes de simular. Implementado como comprobacion automatica en la
+QA, que inspecciona SOLO codigo (descarta comentarios y literales para no detectarse a si
+misma) y verifica que ningun script del gate construya rutas a cfd/results ni cfd/cases.
+Resultado: OK. Nota: los manifiestos incluyen derivados_nivel0 (momentum theory), que es
+fisica analitica y no CFD; no rompe la no-circularidad pero NO es criterio de cierre.
 
-A9 CAMBIA DE NATURALEZA:
-  T100 -> Cantidad = 8 pares
-  T55  -> Cantidad = 4 pares
-  T70P -> Cantidad = 4        <-- sin la palabra "pares"
-  La recaptura confirma que el OCR era correcto. Correccion: el Cantidad del T70P NO
-  estaba vacio, dice 4 a secas; el hueco era del PDF capturado (via barata cerrada).
-  Los tres UAV tienen la misma arquitectura de 4 brazos con par coaxial y sin embargo
-  DJI escribe 8 pares / 4 pares / 4. Esa inconsistencia de unidad dentro de la misma
-  casa demuestra que el campo no se puede leer como conteo fisico sin mas. Hipotesis
-  registradas, ninguna adoptada. Refuerza la advertencia: "8 pares" quiza no sea un
-  conflicto 8-vs-16 rotores. Ya no es sospecha: es ambiguedad demostrada en la fuente.
+QA IMPLEMENTADA: scripts/audit_measurement_csv.py — reporta sin escribir nunca en el CSV ni
+en los manifiestos: esquema/trazabilidad, repetibilidad entre repeticiones independientes,
+residuos de simetria, cierre de distancias vs wheelbase 1970 mm y alcance 2650 mm, cobertura
+de parametros para GATE 1A, y no-circularidad.
 
-A10 SIGUE ABIERTO: las fichas no declaran numero de motores ni de ESC por brazo (el grupo
-Sistema de propulsion - Motores solo da estator y KV). Exige inspeccion fisica o manual
-de servicio.
+QA VERIFICADA: scripts/selftest_measurement_qa.py inyecta 8 problemas conocidos en un CSV
+desechable y comprueba que todos se detectan: par simetrico correcto, par con residuo de
+30 mm, fila M sin trazabilidad, fila sin reference_frame, repeticiones con el mismo setup_id,
+repeticiones correctas y cota de separacion de ejes. Detecta los 6 grupos, incluido el
+residuo de -0,030 m marcado como RESIDUO GRANDE y el cierre de +0,56% frente al wheelbase.
+El CSV real se restaura tras la prueba.
 
-Artefacto nuevo evidence/CONFLICTS.md: registro unico de conflictos con evidencia citada
-(archivo + linea + hash). Es el UNICO documento que se actualiza ante evidencia
-documental; rotor_count y compania no se tocan automaticamente.
+Entrega: geometry/campana_T25P.md (bloques 1 y 2 con parada), CSV con cabecera ampliada
+(setup_id incluido) y 0 filas.
 
-C-05 RESUELTO con el criterio exigido: la ficha oficial vigente da T70P 3200x3520x960
-(coincide con el PDF del investigador); el deck de Academy decia 3175x3490x960 y se
-descarta. Convergencia entre dos fuentes independientes del mismo emisor. Manifiesto del
-T70P actualizado; su prueba de consistencia pasa de +3,92% a +3,10% (sigue sin cerrar).
-
-Conflictos nuevos: C-06 masa de pulverizacion del T100 (ficha 75 kg cierra con el MTOW,
-Academy 73 kg no cierra) y C-07 MTOW de esparcido discrepante en T55/T70P, fuera de
-alcance de este paper.
-
-Orden de ejecucion registrado como vinculante en el State Tracker:
-  recaptura (hecho) -> auditoria A9/A10 (hecho) -> campana T25P (SIGUIENTE)
-  -> post-mortem -> campana v2 -> generar T55/T70P/T100
-No se preparan las otras tres hojas de campana: el piloto T25P existe para descubrir
-que falta en la plantilla.
-
-Ningun gate cambio de estado. Nada medido. CFD no ejecutado.
+Nada medido. Ningun gate cerrado. CFD no ejecutado. El cuello de botella pasa a ser fisico.
