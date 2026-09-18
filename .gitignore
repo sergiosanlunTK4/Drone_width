@@ -10,6 +10,9 @@ data/raw/dji_academy_*.txt
 data/raw/media/
 # el render PNG del diagrama se regenera con scripts/convert_vector_media.py
 data/raw/media_converted/
+# capturas de fichas oficiales: el HTML crudo se regenera con scripts/capture_official_specs.py;
+# SI se versionan el manifiesto con hashes, el informe y las tablas estructuradas
+data/raw/specs_captures/*.html
 
 # --- Casos CFD: la malla y los campos son regenerables desde los diccionarios.
 #     Se versionan los diccionarios (system/, constant/*.dict, 0/), NO la malla ni los resultados.

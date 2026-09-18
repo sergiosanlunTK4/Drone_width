@@ -10,13 +10,13 @@
     },
     "desplegado_mm": {
       "valor": [
-        3175,
-        3490,
+        3200,
+        3520,
         960
       ],
       "clasificacion": "P-A",
       "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, 01 Conocimiento basico de un Dron)",
-      "nota": "ficha oficial dice 3200x3520x960; DJI Academy dice 3175x3490x960"
+      "nota": "RESUELTO (C-05): la ficha oficial vigente dice 3200x3520x960; el deck de DJI Academy decia 3175x3490x960 y se descarta. Convergencia entre el PDF del investigador y la captura en vivo del 2026-09-14 (dos fuentes del mismo emisor)"
     },
     "rotor_diameter_m": {
       "valor": 1.574,
@@ -72,12 +72,12 @@
     "radio_centro_a_eje_m": 1.22,
     "span_candidato_mm": 3299.3,
     "span_oficial_mm": [
-      3175,
-      3490,
+      3200,
+      3520,
       960
     ],
-    "error_vs_ancho_pct": 3.92,
-    "error_vs_largo_pct": -5.46,
+    "error_vs_ancho_pct": 3.1,
+    "error_vs_largo_pct": -6.27,
     "clasificacion": "I (hipotesis de trabajo; la prueba de consistencia no la confirma en las 4 plataformas)",
     "coincide_con_el_sobre": false,
     "hipotesis_alternativas": "geometry/protocolo_geometria.md SS7.1",
@@ -266,7 +266,7 @@
   "validaciones": {
     "errores": [],
     "avisos": [
-      "prueba de consistencia FALLA: span_candidato=3299 mm vs sobre oficial 3175x3490 mm (err +3.92 % / -5.46 %): el wheelbase y las dimensiones desplegadas no cierran. NO asumir error de la especificacion: contrastar las hipotesis alternativas (protocolo SS7.1) con medicion directa (A2/A8, GATE 1A)"
+      "prueba de consistencia FALLA: span_candidato=3299 mm vs sobre oficial 3200x3520 mm (err +3.10 % / -6.27 %): el wheelbase y las dimensiones desplegadas no cierran. NO asumir error de la especificacion: contrastar las hipotesis alternativas (protocolo SS7.1) con medicion directa (A2/A8, GATE 1A)"
     ]
   },
   "evidencia_visual": {

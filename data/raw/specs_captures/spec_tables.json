@@ -1,0 +1,860 @@
+# Tablas de especificaciones extraidas del payload embebido
+
+
+## T100 — 21 grupos de especificaciones
+
+### Aeronave
+
+| clave | valor |
+|---|---|
+| Peso | Peso para pulverización: 75 kg (estándar con 2 boquillas)<br>Peso para pulverización: 77 kg (opcional con 4 boquillas)<br>Peso para esparcir: 75 kg (equipado con sistema de esparcido)<br>Peso para levantar: 65 kg (equipado con sistema de elevación)<br>Peso para levantar: 90 kg (equipado con sistema de elevación de doble batería) |
+| <html><html><html><html>Peso de despegue máximo<sup>[1]</sup></html></html></html></html> | Peso máximo de despegue para la pulverización: 175 kg (estándar con 2 boquillas)<br>Peso máximo de despegue para la pulverización: 177 kg (opcional con 4 boquillas)<br>Peso máximo de despegue para el esparcido: 175 kg (equipado con sistema de dispersión)<br>Peso máximo de despegue para la elevación: 165 kg (equipado con sistema de elevación)<br>Peso máximo de despegue para la elevación: 170 kg (equipado con sistema de elevación de doble batería) |
+| Distancia diagonal entre ejes máxima | 2330 mm (diagonal) |
+| Dimensiones | 3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados)<br>1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas)<br>1105 mm × 1265 mm × 975 mm (brazos y hélices plegados) |
+| Rango de precisión en vuelo estacionario (con señal GNSS fuerte) | RTK habilitado:<br> ±10 cm (horizontal), ±10 cm (vertical)<br>RTK no habilitado:<br> Horizontal ± 0.6 m, vertical ± 0.3 m |
+| Radio de vuelo configurable máximo | 2 km |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+| Resistencia máxima al viento | <6 m/s |
+
+### Sistema de propulsión - Motores
+
+| clave | valor |
+|---|---|
+| Tamaño del estátor | 155 × 16 mm |
+| KV | 60 rpm/V |
+
+### Sistema de propulsión - Hélices
+
+| clave | valor |
+|---|---|
+| Material | Compuesto de fibra de carbono |
+| Dimensiones | 62 pulgadas |
+| Cantidad | 8 pares |
+
+### Sistema de rociado
+
+| clave | valor |
+|---|---|
+| Modelo | LS100 |
+| Dimensiones | 880 mm × 870 mm × 810 mm (barra de pulverización plegada)<br>1020 mm × 1930 mm × 810 mm (barra de pulverización desplegada) |
+
+### Sistema de pulverización - Tanque de pulverización
+
+| clave | valor |
+|---|---|
+| Material | HDPE |
+| Volumen | 100 L |
+| Capacidad de carga | 100 kg |
+
+### Sistema de rociado - Aspersores
+
+| clave | valor |
+|---|---|
+| Modelo | LX07550SX (Boquilla estándar) / LX09510DX  (Boquilla de niebla opcional) |
+| Cantidad | 2 (Estándar) / 4 (Opcional) |
+| Distancia de las boquillas | 1834 mm (Dos boquillas / Cuatro boquillas exteriores) |
+| Tamaño de microgotas | 50 - 500 μm |
+| <html><html><html><html>Anchura de rociado efectiva<sup>[2]</sup></html></html></html></html> | 5 - 13 m |
+
+### Sistema de pulverización - Bombas de entrega
+
+| clave | valor |
+|---|---|
+| Tipo | Bomba centrífuga (magnética) |
+| Cantidad | 2 |
+| Tasa de caudal máximo | 30 L/min (2 boquillas estándar), 40 L/min (4 boquillas opcionales) |
+
+### Sistema de pulverización con doble batería
+
+| clave | valor |
+|---|---|
+| Modelo | LS100-DB |
+| Dimensiones | 1106 mm × 805 mm × 816 mm, con la barra de pulverización plegada<br>1930 mm × 1011 mm × 816 mm, con la barra de pulverización desplegada |
+| Volumen del tanque de pulverización | 100 L |
+| Carga útil operativa | 90 kg |
+
+### Carga de esparcimiento
+
+| clave | valor |
+|---|---|
+| Dimensiones | 900 mm × 820 mm × 920 mm |
+| Diámetro de material compatible | Configuración estándar:<br>Tornillo sin fin extra grande: 0.5 mm - 10 mm gránulos (fertilizante, trigo, alimento, etc.)<br>Tornillo sin fin mediano: 4 mm - 6 mm gránulos (arroz)<br>Opcional:<br>Gran auger: 4 mm - 10 mm gránulos (arroz, fertilizante)<br>Pequeño auger: 0.5 mm - 4 mm gránulos (semillas de colza, herbicidas granulados, insecticidas granulados) |
+
+### Sistema de esparcido 4.0
+
+| clave | valor |
+|---|---|
+| Volumen del tanque de esparcido | 150 L |
+| Tipo de estructura del esparcidor | Disco centrífugo |
+| Tipo de estructura de descarga | Alimentación del alimentador de tipo tornillo |
+| Tasa de descarga máxima | 400 kg/min (fertilizante compuesto) |
+| Carga máxima dentro de la caja de operación de esparcimiento | 100 kg |
+| <html><html><html><html>Ancho de esparcimiento efectivo<sup>[3]</sup></html></html></html></html> | 3 - 10 m |
+
+### Sistema de elevación
+
+| clave | valor |
+|---|---|
+| Dimensiones | 805 mm × 764 mm × 669 mm |
+| <html><html><html><html>Capacidad de carga<sup>[4]</sup></html></html></html></html> | 100 kg |
+| Longitud del Cable de Elevación | 10 m (configuración estándar) |
+| Longitud recomendada del cable | 10 - 15 m |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+
+### Sistema de Elevación de Doble Batería
+
+| clave | valor |
+|---|---|
+| Dimensiones | 805 mm × 960 mm × 669 mm |
+| <html><html><html><html>Capacidad de carga<sup>[4]</sup></html></html></html></html> | 80 kg |
+| Longitud del Cable de Elevación | 10 m (configuración estándar) |
+| Modo de Escape de Emergencia | Desconexión del Fusible del Cable y Escape |
+| Longitud recomendada del cable | 10 - 15 m |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+
+### Sistema de Seguridad 3.0
+
+| clave | valor |
+|---|---|
+| PIRE del radar de onda milimétrica | < 20 dBm (NCC / MIC / KC / CE / FCC) |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+| Requisitos del entorno de trabajo | Luz adecuada y superficies reconocibles |
+| Campo de visión | Radar láser: 272° vertical, 60° horizontal<br>Radar Delantera: Horizontal: 360°; vertical: ± 45°<br>Radar Inferior: Izquierda y Derecha ± 12.5°, Delantera y Anterior ± 22.5°<br>Radar Anterior: Izquierda y Derecha ± 45°, Delantera y Anterior ± 45°<br>Sistema de visión cuádruple: Horizontal: 360°; vertical: 180°<br>Cámara FPV: Horizontal: ± 86°; vertical: 108° |
+| <html><html><html><html>Rango de medición<sup>[4]</sup></html></html></html></html> | ≤ 60 m |
+| <html><html><html><html>Velocidad efectiva del sistema anticolisión<sup>[5]</sup></html></html></html></html> | ≤ 13.8 m/s |
+| Altura efectiva del sistema anticolisión | ≥ 1.5 m |
+| Distancia de seguridad | 2,5 m (Distancia entre la aeronave y el obstáculo después de frenar y mantenerse estable en el aire) |
+
+### Control remoto
+
+| clave | valor |
+|---|---|
+| Modelo | TKPL 2 |
+| Pantalla | Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m² |
+| Rango de temperatura de almacenamiento | Menos de un mes: De −30 a 45 °C (de −22 a 113 °F)<br>De uno a tres meses: De −30 a 35 °C (de −22 a 95 °F)<br>De tres meses a un año: De −30 °C a 30 °C (de −22 °F a 86 °F) |
+| Temperatura de carga | De 5 a 40 °C (de 41 a 104 °F) |
+| Tiempo de ejecución de batería interna | 3.8 horas |
+| Tiempo de ejecución de batería externa | 3.2 horas |
+| Tipo de carga | Utilice un cargador rápido USB-C con una potencia máxima de 65 W (voltaje máximo 20 V), y se recomienda usar el cargador portátil DJI. |
+| Tiempo de carga | Dos horas para la batería interna o para la batería interna y externa (si el control remoto está apagado y se utiliza un cargador estándar de DJI). |
+
+### Batería de vuelo inteligente DB2160
+
+| clave | valor |
+|---|---|
+| <html><html><html><html>Peso<sup>[1]</sup></html></html></html></html> | 14.7 ± 0.3 kg |
+| Capacidad | 41000 mAh |
+| Tensión nominal | 52 V |
+
+### Batería de vuelo inteligente DB2212
+
+| clave | valor |
+|---|---|
+| <html><html><html><html>Peso<sup>[1]</sup></html></html></html></html> | 15 ± 0.3 kg |
+| Capacidad | 41000 mAh |
+| Tensión nominal | 52 V |
+
+### Generador inversor multifuncional D14000iE
+
+| clave | valor |
+|---|---|
+| Canales de salida | 1. Salida de recarga CC 42 - 61.6 V/11500 W<br>2. Cargador con radiador por aire 12 V/6 A<br>3. Salida CA 220 V/1500 W |
+| <html><html><html><html>Tiempo de recarga<sup>[6]</sup></html></html></html></html> | 8 - 9 minutos (Batería de vuelo inteligente DB2160, 30 % - 95 % de carga) |
+| Capacidad del tanque de combustible | 30 L |
+| Método de arranque | Arranque del generador mediante el interruptor de arranque de un solo botón |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+| Batería compatible | Batería de vuelo inteligente DB1580 / DB2160 |
+| Dimensiones | 757 mm × 704 mm × 677 mm |
+| Peso | 87 ± 0.5 kg |
+| Tipo de combustible | Gasolina sin plomo con RON ≥91 (AKI ≥87) y contenido de alcohol inferior al 10 %<br>(*Brasil: gasolina sin plomo con RON ≥ 91 y contenido de alcohol del 27 %) |
+| Consumo de combustible de referencia | 500 mL/kWh |
+| Capacidad de aceite del motor | 1.3 L |
+| Modelo de aceite del motor | SJ 10W-40 |
+
+### C12000 Smart Charger
+
+| clave | valor |
+|---|---|
+| Modelo de cargador | CSX901-12000 |
+| Dimensiones | 456 mm × 291 mm × 107 mm |
+| <html><html><html><html>Peso<sup>[1]</sup></html></html></html></html> | 13.13 kg |
+| Voltaje de entrada | Entrada CA trifásica: 175 - 520 V<br>Entrada CA monofásica: 200 - 264 V |
+| Voltaje de salida | 62 V |
+| Corriente de salida nominal | 194 A |
+| Potencia nominal | 12000 W (entrada trifásica 380 V)<br>3000 W (entrada monofásica de 220 V) |
+| <html><html><html><html>Tiempo de recarga<sup>[6]</sup></html></html></html></html> | 8 - 9 minutos (Batería de vuelo inteligente DB2160, 30 % - 95 % de carga) |
+| Funciones de protección | Protección contra sobrecalentamiento, sobretensión, subtensión, cortocircuitos, calado del ventilador y otras funciones de protección |
+| Temperatura de funcionamiento | De 0 a 40 °C |
+| Canales de salida | 1 |
+| Compatible con Batería de vuelo inteligente | Batería de vuelo inteligente DB1580 / DB2160 |
+
+### Relé
+
+| clave | valor |
+|---|---|
+| Dimensiones | 112 mm × 112 mm × 51 mm (sin antena)<br>120 mm × 112 mm × 101 mm (con antena) |
+| <html><html><html><html>Peso<sup>[1]</sup></html></html></html></html> | 630 g |
+| Entrada | 2.7 V - 24 V |
+| Consumo eléctrico | 10.48 W (FCC), 8.8 W (SRRC) |
+| Capacidad de la batería | 6500 mAh |
+| Tiempo de funcionamiento | 5 horas |
+| Frecuencia de funcionamiento | 2.4000-2.4835 GHz, 5.150-5.250 GHz, 5.725-5.850 GHz |
+| Rango de señal efectivo | 5 km (SRRC), 4 km (MIC/KCC/CE), 8 km (FCC)<br>(En un entorno sin interferencias y sin obstrucciones, altitud de vuelo 2.5 m) |
+| Tiempo de carga | 2.5 horas (recarga de 30 W) |
+| Índice de protección de entrada | IP55 |
+
+### D-RTK 3 AG
+
+| clave | valor |
+|---|---|
+| Admite sistemas satelitales | GPS: L1/L2/L5<br>BeiDou: B1I/B2I/B3I/B1C/B2A/B2B<br>Galileo: E1/E5a/E5b/E6<br>GLONASS: G1/G2<br>QZSS: L1CA/L2C/L5<br>L-BAND |
+| Dimensiones | 345 mm × 244 mm × 300 mm |
+| <html><html><html><html>Peso<sup>[1]</sup></html></html></html></html> | 3.77 kg (incluyendo embalaje) |
+| Consumo eléctrico | 7 W |
+| Capacidad de la batería | 6500 mAh |
+| Tiempo de funcionamiento | 7 horas |
+| Frecuencia de funcionamiento | O4: 2.4G/5.8G |
+| Rango de señal efectivo | FCC: 15 km<br>SRRC: 12 km<br>CE/JP: 8 km |
+| Tiempo de carga | 2.5 horas (recarga de 30 W) |
+| Índice de protección de entrada | IP67 |
+| <html><html><html><html>Precisión de posicionamiento<sup>[7]</sup></html></html></html></html> | Precisión del servicio basado en satélites PPP:<br>Tiempo de convergencia: 20 min<br>Horizontal:<br> 30 cm (RMS)<br>Elevación:<br> 40 cm (RMS)<br>Calibración RTK de red:<br>Horizontal:<br> 0.8 cm + 1 ppm (RMS)<br>Vertical:<br> 1.5 cm + 1 ppm (RMS)<br>1 ppm:<br> La precisión disminuye en 1 mm por cada aumento de 1 km en la distancia entre la aeronave y la estación base. Por ejemplo, si la aeronave está a 1 km de la estación base, la precisión es de 1.1 cm. |
+
+### Notas de pie de página
+
+| clave | valor |
+|---|---|
+|  | [1] Medido al nivel del mar, la aplicación DJI Agriculture recomendará inteligentemente el peso de carga basado en el estado actual de la aeronave, las condiciones del entorno y las tareas operativas. Los usuarios no deben exceder el peso máximo de carga recomendado, ya que puede afectar la seguridad del vuelo.<br>[2] El ancho efectivo de pulverización del sistema de rociado depende de la escena de trabajo real.<br>[3] La altura de trabajo es de 3 m, la velocidad de rotación del disco es de 1100 rpm, el requisito de uniformidad (CV<30%) el ancho de transmisión medido es de 10 m. Cuanto más rápida sea la velocidad de rotación del disco, mayor será la altitud de vuelo, mayor será el ancho de transmisión.<br>[4] Incluye el peso de las cuerdas y ganchos. Medido al nivel del mar, la aplicación DJI Agriculture recomendará inteligentemente el peso de carga basado en el estado actual de la aeronave, las condiciones del entorno y las tareas operativas. El peso máximo del material cargado no debe exceder el valor recomendado, ya que puede afectar la seguridad del vuelo.[5] El rango de trabajo efectivo de la distancia de detección, la evitación de obstáculos y las capacidades de desvío pueden variar debido a diferentes condiciones de iluminación ambiental, lluvia, niebla y el material, ubicación y forma del objeto objetivo. El sensor hacia abajo se utiliza para ayudar en el vuelo a altitud siguiendo el terreno, mientras que los sensores en otras direcciones se utilizan para evitar obstáculos. Excepto en escenas sin obstáculos lineales, si ocurre una colisión a velocidades de hasta 13.8 m/s que resulta en daños a la aeronave, la responsabilidad puede determinarse a través del análisis de registros, y la aeronave puede ser elegible para una garantía gratuita si se identifican causas no humanas. Si hay obstáculos lineales como cables o tirantes en postes de energía, por favor márquelos como obstáculos; de lo contrario, la falta de evitarlos será responsabilidad del cliente.<br>Nota:1. La percepción hacia abajo se utiliza para ayudar en el vuelo a altitud siguiendo el terreno. Si ocurre una colisión con un obstáculo abajo, se considera responsabilidad del cliente.2. Debido a las limitaciones de rendimiento del sistema de seguridad, la aeronave no puede esquivar activamente objetos que se mueven. Los accidentes en tales escenas se consideran responsabilidad del cliente.<br>[6] Altura sobre el nivel del mar, temperatura ambiental entre 15-40 grados Celsius, tiempo para cargar la batería del 30 % al 95 %; se admite carga rápida cuando la temperatura de la celda de batería está dentro del rango de 15-75 grados Celsius; el tiempo de carga varía dependiendo de la potencia de entrada, ASL, nivel de carga inicial y otros factores.<br>[7] La precisión y fiabilidad del posicionamiento se ven afectadas por varios factores, incluyendo la inclinación del equipo, obstrucción de la señal, multitrayectoria, número de satélites, distribución geométrica y condiciones atmosféricas. Se recomienda configurar el equipo en escenas abiertas, lejos de interferencias electromagnéticas y entornos de multitrayectoria. |
+|  | Los términos HDMI, HDMI High-Definition Multimedia Interface (Interfaz multimedia de alta definición), HDMI Trade Dress (diseño e imagen comercial HDMI) y los logotipos HDMI son marcas comerciales o marcas registradas de HDMI Licensing Administrator, Inc.<br><br> <img src="https://terra-1-g.djicdn.com/851d20f7b9f64838a34cd02351370894/HDMI/HDMI_logo_R_Black60.png" height="50px" width="125px"></img> |
+
+**Grupos relevantes al proyecto: 10/21**
+
+
+## T55 — 17 grupos de especificaciones
+
+### Aeronave
+
+| clave | valor |
+|---|---|
+| Peso (con batería) | 45 kg (configuración estándar: dos aspersores, tanque de 50 L y batería DB1050)<br>48.4 kg (configuración estándar: dos aspersores, tanque de 50 L y batería DB1580) |
+| Peso máx. al despegue | Con la batería DB1050 instalada:<br>Peso máximo de despegue para pulverización: 95 kg (estándar con 2 aspersores)<br>Peso máximo de despegue para pulverización: 99 kg (con configuración opcional de 4 aspersores)<br>Peso máximo de despegue para esparcido: 104 kg (con sistema de esparcido instalado)<br>Peso máximo de despegue para elevación: 84 kg (con sistema de elevación instalado)<br>Con la batería DB1580 instalada:<br>Peso máximo de despegue para pulverización: 99 kg (estándar con 2 aspersores)<br>Peso máximo de despegue para pulverización: 103 kg (con 4 aspersores opcionales)<br>Peso máximo de despegue para esparcido: 108 kg (con sistema de esparcido instalado)<br>Peso máximo de despegue para elevación: 89 kg (con sistema de elevación instalado) |
+| Distancia diagonal máxima entre ejes | 2415 mm (distancia diagonal entre ejes) |
+| Dimensiones | Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;<br>Brazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm;<br>Brazos del bastidor plegados, hélices plegadas: 1120 mm × 896 mm × 934 mm; |
+| Rango de precisión en vuelo estacionario<br>(con señal GNSS fuerte) | RTK activado: ± 10 cm (horizontal), ± 10 cm (vertical)<br>RTK desactivado: ± 0.6 m (horizontal), ± 0.3 m (vertical) |
+| Radio de vuelo máximo configurable | 2 km |
+| Temperatura de funcionamiento | De 0 °C a 40 °C (32 °F a 104 °F) |
+| Resistencia máxima al viento | 6 m/s |
+
+### Sistema de propulsión - Motores
+
+| clave | valor |
+|---|---|
+| Dimensiones del estátor | 155 × 16 mm |
+| KV | 55 rpm/V |
+
+### Sistema de propulsión - Hélice
+
+| clave | valor |
+|---|---|
+| Material | Compuesto de fibra de carbono |
+| Dimensiones | 62 pulgadas |
+| Cantidad | 4 pares |
+
+### Sistema de pulverización - Tanque de pulverización
+
+| clave | valor |
+|---|---|
+| Material | HDPE |
+| Volumen | 50 L |
+| Carga útil de funcionamiento | 50 kg |
+
+### Sistema de pulverización - Aspersores
+
+| clave | valor |
+|---|---|
+| Modelo | LX09050DX (aspersor centrífugo estándar) / LX09510DX (aspersor nebulizador opcional) |
+| Cantidad | 2 (estándar) / 4 (opcional) |
+| Distancia entre aspersores | 1800 mm (dos aspersores estándar) |
+| Tamaño de gota | 50 - 500 μm |
+| Anchura efectiva de pulverización | 4 - 11 m |
+
+### Sistema de pulverización - Bombas de suministro
+
+| clave | valor |
+|---|---|
+| Tipo | Bomba de impulsor (accionamiento magnético) |
+| Cantidad | 2 |
+| Tasa máxima de caudal | 40 L/min (2 aspersores estándar), 50 L/min (4 aspersores opcionales) |
+
+### Sistema de esparcido DS80L
+
+| clave | valor |
+|---|---|
+| Volumen | 80 L |
+| Carga útil de funcionamiento | 55 kg |
+| Diámetro de material compatible | Configuración estándar:<br>Tornillo sinfín extragrande: gránulos de 0.5 mm–10 mm (fertilizante, trigo, pienso, etc.)<br>Tornillo sinfín mediano: gránulos de 4 mm–6 mm (arroz)<br>Opcional:<br>Tornillo sinfín grande: gránulos de 4 mm–10 mm (arroz, fertilizante)<br>Tornillo sinfín mediano-pequeño: pellets de 0.5 mm–2 mm (alimento para cangrejo de río y camarón)<br>Tornillo sinfín pequeño: gránulos de 0.5 mm–4 mm (colza, herbicidas granulados, insecticidas granulados) |
+| Tipo de estructura de esparcidor | Disco centrífugo |
+| Tipo de estructura de descarga | Alimentación por tornillo sinfín |
+| Tasa máxima de descarga | 400 kg/min (fertilizante compuesto) |
+| Anchura efectiva de esparcido | 3 - 10 m |
+
+### Sistema de elevación DL100
+
+| clave | valor |
+|---|---|
+| Carga útil de funcionamiento | 40 kg |
+| Longitud del cable de elevación | 10 m |
+| Longitud recomendada del cable | 10–15 m |
+| Temperatura de funcionamiento | De 0 °C a 40 °C (32 °F a 104 °F) |
+
+### Sistema de seguridad
+
+| clave | valor |
+|---|---|
+| PIRE del radar | < 20 dBm (NCC / KC / CE / FCC)<br>< 13 dBm (MIC) |
+| Temperatura de funcionamiento | De 0 °C a 40 °C (32 °F a 104 °F) |
+| Requisitos del entorno de funcionamiento | Intensidad luminosa normal, características abundantes de textura de la escena y sin suciedad. |
+| Consumo energético de funcionamiento | Radar delantero: 36 W (pico)<br>Radar de visión inferior: 3.5 W (pico)<br>Radar trasero: 3.5 W (pico) |
+| Campo de visión (FOV) | Radar delantero: horizontal 360°, vertical ± 45°<br>Radar superior: izquierda y derecha ± 45°, delante y detrás ± 45°<br>Radar inferior: izquierda y derecha ± 45°, delante y detrás ± 45°<br>Radar trasero: izquierda y derecha ± 45°, delante y detrás ± 45°<br>Sistema de triple visión: horizontal 360°, vertical 180°<br>Cámara FPV: 86° horizontal, 155° vertical |
+| Alcance de medición | 60 m |
+| Velocidad efectiva de desvío seguro de obstáculos | ≤ 13.8 m/s |
+| Altura efectiva de evitación de obstáculos | ≥ 1.5 m |
+| Distancia de seguridad | 2.5 m (distancia desde el obstáculo después de que la aeronave frena y se estabiliza en vuelo estacionario) |
+
+### DJI RC Plus 2 AG
+
+| clave | valor |
+|---|---|
+| Modelo | TKPL 2 |
+| Pantalla | Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m² |
+| Temperatura de almacenamiento | Dentro de un mes: de -30 °C a 45 °C (-22 °F a 140 °F)<br>De uno a tres meses: de -30 °C a 35 °C (-22 °F a 113 °F)<br>De tres meses a un año: de -30 °C a 30 °C (-22 °F a 86 °F) |
+| Temperatura de recarga | De 5 °C a 40 °C (41 °F a 104 °F) |
+| Autonomía de la batería interna | 3.8 horas |
+| Autonomía de la batería externa | 3.2 horas |
+| Tipo de carga | Utilice un cargador de carga rápida USB-C con una potencia máxima de salida de 65 W (voltaje máximo de 20 V); se recomienda el cargador portátil DJI. |
+| Tiempo de carga | 2 horas para la batería interna o para la batería interna y externa (cuando el control remoto está apagado y se utiliza un cargador DJI estándar) |
+
+### Batería de vuelo inteligente DB1050
+
+| clave | valor |
+|---|---|
+| Peso | 8.3 ± 0.3 kg |
+| Capacidad | 20000 mAh |
+| Voltaje | 52.5 V |
+
+### Batería de vuelo inteligente DB1580
+
+| clave | valor |
+|---|---|
+| Peso | 11.7 ± 0.3 kg |
+| Capacidad | 30000 mAh |
+| Voltaje | 52 V |
+
+### Generador inversor multifuncional D8000iE
+
+| clave | valor |
+|---|---|
+| Canales de salida | 1. Salida de carga CC 42–61.6 V/6500 W<br>2. Carga del radiador refrigerado por aire 12 V/6 A/4.5 A<br>3. Salida CC 48 V/500 W |
+| Tiempo de carga | 8–9 minutos (batería de vuelo inteligente DB1050, nivel de 30 %–95 %) |
+| Capacidad del tanque de combustible | 20 L |
+| Método de arranque | Arranque con un botón |
+| Temperatura de funcionamiento | De -20 °C a 40 °C (-4 °F a 104 °F) |
+| Batería compatible | Batería de vuelo inteligente DB1050 / DB1580 / DB2160 |
+| Dimensiones | 452 mm × 566 mm × 600 mm |
+| Peso | 46 ± 0.5 kg |
+| Tipo de combustible | Gasolina sin plomo con RON ≥ 91 (AKI ≥ 87) y contenido de alcohol inferior al 10 %<br>(*Brasil: gasolina sin plomo con RON ≥ 91 y contenido de alcohol del 27 %) |
+| Consumo de combustible de referencia | 500 mL/kWh |
+| Capacidad de aceite del motor | 0.8 L |
+| Tipo de aceite del motor | SN 15W-50 |
+
+### Fuente de alimentación inteligente C7000
+
+| clave | valor |
+|---|---|
+| Modelo de cargador | CSX711-7000 |
+| Dimensiones | 460 mm × 160 mm × 80 mm |
+| Peso | 8.5 kg |
+| Voltaje de entrada | Monofásico 220 - 240 V<br>Trifásico 380 - 480 V |
+| Voltaje de salida | 50 - 62 V |
+| Corriente nominal de salida | Monofásica 40 A<br>Trifásica, 140 A |
+| Potencia nominal | 7000 W (entrada trifásica de 380 V)<br>2000 W (entrada monofásica de 220 V) |
+| Tiempo de carga | 8–9 minutos (batería de vuelo inteligente DB1050, carga del 30 %–95 %) |
+| Funciones de protección | Protección contra sobretemperatura, sobretensión, subtensión, cortocircuito, bloqueo del ventilador y otras funciones de protección |
+| Temperatura de funcionamiento | De -20 °C a 40 °C (-4 °F a 104 °F) |
+| Canales de salida | 1 |
+| Batería compatible | Batería de vuelo inteligente DB1050 / DB1580 / DB2160 |
+
+### Repetidor
+
+| clave | valor |
+|---|---|
+| Modelo | RL0265 |
+| Dimensiones | 112 mm × 112 mm × 51 mm (sin antena)<br>120 mm × 112 mm × 101 mm (con antena) |
+| Peso | 630 g |
+| Voltaje de entrada | De 2.7 V a 24 V |
+| Consumo energético | 10.48 W (FCC) |
+| Capacidad total | 6500 mAh |
+| Tiempo de funcionamiento | 5 horas |
+| Frecuencia de funcionamiento | 2.4000-2.4835 GHz, 5.170-5.250 GHz, 5.725-5.850 GHz |
+| Alcance de señal | 4 km (MIC/KCC/CE), 8 km (FCC)<br>(en un entorno sin interferencias y sin obstrucciones, a una altitud de vuelo de 2.5 m) |
+| Tiempo de carga | 2.5 horas (recarga de 30 W) |
+| Grado de protección IP | IP55 |
+
+### D-RTK 3 AG
+
+| clave | valor |
+|---|---|
+| Sistemas satelitales compatibles | GPS: L1/L2/L5<br>BeiDou: B1I/B2I/B3I/B1C/B2A/B2B<br>Galileo: E1/E5a/E5b/E6<br>GLONASS: G1/G2<br>QZSS: L1CA/L2C/L5<br>BANDA L |
+| Dimensiones | 345 mm × 244 mm × 300 mm |
+| Peso | 3.77 kg (embalaje incluido) |
+| Consumo energético | 7 W |
+| Capacidad total | 6500 mAh |
+| Tiempo de funcionamiento | 7 horas |
+| Frecuencia de funcionamiento | Modo de transmisión:<br>O4: 2.4 GHz/5.8 GHz |
+| Alcance de señal | FCC: 15 km<br>CE/JP: 8 km |
+| Tiempo de carga | 2.5 horas (recarga de 30 W) |
+| Grado de protección IP | IP67 |
+| Precisión de posicionamiento | Precisión del servicio satelital PPP:<br>Tiempo de convergencia: 20 minutos<br>Horizontal: 30 cm (RMS)<br>Elevación: 40 cm (RMS)<br>Calibración RTK de red:<br>Horizontal: 0.8 cm + 1 ppm (RMS)<br>Vertical: 1.5 cm + 1 ppm (RMS)<br>1 ppm: Por cada 1 km adicional entre la aeronave y la estación base, la precisión disminuye 1 mm. Por ejemplo, si la aeronave está a 1 km de la estación base, la precisión es de 1.1 cm. |
+
+### Notas al pie
+
+| clave | valor |
+|---|---|
+|  | Los términos HDMI, HDMI High-Definition Multimedia Interface, la imagen comercial HDMI y los logotipos HDMI son marcas comerciales o marcas registradas de HDMI Licensing Administrator, Inc.<br><br> <img src="https://terra-1-g.djicdn.com/851d20f7b9f64838a34cd02351370894/HDMI/HDMI_logo_R_Black60.png" height="50px" width="125px"></img> |
+
+**Grupos relevantes al proyecto: 7/17**
+
+
+## T70P — 19 grupos de especificaciones
+
+### Aeronave
+
+| clave | valor |
+|---|---|
+| Peso | Equipado con Batería de vuelo inteligente DB1580: 52 kg (incluyendo batería)<br>Equipado con Batería de vuelo inteligente DB2160: 56 kg (incluyendo batería) |
+| <html><html>Peso de despegue máximo<sup>[1]</sup></html></html> | Equipado con Batería de vuelo inteligente DB1580:<br>Peso máximo de despegue para pulverización (estándar con 2 boquillas): 102 kg<br>Peso máximo de despegue para pulverización (opcional con 4 boquillas): 105 kg<br>Peso máximo de despegue para el esparcido: 126 kg<br>Peso máximo de despegue para la elevación: 115 kg<br>Equipado con Batería de vuelo inteligente DB2160:<br>Peso máximo de despegue para pulverización (estándar con 2 boquillas): 126 kg<br>Peso máximo de despegue para pulverización (4 boquillas opcionales): 130 kg<br>Peso máximo de despegue para el esparcido: 130 kg<br>Peso máximo de despegue para la elevación: 118.5 kg |
+| Distancia diagonal entre ejes máxima | 2440 mm |
+| Dimensiones | 3200 mm × 3520 mm × 960 mm  (brazos y hélices desplegados)<br>1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas)<br>1160 mm × 900 mm × 960 mm (brazos y hélices plegadas)<br> |
+| Rango de precisión en vuelo estacionario (con señal GNSS fuerte) | RTK habilitado:<br> ±10 cm (horizontal), ±10 cm (vertical)<br>RTK no habilitado:<br> Horizontal ± 0.6 m, vertical ± 0.3 m |
+| Radio de vuelo configurable máximo | 2 km |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+| Resistencia máxima al viento | <6 m/s |
+
+### Sistema de propulsión - Motores
+
+| clave | valor |
+|---|---|
+| Tamaño del estátor | 155 × 22 mm |
+| KV | 65 rpm/V |
+
+### Sistema de propulsión - Hélices
+
+| clave | valor |
+|---|---|
+| Material | Compuesto de fibra de carbono |
+| Dimensiones | 62 pulgadas |
+| Cantidad | 4 |
+
+### Sistema de pulverización - Tanque de pulverización
+
+| clave | valor |
+|---|---|
+| Material | HDPE |
+| Volumen | 70 L |
+| Capacidad de carga | 70 kg |
+
+### Sistema de rociado - Aspersores
+
+| clave | valor |
+|---|---|
+| Modelo | LX07550SX (Boquilla estándar) / LX09550SX (Boquilla de niebla opcional) |
+| Cantidad | 2 (Estándar) / 4 (Opcional) |
+| Distancia de las boquillas | 1874 mm (boquillas traseras) |
+| Tamaño de microgotas | 50 - 500 μm |
+| <html><html>Anchura de rociado efectiva<sup>[2]</sup></html></html> | 4 - 11 m |
+
+### Sistema de pulverización - Bombas de entrega
+
+| clave | valor |
+|---|---|
+| Tipo | Bomba centrífuga (magnética) |
+| Cantidad | 2 |
+| Tasa de caudal máximo | 30 L/min (Estándar 2 pulverizaciones）<br>40 L/min (Opcional 4 pulverizaciones) |
+
+### Sistema de esparcido 4.0
+
+| clave | valor |
+|---|---|
+| Diámetro de material compatible | Configuración estándar:<br>Tornillo sinfín extra grande: 0.5 mm - 10 mm gránulos (fertilizante, trigo, alimento, etc.)<br>Tornillo sinfín mediano: 4 mm - 6 mm gránulos (arroz)<br>Opcional:<br>Gran auger: 4 mm - 10 mm gránulos (arroz, fertilizante)<br>Pequeño auger: 0.5 mm - 4 mm gránulos (semillas de colza, herbicidas granulados, insecticidas granulados)<br> |
+| Volumen del tanque de esparcido | 100 L |
+| Tipo de estructura del esparcidor | Disco centrífugo |
+| Tipo de estructura de descarga | Alimentación del alimentador |
+| Tasa de descarga máxima | 400 kg/min (fertilizante compuesto) |
+| Carga máxima dentro de la caja de operación de esparcimiento | 70 kg |
+| <html><html>Ancho de esparcimiento efectivo<sup>[3]</sup></html></html> | 3 - 10 m |
+
+### Sistema de elevación
+
+| clave | valor |
+|---|---|
+| <html><html>Capacidad de carga<sup>[4]</sup></html></html> | 65 kg |
+| Longitud del Cable de Elevación | 10 m (configuración estándar) |
+| Longitud recomendada del cable | 10 - 15 m |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+
+### Sistema de Seguridad 3.0
+
+| clave | valor |
+|---|---|
+| PIRE del radar de onda milimétrica | < 20 dBm (NCC / MIC / KC / CE / FCC) |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+| Entorno de funcionamiento | Luz adecuada y superficies reconocibles |
+| Campo de visión | Radar de onda milimétrica delantera: 360° horizontal, ± 45° vertical, Arriba ± 45° (cono)<br>Radar de onda milimétrica trasera: 360° vertical, ± 45° horizontal<br>Inteligencia Visionaria Tri-eye: Horizontal: 90°; vertical: 180° |
+| <html><html>Rango<sup>[4]</sup></html></html> | ≤ 60 m |
+| <html><html>Velocidad efectiva del sistema anticolisión<sup>[5]</sup></html></html> | ≤ 13.8 m/s |
+| Altura efectiva del sistema anticolisión | ≥ 1.5 m |
+| Distancia de seguridad | 2,5 m (Distancia entre la aeronave y el obstáculo después de frenar y mantenerse estable en el aire) |
+
+### Control remoto
+
+| clave | valor |
+|---|---|
+| Modelo | TKPL 2 |
+| Pantalla | Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m² |
+| Rango de temperatura de almacenamiento | Menos de un mes: De −30 a 45 °C (de −22 a 113 °F)<br>De uno a tres meses: De −30 a 35 °C (de −22 a 95 °F)<br>De tres meses a un año: De −30 °C a 30 °C (de −22 °F a 86 °F) |
+| Temperatura de carga | De 5 a 40 °C (de 41 a 104 °F) |
+| Tiempo de ejecución de batería interna | 3.8 horas |
+| Tiempo de ejecución de batería externa | 3.2 horas |
+| Tipo de carga | Utilice un cargador rápido USB-C con una potencia máxima de 65 W (voltaje máximo 20 V), y se recomienda usar el cargador portátil DJI. |
+| Tiempo de carga | Dos horas para la batería interna o para la batería interna y externa (si el control remoto está apagado y se utiliza un cargador estándar de DJI). |
+
+### Batería de vuelo inteligente DB1580
+
+| clave | valor |
+|---|---|
+| <html><html>Peso<sup>[1]</sup></html></html> | 11.7 ± 0.3 kg |
+| Capacidad | 30 000 mAh |
+| Tensión nominal | 52 V |
+
+### Batería de vuelo inteligente DB2160
+
+| clave | valor |
+|---|---|
+| <html><html>Peso<sup>[1]</sup></html></html> | 14.7 ± 0.3 kg |
+| Capacidad | 41000 mAh |
+| Tensión nominal | 52 V |
+
+### Batería de vuelo inteligente DB2212
+
+| clave | valor |
+|---|---|
+| <html><html>Peso<sup>[1]</sup></html></html> | 15 ± 0.3 kg |
+| Capacidad | 41000 mAh |
+| Tensión nominal | 52 V |
+
+### Generador inversor multifuncional D14000iE
+
+| clave | valor |
+|---|---|
+| Canales de salida | 1. Salida de recarga CC 42 - 61.6 V/9650W<br>2. Radiador con refrigeración por aire carga 12 V/6A<br>3. Salida CA 220 V/1500 W |
+| <html><html>Tiempo de recarga<sup>[6]</sup></html></html> | 7 - 8 minutos (Batería de vuelo inteligente DB1580, 30 % - 95 % de potencia)<br>8 - 9 minutos (Batería de vuelo inteligente DB2160, 30 % - 95 % de potencia) |
+| Capacidad del tanque de combustible | 30 L |
+| Método de arranque | Arranque del generador mediante el interruptor de arranque de un solo botón |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+| Batería compatible | Batería de vuelo inteligente DB1580 / DB2160 |
+| Dimensiones | 757 mm × 704 mm × 677 mm |
+| <html><html>Peso<sup>[1]</sup></html></html> | 87 ± 0.5 kg |
+| Tipo de combustible | Gasolina sin plomo con RON ≥91 (AKI ≥87) y contenido de alcohol inferior al 10 %(*Brasil: gasolina sin plomo con RON ≥ 91 y contenido de alcohol del 27 %) |
+| Consumo de combustible de referencia | 500 mL/kWh |
+| Modelo de aceite del motor | SJ 10W-40 |
+| Capacidad de aceite del motor | 1.3 L |
+
+### C12000 Smart Charger
+
+| clave | valor |
+|---|---|
+| Modelo de cargador | CSX901-12000 |
+| Dimensiones | 456 mm × 291 mm × 107 mm |
+| <html><html>Peso<sup>[1]</sup></html></html> | 13.13 kg |
+| Entrada | Entrada CA trifásica: 175 - 520 V<br>Entrada CA monofásica: 200 - 264 V |
+| Salida | 62 V |
+| Corriente de salida nominal | 194 A |
+| Potencia nominal | 12000 W (entrada trifásica 380 V)<br>3000 W (entrada monofásica 220 V) |
+| <html><html>Tiempo de carga<sup>[6]</sup></html></html> | 7 - 8 mins (Batería de vuelo inteligente DB1580, 30 % - 95 % de carga)<br>8 - 9 mins (Batería de vuelo inteligente DB2160, 30 % - 95 % de carga) |
+| Funciones de protección | Protección contra sobretensión, sobrecarga, subtensión y exceso de temperatura. |
+| Temperatura de funcionamiento | De 0 a 40 °C |
+| Canales de salida | 1 |
+| Compatible con Batería de vuelo inteligente | Batería de vuelo inteligente DB1580 / DB2160 |
+
+### Relé
+
+| clave | valor |
+|---|---|
+| Dimensiones | 112 mm × 112 mm × 51 mm (sin antena)<br>120 mm × 112 mm × 101 mm (con antena) |
+| <html><html>Peso<sup>[1]</sup></html></html> | 630 g |
+| Entrada | 2.7V - 24V |
+| Consumo eléctrico | 10.48 W (FCC), 8.8 W (SRRC) |
+| Capacidad de la batería | 6500 mAh |
+| Tiempo de funcionamiento | 5 horas |
+| Frecuencia de funcionamiento | 2.4000-2.4835 GHz, 5.150-5.250 GHz, 5.725-5.850 GHz |
+| Rango de señal efectivo | 5 km (SRRC), 4 km (MIC/KCC/CE), 8 km (FCC)<br>(En un entorno sin interferencias y sin obstrucciones, altitud de vuelo 2.5 m) |
+| Tiempo de carga | 2.5 horas (recarga de 30 W) |
+| Índice de protección de entrada | IP55 |
+
+### D-RTK 3 AG
+
+| clave | valor |
+|---|---|
+| Admite sistemas satelitales | GPS: L1/L2/L5<br>BeiDou: B1I/B2I/B3I/B1C/B2A/B2B<br>Galileo: E1/E5a/E5b/E6<br>GLONASS: G1/G2<br>QZSS: L1CA/L2C/L5<br>L-BAND |
+| Dimensiones | 345 mm × 244 mm × 300 mm |
+| <html><html><html><html>Peso<sup>[1]</sup></html></html></html></html> | 3.77 kg (incluyendo embalaje) |
+| Consumo eléctrico | 7 W |
+| Capacidad de la batería | 6500 mAh |
+| Tiempo de funcionamiento | 7 horas |
+| Frecuencia de funcionamiento | Modo de transmisión:<br>O4: 2.4G/5.8G |
+| Rango de señal efectivo | FCC: 15 km<br>SRRC: 12 km<br>CE/JP: 8 km |
+| Tiempo de carga | 2.5 horas (recarga de 30 W) |
+| Índice de protección de entrada | IP67 |
+| <html><html>Precisión de posicionamiento<sup>[7]</sup></html></html> | Precisión del servicio satelital PPP:<br> Tiempo de convergencia: 20 min<br> Horizontal: 30 cm (RMS)<br> Elevación: 40 cm (RMS)<br> Calibración RTK de red:<br> Horizontal: 0.8 cm + 1 ppm (RMS)<br> Vertical: 1.5 cm + 1 ppm (RMS)<br> 1 ppm: Por cada 1 km de aumento entre la aeronave y la estación base, la precisión empeora en 1 mm. Por ejemplo, si la aeronave está a 1 km de la estación base, la precisión es de 1.1 cm. |
+
+### Notas de pie de página
+
+| clave | valor |
+|---|---|
+|  | [1] Medido al nivel del mar, la aplicación DJI Agriculture recomendará inteligentemente el peso de carga basado en el estado actual de la aeronave, las condiciones del entorno y las tareas operativas. Los usuarios no deben exceder el peso máximo de carga recomendado, ya que puede afectar la seguridad del vuelo.<br>[2] El ancho efectivo de pulverización del sistema de rociado depende de la escena de trabajo real.<br>[3] La altura de trabajo es de 3 m, la velocidad de rotación del disco es de 1100 rpm, el requisito de uniformidad (CV<30%) el ancho de transmisión medido es de 10 m. Cuanto más rápida sea la velocidad de rotación del disco, mayor será la altitud de vuelo, mayor será el ancho de transmisión.<br>[4] Incluye el peso de las cuerdas y ganchos. Medido al nivel del mar, la aplicación DJI Agriculture recomendará inteligentemente el peso de carga basado en el estado actual de la aeronave, las condiciones del entorno y las tareas operativas. El peso máximo del material cargado no debe exceder el valor recomendado, ya que puede afectar la seguridad del vuelo.<br>[5] El rango de trabajo efectivo de la distancia de detección, la evitación de obstáculos y las capacidades de desvío pueden variar debido a diferentes condiciones de iluminación ambiental, lluvia, niebla y el material, ubicación y forma del objeto objetivo. El sensor hacia abajo se utiliza para ayudar en el vuelo a altitud siguiendo el terreno, mientras que los sensores en otras direcciones se utilizan para evitar obstáculos. Excepto en escenas sin obstáculos lineales, si ocurre una colisión a velocidades de hasta 13.8 m/s que resulta en daños a la aeronave, la responsabilidad puede determinarse a través del análisis de registros, y la aeronave puede ser elegible para una garantía gratuita si se identifican causas no humanas. Si hay obstáculos lineales como cables o tirantes en postes de energía, por favor márquelos como obstáculos; de lo contrario, la falta de evitarlos será responsabilidad del cliente.<br>Nota:1. La percepción hacia abajo se utiliza para ayudar en el vuelo a altitud siguiendo el terreno. Si ocurre una colisión con un obstáculo abajo, se considera responsabilidad del cliente.2. Debido a las limitaciones de rendimiento del sistema de seguridad, la aeronave no puede esquivar activamente objetos que se mueven. Los accidentes en tales escenas se consideran responsabilidad del cliente.<br>[6] Altura sobre el nivel del mar, temperatura ambiental entre 15-40 grados Celsius, tiempo para cargar la batería del 30 % al 95 %; se admite carga rápida cuando la temperatura de la celda de batería está dentro del rango de 15-75 grados Celsius; el tiempo de carga varía dependiendo de la potencia de entrada, ASL, nivel de carga inicial y otros factores.<br>[7] La precisión y fiabilidad del posicionamiento se ven afectadas por varios factores, incluyendo la inclinación del equipo, obstrucción de la señal, multitrayectoria, número de satélites, distribución geométrica y condiciones atmosféricas. Se recomienda configurar el equipo en escenas abiertas, lejos de interferencias electromagnéticas y entornos de multitrayectoria. |
+|  | Los términos HDMI, HDMI High-Definition Multimedia Interface (Interfaz multimedia de alta definición), HDMI Trade Dress (diseño e imagen comercial HDMI) y los logotipos HDMI son marcas comerciales o marcas registradas de HDMI Licensing Administrator, Inc.<br><br> <img src="https://terra-1-g.djicdn.com/851d20f7b9f64838a34cd02351370894/HDMI/HDMI_logo_R_Black60.png" height="50px" width="125px"></img> |
+
+### 
+
+| clave | valor |
+|---|---|
+|  |  |
+
+**Grupos relevantes al proyecto: 8/19**
+
+
+## ZH — 21 grupos de especificaciones
+
+### Aeronave
+
+| clave | valor |
+|---|---|
+| Peso | Peso para pulverización: 75 kg (estándar con 2 boquillas)<br>Peso para pulverización: 77 kg (opcional con 4 boquillas)<br>Peso para esparcir: 75 kg (equipado con sistema de esparcido)<br>Peso para levantar: 65 kg (equipado con sistema de elevación)<br>Peso para levantar: 90 kg (equipado con sistema de elevación de doble batería) |
+| <html><html><html><html>Peso de despegue máximo<sup>[1]</sup></html></html></html></html> | Peso máximo de despegue para la pulverización: 175 kg (estándar con 2 boquillas)<br>Peso máximo de despegue para la pulverización: 177 kg (opcional con 4 boquillas)<br>Peso máximo de despegue para el esparcido: 175 kg (equipado con sistema de dispersión)<br>Peso máximo de despegue para la elevación: 165 kg (equipado con sistema de elevación)<br>Peso máximo de despegue para la elevación: 170 kg (equipado con sistema de elevación de doble batería) |
+| Distancia diagonal entre ejes máxima | 2330 mm (diagonal) |
+| Dimensiones | 3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados)<br>1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas)<br>1105 mm × 1265 mm × 975 mm (brazos y hélices plegados) |
+| Rango de precisión en vuelo estacionario (con señal GNSS fuerte) | RTK habilitado:<br> ±10 cm (horizontal), ±10 cm (vertical)<br>RTK no habilitado:<br> Horizontal ± 0.6 m, vertical ± 0.3 m |
+| Radio de vuelo configurable máximo | 2 km |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+| Resistencia máxima al viento | <6 m/s |
+
+### Sistema de propulsión - Motores
+
+| clave | valor |
+|---|---|
+| Tamaño del estátor | 155 × 16 mm |
+| KV | 60 rpm/V |
+
+### Sistema de propulsión - Hélices
+
+| clave | valor |
+|---|---|
+| Material | Compuesto de fibra de carbono |
+| Dimensiones | 62 pulgadas |
+| Cantidad | 8 pares |
+
+### Sistema de rociado
+
+| clave | valor |
+|---|---|
+| Modelo | LS100 |
+| Dimensiones | 880 mm × 870 mm × 810 mm (barra de pulverización plegada)<br>1020 mm × 1930 mm × 810 mm (barra de pulverización desplegada) |
+
+### Sistema de pulverización - Tanque de pulverización
+
+| clave | valor |
+|---|---|
+| Material | HDPE |
+| Volumen | 100 L |
+| Capacidad de carga | 100 kg |
+
+### Sistema de rociado - Aspersores
+
+| clave | valor |
+|---|---|
+| Modelo | LX07550SX (Boquilla estándar) / LX09510DX  (Boquilla de niebla opcional) |
+| Cantidad | 2 (Estándar) / 4 (Opcional) |
+| Distancia de las boquillas | 1834 mm (Dos boquillas / Cuatro boquillas exteriores) |
+| Tamaño de microgotas | 50 - 500 μm |
+| <html><html><html><html>Anchura de rociado efectiva<sup>[2]</sup></html></html></html></html> | 5 - 13 m |
+
+### Sistema de pulverización - Bombas de entrega
+
+| clave | valor |
+|---|---|
+| Tipo | Bomba centrífuga (magnética) |
+| Cantidad | 2 |
+| Tasa de caudal máximo | 30 L/min (2 boquillas estándar), 40 L/min (4 boquillas opcionales) |
+
+### Sistema de pulverización con doble batería
+
+| clave | valor |
+|---|---|
+| Modelo | LS100-DB |
+| Dimensiones | 1106 mm × 805 mm × 816 mm, con la barra de pulverización plegada<br>1930 mm × 1011 mm × 816 mm, con la barra de pulverización desplegada |
+| Volumen del tanque de pulverización | 100 L |
+| Carga útil operativa | 90 kg |
+
+### Carga de esparcimiento
+
+| clave | valor |
+|---|---|
+| Dimensiones | 900 mm × 820 mm × 920 mm |
+| Diámetro de material compatible | Configuración estándar:<br>Tornillo sin fin extra grande: 0.5 mm - 10 mm gránulos (fertilizante, trigo, alimento, etc.)<br>Tornillo sin fin mediano: 4 mm - 6 mm gránulos (arroz)<br>Opcional:<br>Gran auger: 4 mm - 10 mm gránulos (arroz, fertilizante)<br>Pequeño auger: 0.5 mm - 4 mm gránulos (semillas de colza, herbicidas granulados, insecticidas granulados) |
+
+### Sistema de esparcido 4.0
+
+| clave | valor |
+|---|---|
+| Volumen del tanque de esparcido | 150 L |
+| Tipo de estructura del esparcidor | Disco centrífugo |
+| Tipo de estructura de descarga | Alimentación del alimentador de tipo tornillo |
+| Tasa de descarga máxima | 400 kg/min (fertilizante compuesto) |
+| Carga máxima dentro de la caja de operación de esparcimiento | 100 kg |
+| <html><html><html><html>Ancho de esparcimiento efectivo<sup>[3]</sup></html></html></html></html> | 3 - 10 m |
+
+### Sistema de elevación
+
+| clave | valor |
+|---|---|
+| Dimensiones | 805 mm × 764 mm × 669 mm |
+| <html><html><html><html>Capacidad de carga<sup>[4]</sup></html></html></html></html> | 100 kg |
+| Longitud del Cable de Elevación | 10 m (configuración estándar) |
+| Longitud recomendada del cable | 10 - 15 m |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+
+### Sistema de Elevación de Doble Batería
+
+| clave | valor |
+|---|---|
+| Dimensiones | 805 mm × 960 mm × 669 mm |
+| <html><html><html><html>Capacidad de carga<sup>[4]</sup></html></html></html></html> | 80 kg |
+| Longitud del Cable de Elevación | 10 m (configuración estándar) |
+| Modo de Escape de Emergencia | Desconexión del Fusible del Cable y Escape |
+| Longitud recomendada del cable | 10 - 15 m |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+
+### Sistema de Seguridad 3.0
+
+| clave | valor |
+|---|---|
+| PIRE del radar de onda milimétrica | < 20 dBm (NCC / MIC / KC / CE / FCC) |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+| Requisitos del entorno de trabajo | Luz adecuada y superficies reconocibles |
+| Campo de visión | Radar láser: 272° vertical, 60° horizontal<br>Radar Delantera: Horizontal: 360°; vertical: ± 45°<br>Radar Inferior: Izquierda y Derecha ± 12.5°, Delantera y Anterior ± 22.5°<br>Radar Anterior: Izquierda y Derecha ± 45°, Delantera y Anterior ± 45°<br>Sistema de visión cuádruple: Horizontal: 360°; vertical: 180°<br>Cámara FPV: Horizontal: ± 86°; vertical: 108° |
+| <html><html><html><html>Rango de medición<sup>[4]</sup></html></html></html></html> | ≤ 60 m |
+| <html><html><html><html>Velocidad efectiva del sistema anticolisión<sup>[5]</sup></html></html></html></html> | ≤ 13.8 m/s |
+| Altura efectiva del sistema anticolisión | ≥ 1.5 m |
+| Distancia de seguridad | 2,5 m (Distancia entre la aeronave y el obstáculo después de frenar y mantenerse estable en el aire) |
+
+### Control remoto
+
+| clave | valor |
+|---|---|
+| Modelo | TKPL 2 |
+| Pantalla | Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m² |
+| Rango de temperatura de almacenamiento | Menos de un mes: De −30 a 45 °C (de −22 a 113 °F)<br>De uno a tres meses: De −30 a 35 °C (de −22 a 95 °F)<br>De tres meses a un año: De −30 °C a 30 °C (de −22 °F a 86 °F) |
+| Temperatura de carga | De 5 a 40 °C (de 41 a 104 °F) |
+| Tiempo de ejecución de batería interna | 3.8 horas |
+| Tiempo de ejecución de batería externa | 3.2 horas |
+| Tipo de carga | Utilice un cargador rápido USB-C con una potencia máxima de 65 W (voltaje máximo 20 V), y se recomienda usar el cargador portátil DJI. |
+| Tiempo de carga | Dos horas para la batería interna o para la batería interna y externa (si el control remoto está apagado y se utiliza un cargador estándar de DJI). |
+
+### Batería de vuelo inteligente DB2160
+
+| clave | valor |
+|---|---|
+| <html><html><html><html>Peso<sup>[1]</sup></html></html></html></html> | 14.7 ± 0.3 kg |
+| Capacidad | 41000 mAh |
+| Tensión nominal | 52 V |
+
+### Batería de vuelo inteligente DB2212
+
+| clave | valor |
+|---|---|
+| <html><html><html><html>Peso<sup>[1]</sup></html></html></html></html> | 15 ± 0.3 kg |
+| Capacidad | 41000 mAh |
+| Tensión nominal | 52 V |
+
+### Generador inversor multifuncional D14000iE
+
+| clave | valor |
+|---|---|
+| Canales de salida | 1. Salida de recarga CC 42 - 61.6 V/11500 W<br>2. Cargador con radiador por aire 12 V/6 A<br>3. Salida CA 220 V/1500 W |
+| <html><html><html><html>Tiempo de recarga<sup>[6]</sup></html></html></html></html> | 8 - 9 minutos (Batería de vuelo inteligente DB2160, 30 % - 95 % de carga) |
+| Capacidad del tanque de combustible | 30 L |
+| Método de arranque | Arranque del generador mediante el interruptor de arranque de un solo botón |
+| Temperatura de funcionamiento | 0 °C a 40 °C |
+| Batería compatible | Batería de vuelo inteligente DB1580 / DB2160 |
+| Dimensiones | 757 mm × 704 mm × 677 mm |
+| Peso | 87 ± 0.5 kg |
+| Tipo de combustible | Gasolina sin plomo con RON ≥91 (AKI ≥87) y contenido de alcohol inferior al 10 %<br>(*Brasil: gasolina sin plomo con RON ≥ 91 y contenido de alcohol del 27 %) |
+| Consumo de combustible de referencia | 500 mL/kWh |
+| Capacidad de aceite del motor | 1.3 L |
+| Modelo de aceite del motor | SJ 10W-40 |
+
+### C12000 Smart Charger
+
+| clave | valor |
+|---|---|
+| Modelo de cargador | CSX901-12000 |
+| Dimensiones | 456 mm × 291 mm × 107 mm |
+| <html><html><html><html>Peso<sup>[1]</sup></html></html></html></html> | 13.13 kg |
+| Voltaje de entrada | Entrada CA trifásica: 175 - 520 V<br>Entrada CA monofásica: 200 - 264 V |
+| Voltaje de salida | 62 V |
+| Corriente de salida nominal | 194 A |
+| Potencia nominal | 12000 W (entrada trifásica 380 V)<br>3000 W (entrada monofásica de 220 V) |
+| <html><html><html><html>Tiempo de recarga<sup>[6]</sup></html></html></html></html> | 8 - 9 minutos (Batería de vuelo inteligente DB2160, 30 % - 95 % de carga) |
+| Funciones de protección | Protección contra sobrecalentamiento, sobretensión, subtensión, cortocircuitos, calado del ventilador y otras funciones de protección |
+| Temperatura de funcionamiento | De 0 a 40 °C |
+| Canales de salida | 1 |
+| Compatible con Batería de vuelo inteligente | Batería de vuelo inteligente DB1580 / DB2160 |
+
+### Relé
+
+| clave | valor |
+|---|---|
+| Dimensiones | 112 mm × 112 mm × 51 mm (sin antena)<br>120 mm × 112 mm × 101 mm (con antena) |
+| <html><html><html><html>Peso<sup>[1]</sup></html></html></html></html> | 630 g |
+| Entrada | 2.7 V - 24 V |
+| Consumo eléctrico | 10.48 W (FCC), 8.8 W (SRRC) |
+| Capacidad de la batería | 6500 mAh |
+| Tiempo de funcionamiento | 5 horas |
+| Frecuencia de funcionamiento | 2.4000-2.4835 GHz, 5.150-5.250 GHz, 5.725-5.850 GHz |
+| Rango de señal efectivo | 5 km (SRRC), 4 km (MIC/KCC/CE), 8 km (FCC)<br>(En un entorno sin interferencias y sin obstrucciones, altitud de vuelo 2.5 m) |
+| Tiempo de carga | 2.5 horas (recarga de 30 W) |
+| Índice de protección de entrada | IP55 |
+
+### D-RTK 3 AG
+
+| clave | valor |
+|---|---|
+| Admite sistemas satelitales | GPS: L1/L2/L5<br>BeiDou: B1I/B2I/B3I/B1C/B2A/B2B<br>Galileo: E1/E5a/E5b/E6<br>GLONASS: G1/G2<br>QZSS: L1CA/L2C/L5<br>L-BAND |
+| Dimensiones | 345 mm × 244 mm × 300 mm |
+| <html><html><html><html>Peso<sup>[1]</sup></html></html></html></html> | 3.77 kg (incluyendo embalaje) |
+| Consumo eléctrico | 7 W |
+| Capacidad de la batería | 6500 mAh |
+| Tiempo de funcionamiento | 7 horas |
+| Frecuencia de funcionamiento | O4: 2.4G/5.8G |
+| Rango de señal efectivo | FCC: 15 km<br>SRRC: 12 km<br>CE/JP: 8 km |
+| Tiempo de carga | 2.5 horas (recarga de 30 W) |
+| Índice de protección de entrada | IP67 |
+| <html><html><html><html>Precisión de posicionamiento<sup>[7]</sup></html></html></html></html> | Precisión del servicio basado en satélites PPP:<br>Tiempo de convergencia: 20 min<br>Horizontal:<br> 30 cm (RMS)<br>Elevación:<br> 40 cm (RMS)<br>Calibración RTK de red:<br>Horizontal:<br> 0.8 cm + 1 ppm (RMS)<br>Vertical:<br> 1.5 cm + 1 ppm (RMS)<br>1 ppm:<br> La precisión disminuye en 1 mm por cada aumento de 1 km en la distancia entre la aeronave y la estación base. Por ejemplo, si la aeronave está a 1 km de la estación base, la precisión es de 1.1 cm. |
+
+### Notas de pie de página
+
+| clave | valor |
+|---|---|
+|  | [1] Medido al nivel del mar, la aplicación DJI Agriculture recomendará inteligentemente el peso de carga basado en el estado actual de la aeronave, las condiciones del entorno y las tareas operativas. Los usuarios no deben exceder el peso máximo de carga recomendado, ya que puede afectar la seguridad del vuelo.<br>[2] El ancho efectivo de pulverización del sistema de rociado depende de la escena de trabajo real.<br>[3] La altura de trabajo es de 3 m, la velocidad de rotación del disco es de 1100 rpm, el requisito de uniformidad (CV<30%) el ancho de transmisión medido es de 10 m. Cuanto más rápida sea la velocidad de rotación del disco, mayor será la altitud de vuelo, mayor será el ancho de transmisión.<br>[4] Incluye el peso de las cuerdas y ganchos. Medido al nivel del mar, la aplicación DJI Agriculture recomendará inteligentemente el peso de carga basado en el estado actual de la aeronave, las condiciones del entorno y las tareas operativas. El peso máximo del material cargado no debe exceder el valor recomendado, ya que puede afectar la seguridad del vuelo.[5] El rango de trabajo efectivo de la distancia de detección, la evitación de obstáculos y las capacidades de desvío pueden variar debido a diferentes condiciones de iluminación ambiental, lluvia, niebla y el material, ubicación y forma del objeto objetivo. El sensor hacia abajo se utiliza para ayudar en el vuelo a altitud siguiendo el terreno, mientras que los sensores en otras direcciones se utilizan para evitar obstáculos. Excepto en escenas sin obstáculos lineales, si ocurre una colisión a velocidades de hasta 13.8 m/s que resulta en daños a la aeronave, la responsabilidad puede determinarse a través del análisis de registros, y la aeronave puede ser elegible para una garantía gratuita si se identifican causas no humanas. Si hay obstáculos lineales como cables o tirantes en postes de energía, por favor márquelos como obstáculos; de lo contrario, la falta de evitarlos será responsabilidad del cliente.<br>Nota:1. La percepción hacia abajo se utiliza para ayudar en el vuelo a altitud siguiendo el terreno. Si ocurre una colisión con un obstáculo abajo, se considera responsabilidad del cliente.2. Debido a las limitaciones de rendimiento del sistema de seguridad, la aeronave no puede esquivar activamente objetos que se mueven. Los accidentes en tales escenas se consideran responsabilidad del cliente.<br>[6] Altura sobre el nivel del mar, temperatura ambiental entre 15-40 grados Celsius, tiempo para cargar la batería del 30 % al 95 %; se admite carga rápida cuando la temperatura de la celda de batería está dentro del rango de 15-75 grados Celsius; el tiempo de carga varía dependiendo de la potencia de entrada, ASL, nivel de carga inicial y otros factores.<br>[7] La precisión y fiabilidad del posicionamiento se ven afectadas por varios factores, incluyendo la inclinación del equipo, obstrucción de la señal, multitrayectoria, número de satélites, distribución geométrica y condiciones atmosféricas. Se recomienda configurar el equipo en escenas abiertas, lejos de interferencias electromagnéticas y entornos de multitrayectoria. |
+|  | Los términos HDMI, HDMI High-Definition Multimedia Interface (Interfaz multimedia de alta definición), HDMI Trade Dress (diseño e imagen comercial HDMI) y los logotipos HDMI son marcas comerciales o marcas registradas de HDMI Licensing Administrator, Inc.<br><br> <img src="https://terra-1-g.djicdn.com/851d20f7b9f64838a34cd02351370894/HDMI/HDMI_logo_R_Black60.png" height="50px" width="125px"></img> |
+
+**Grupos relevantes al proyecto: 10/21**

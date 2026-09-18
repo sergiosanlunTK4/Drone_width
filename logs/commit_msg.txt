@@ -1,56 +1,54 @@
-physics: retirar Q_u = Q_l como restriccion universal del par coaxial
+docs: recaptura forense de fichas oficiales — A9 gana precision, A10 no se resuelve
 
-La objecion es correcta. Lo que exige un UAV en hover sin aceleracion de guinada es la
-suma algebraica GLOBAL de reacciones:
+Recaptura forense (scripts/capture_official_specs.py): T100/T70P/T55 x es/zh, con URL,
+fecha UTC, user-agent, cabeceras, HTML crudo y sha256. Manifiesto en
+data/raw/specs_captures/capturas_manifest.json.
 
-    sum_i s_i * Q_i ~ 0
+Via de red registrada: PowerShell y curl.exe fallan (schannel SEC_E_NO_CREDENTIALS),
+pero Python/urllib funciona.
 
-NO que cada pareja coaxial tenga par neto nulo: el controlador puede compensar
-desequilibrios entre brazos.
+HALLAZGO FORENSE: /es/ y /cn/ devuelven BYTES IDENTICOS (mismo sha256), lang="es" y el
+payload en espanol; el contenido se hidrata por JavaScript (0 tablas HTML). Probado
+ademas Accept-Language zh-CN, cookie de locale y www.dji.com/cn (404). El texto chino
+original NO es accesible por HTTP: el punto de conservar 对 sin traducir queda sin
+satisfacer por esta via, y asi se registra en intentos_chino.json.
 
-Se retiran como resultados, por no estar justificados:
-  - w_l/w_u = sqrt(C_Qu/C_Ql)
-  - que el rotor superior deba girar mas rapido
-  - toda particion T_l/T_u por defecto
+Via que si funciono: extraer el payload JSON embebido (scripts/extract_spec_payload.py
+-> spec_tables.json), que da la fila completa con encabezados key/value y texto literal.
 
-Queda como HIPOTESIS CONDICIONAL explicita (accionamiento independiente Y par neto nulo
-por pareja), util solo como modelo candidato falsable con A11 y D5a-D5c.
+A9 CAMBIA DE NATURALEZA:
+  T100 -> Cantidad = 8 pares
+  T55  -> Cantidad = 4 pares
+  T70P -> Cantidad = 4        <-- sin la palabra "pares"
+  La recaptura confirma que el OCR era correcto. Correccion: el Cantidad del T70P NO
+  estaba vacio, dice 4 a secas; el hueco era del PDF capturado (via barata cerrada).
+  Los tres UAV tienen la misma arquitectura de 4 brazos con par coaxial y sin embargo
+  DJI escribe 8 pares / 4 pares / 4. Esa inconsistencia de unidad dentro de la misma
+  casa demuestra que el campo no se puede leer como conteo fisico sin mas. Hipotesis
+  registradas, ninguna adoptada. Refuerza la advertencia: "8 pares" quiza no sea un
+  conflicto 8-vs-16 rotores. Ya no es sospecha: es ambiguedad demostrada en la fuente.
 
-Lo unico robusto es aerodinamico: el rotor inferior opera en la estela del superior
-(v_in,l = v_u + delta*v_i), lo que degrada su C_T y encarece su C_Q. Como se reparte esa
-degradacion entre T y w es asignacion de control, no aerodinamica: no se afirma sin medir.
+A10 SIGUE ABIERTO: las fichas no declaran numero de motores ni de ESC por brazo (el grupo
+Sistema de propulsion - Motores solo da estator y KV). Exige inspeccion fisica o manual
+de servicio.
 
-A10 queda confirmado como mas importante de lo previsto: sin el no se sabe que restriccion
-aplica. El CFD correra con la particion como PARAMETRO y analisis de sensibilidad.
+Artefacto nuevo evidence/CONFLICTS.md: registro unico de conflictos con evidencia citada
+(archivo + linea + hash). Es el UNICO documento que se actualiza ante evidencia
+documental; rotor_count y compania no se tocan automaticamente.
 
-Barrido documental de decks 04-09 (extraidos los 6 restantes; 10 en total):
-  - RESULTADO NEGATIVO: el T55 no aparece en ninguno de los 10 decks, ni por alias.
-    Queda enteramente dependiente de medicion fisica.
-  - A9: origen del "8 pares" LOCALIZADO. No era lectura ambigua: valor de tabla de la
-    ficha oficial (T100_ocr.txt lineas 56-67). Contraste: T55_ocr.txt dice "4 pares" con
-    la misma helice de 62 in. El campo Cantidad del T70P esta VACIO en la captura
-    (hueco recuperable recapturando la pagina oficial, no incognita de medicion).
-    Anadida la hipotesis de ambiguedad de traduccion (el original usa 对, "par").
-    NO se resuelve por interpretacion: se resuelve por conteo fisico.
-  - A10: sigue sin resolverse. El deck 08 menciona "Motores y ESC" en una lista de
-    limpieza sin contar unidades. El deck 04 trata del generador, no de la propulsion.
+C-05 RESUELTO con el criterio exigido: la ficha oficial vigente da T70P 3200x3520x960
+(coincide con el PDF del investigador); el deck de Academy decia 3175x3490x960 y se
+descarta. Convergencia entre dos fuentes independientes del mismo emisor. Manifiesto del
+T70P actualizado; su prueba de consistencia pasa de +3,92% a +3,10% (sigue sin cerrar).
 
-Hoja de campana T25P PREPARADA, no ejecutada (geometry/campana_T25P.md):
-  el T25P pasa de "el primero que se puede cerrar" a ENSAYO DEL PROPIO METODO
-  EXPERIMENTAL, porque al no tener par coaxial permite depurar de punta a punta
-  documentacion -> M -> incertidumbre -> manifest -> GATE 1A -> freeze -> SHA256
-  antes de enfrentar los coaxiales.
+Conflictos nuevos: C-06 masa de pulverizacion del T100 (ficha 75 kg cierra con el MTOW,
+Academy 73 kg no cierra) y C-07 MTOW de esparcido discrepante en T55/T70P, fuera de
+alcance de este paper.
 
-  Incluye puntos de carga derivados de datos publicos (33+20f -> 33/38/43/48/53 kg,
-  coherente con MTOW 53 kg), referencias de nivel 0 para CONTRASTAR (A_disco 5.067 m2,
-  DL 102.6 N/m2, v_ind 6.62 m/s), bloques A-D con precisiones objetivo, checklist de
-  instrumentos calibrados, repeticiones, seguridad (R11) y criterio de cierre.
-  A6, A10 y A11 no aplican al T25P: precisamente lo que lo hace buen piloto.
+Orden de ejecucion registrado como vinculante en el State Tracker:
+  recaptura (hecho) -> auditoria A9/A10 (hecho) -> campana T25P (SIGUIENTE)
+  -> post-mortem -> campana v2 -> generar T55/T70P/T100
+No se preparan las otras tres hojas de campana: el piloto T25P existe para descubrir
+que falta en la plantilla.
 
-data/raw/mediciones_geometria.csv creado SOLO con cabecera y 0 filas. Verificado que el
-gate sigue bloqueando las 4 plataformas: el congelador no tiene flag de forzado.
-
-Nuevos scripts: audit_documentary_evidence.py (reporta, no concluye),
-prepare_t25p_campaign.py.
-
-Nada medido. Ningun gate cerrado. CFD no ejecutado.
+Ningun gate cambio de estado. Nada medido. CFD no ejecutado.

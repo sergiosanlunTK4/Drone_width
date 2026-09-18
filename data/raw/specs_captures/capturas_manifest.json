@@ -1,0 +1,892 @@
+{
+  "proposito": "recaptura forense de fichas oficiales para resolver el significado de 'Cantidad' (A9) y buscar evidencia de accionamiento (A10)",
+  "regla": "esto es evidencia documental; NO modifica manifests ni convierte nada en M",
+  "capturado_en": "2026-09-18T13:06:08.503004+00:00",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+  "capturas": [
+    {
+      "uav": "T100",
+      "locale": "es",
+      "url": "https://ag.dji.com/es/t100/specs",
+      "status": 200,
+      "bytes": 422648,
+      "sha256": "f3c104af6a7d48bdabc5bb3e1429db8e9766674a453dfcd4e8e4892b6af32bf6",
+      "archivo": "data/raw/specs_captures/t100_es_f3c104af6a7d.html",
+      "content_type": "text/html;charset=utf-8",
+      "server": "nw",
+      "last_modified": null,
+      "segundos": 0.84,
+      "n_tablas_html": 0,
+      "terminos": {
+        "cantidad": [
+          {
+            "match": "Cantidad",
+            "contexto": ";pulgadas Cantidad 8 pares Sistema de rociado <ul class=\"style__detailed-parameter-lis"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "opcional) Cantidad 2 (Estándar) / 4 (Opcional) Distancia de las boquillas <li cl"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "agnética) Cantidad 2 Tasa de caudal máximo <li class=\"style__detailed-parameter_"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "l\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de rociado\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"880 mm × 870 mm × 810 mm (barra de pulverización plegada)\\u003cbr\\u003e1020 mm × 1930 mm × 810 mm (ba"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "cs\":[{\"key\":\"Modelo\",\"value\":\"LX07550SX (Boquilla estándar) / LX09510DX (Boquilla de niebla opcional)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2 (Estándar) / 4 (Opcional)\",\"description\":\"\"},{\"key\":\"Distancia de las boquillas\",\"value\":\"1834 mm (Dos boquillas / Cuatro boquillas exteriores)\",\"description\":\"\"},{\"key\":\"Tamaño de microgotas\",\"value\":\"50 - 500 μm\",\"description\":\"\"},{\"key\":\"\\u003c"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "ema de pulverización - Bombas de entrega\",\"specs\":[{\"key\":\"Tipo\",\"value\":\"Bomba centrífuga (magnética)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2\",\"description\":\"\"},{\"key\":\"Tasa de caudal máximo\",\"value\":\"30 L/min (2 boquillas estándar), 40 L/min (4 boquillas opcionales)\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización con doble batería\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100-DB\",\"d"
+          }
+        ],
+        "pares": [
+          {
+            "match": "pares",
+            "contexto": "=\"style__detailed-parameter-key___2hjK-\"> Cantidad 8 pares Sistema de rociado Modelo <"
+          },
+          {
+            "match": "pares",
+            "contexto": "de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de rociado\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"880 mm × 870 mm × 810 mm (barra de pulverización plegada)\\u003cbr\\u003e1020 mm × 1930 mm × 810 mm (barra de pulverizaci"
+          },
+          {
+            "match": "pares",
+            "contexto": "de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de rociado\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"880 mm × 870 mm × 810 mm (barra de pulverización plegada)\\u003cbr\\u003e1020 mm × 1930 mm × 810 mm (barra de pulverizaci"
+          }
+        ],
+        "helice": [
+          {
+            "match": "hélice",
+            "contexto": "ensiones 3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados) 1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas) 1105 mm × 1265 mm × 975 mm (brazos y hélices plegados) <li class=\"style__det"
+          },
+          {
+            "match": "hélice",
+            "contexto": "mm × 3224 mm × 975 mm (brazos y hélices desplegados) 1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas) 1105 mm × 1265 mm × 975 mm (brazos y hélices plegados) Rango de precisión en vuelo estacionario (con señal GNS"
+          },
+          {
+            "match": "hélice",
+            "contexto": "sp;mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas) 1105 mm × 1265 mm × 975 mm (brazos y hélices plegados) Rango de precisión en vuelo estacionario (con señal GNSS fuerte) <div cla"
+          },
+          {
+            "match": "Hélice",
+            "contexto": "i> Sistema de propulsión - Hélices Material Compuesto de fibra de carbono <ul class=\"style__detailed"
+          },
+          {
+            "match": "hélice",
+            "contexto": "re ejes máxima\",\"value\":\"2330 mm (diagonal)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1105 mm × 1265 mm × 975 mm (brazos y hélices plegados)\",\"description\":\"\"},{\"key\":\"Rango de precisión en vuelo estacionario (con señal GNSS fuerte)\",\"val"
+          },
+          {
+            "match": "hélice",
+            "contexto": ",\"value\":\"3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1105 mm × 1265 mm × 975 mm (brazos y hélices plegados)\",\"description\":\"\"},{\"key\":\"Rango de precisión en vuelo estacionario (con señal GNSS fuerte)\",\"value\":\"RTK habilitado:\\u003cbr\\u003e ±10 cm (horizontal), ±10 cm (vertical)\\u003cbr\\u"
+          }
+        ],
+        "motor": [
+          {
+            "match": "Motores",
+            "contexto": "i> Sistema de propulsión - Motores Tamaño del estátor 155 × 16 mm <ul class=\"style__de"
+          },
+          {
+            "match": "motor",
+            "contexto": "> Capacidad de aceite del motor 1.3 L Modelo de aceite del motor <li class=\"style__detai"
+          },
+          {
+            "match": "motor",
+            "contexto": "/ul> Modelo de aceite del motor SJ 10W-40 C12000 Smart Charger <ul class=\"style__detailed-parameter"
+          },
+          {
+            "match": "Motores",
+            "contexto": "escription\":\"\"},{\"key\":\"Resistencia máxima al viento\",\"value\":\"\\u003c6 m/s\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Motores\",\"specs\":[{\"key\":\"Tamaño del estátor\",\"value\":\"155 × 16 mm\",\"description\":\"\"},{\"key\":\"KV\",\"value\":\"60 rpm/V\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\""
+          },
+          {
+            "match": "motor",
+            "contexto": "ription\":\"\"},{\"key\":\"Consumo de combustible de referencia\",\"value\":\"500 mL/kWh\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"1.3 L\",\"description\":\"\"},{\"key\":\"Modelo de aceite del motor\",\"value\":\"SJ 10W-40\",\"description\":\"\"}]},{\"title\":\"C12000 Smart Charger\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX901-12000\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"456 mm ×"
+          },
+          {
+            "match": "motor",
+            "contexto": "0 mL/kWh\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"1.3 L\",\"description\":\"\"},{\"key\":\"Modelo de aceite del motor\",\"value\":\"SJ 10W-40\",\"description\":\"\"}]},{\"title\":\"C12000 Smart Charger\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX901-12000\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"456 mm × 291 mm × 107 mm\",\"description\":\"\"},{\"key\":\"\\u003chtml\\u003e\\u003chtml"
+          }
+        ],
+        "pulgadas": [
+          {
+            "match": "pulgadas",
+            "contexto": "yle__detailed-parameter-key___2hjK-\"> Dimensiones 62 pulgadas Cantidad 8 pares <div class=\"style__specs-pa"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "parameter-key___2hjK-\"> Pantalla Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m² Rango de temperatura de almacenamiento"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "- Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de rociado\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"880 mm × 870 mm × 810 mm (barra de pulverización plegada)\\u003cbr"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": ":\"Control remoto\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"TKPL 2\",\"description\":\"\"},{\"key\":\"Pantalla\",\"value\":\"Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m²\",\"description\":\"\"},{\"key\":\"Rango de temperatura de almacenamiento\",\"value\":\"Menos de un mes: De −30 a 45 °C (de −22 a 113 °F)\\u003cbr\\u003eDe uno a tres meses: De −30 a 35 °C (de −22 a 95 °F)\\u003cbr\\u003eDe tres m"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "frece el Sistema de Potencia del DJI Agras T100 en comparación con el Agras T50?\",\"answer\":\"Con hélices de fibra de carbono de 62 pulgadas, mejorando la eficiencia de potencia a plena carga en un 39 % y la eficiencia de las hélices en un 32 %.\"},{\"question\":\"¿Cuál es el sentido de rotación de las hélices de DJI Agras T100?\",\"answer\":\"\\u003cimg src=\\\"https://terra-1-g.djicdn.com/b20074248eff4b7f9"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "- Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de rociado\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"880 mm × 870 mm × 810 mm (barra de pulverización plegada)\\u003cbr"
+          }
+        ],
+        "ejes": [
+          {
+            "match": "entre ejes",
+            "contexto": "> Distancia diagonal entre ejes máxima 2330 mm (diagonal) Dimensiones <li class=\"style__detai"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "egue para la elevación: 170 kg (equipado con sistema de elevación de doble batería)\",\"description\":\"\"},{\"key\":\"Distancia diagonal entre ejes máxima\",\"value\":\"2330 mm (diagonal)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1105 mm × 1265 mm × 975"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "egue para la elevación: 170 kg (equipado con sistema de elevación de doble batería)\",\"description\":\"\"},{\"key\":\"Distancia diagonal entre ejes máxima\",\"value\":\"2330 mm (diagonal)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1105 mm × 1265 mm × 975"
+          }
+        ]
+      }
+    },
+    {
+      "uav": "T100",
+      "locale": "zh",
+      "url": "https://ag.dji.com/cn/t100/specs",
+      "status": 200,
+      "bytes": 422648,
+      "sha256": "f3c104af6a7d48bdabc5bb3e1429db8e9766674a453dfcd4e8e4892b6af32bf6",
+      "archivo": "data/raw/specs_captures/t100_zh_f3c104af6a7d.html",
+      "content_type": "text/html;charset=utf-8",
+      "server": "nw",
+      "last_modified": null,
+      "segundos": 1.05,
+      "n_tablas_html": 0,
+      "terminos": {
+        "cantidad": [
+          {
+            "match": "Cantidad",
+            "contexto": ";pulgadas Cantidad 8 pares Sistema de rociado <ul class=\"style__detailed-parameter-lis"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "opcional) Cantidad 2 (Estándar) / 4 (Opcional) Distancia de las boquillas <li cl"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "agnética) Cantidad 2 Tasa de caudal máximo <li class=\"style__detailed-parameter_"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "l\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de rociado\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"880 mm × 870 mm × 810 mm (barra de pulverización plegada)\\u003cbr\\u003e1020 mm × 1930 mm × 810 mm (ba"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "cs\":[{\"key\":\"Modelo\",\"value\":\"LX07550SX (Boquilla estándar) / LX09510DX (Boquilla de niebla opcional)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2 (Estándar) / 4 (Opcional)\",\"description\":\"\"},{\"key\":\"Distancia de las boquillas\",\"value\":\"1834 mm (Dos boquillas / Cuatro boquillas exteriores)\",\"description\":\"\"},{\"key\":\"Tamaño de microgotas\",\"value\":\"50 - 500 μm\",\"description\":\"\"},{\"key\":\"\\u003c"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "ema de pulverización - Bombas de entrega\",\"specs\":[{\"key\":\"Tipo\",\"value\":\"Bomba centrífuga (magnética)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2\",\"description\":\"\"},{\"key\":\"Tasa de caudal máximo\",\"value\":\"30 L/min (2 boquillas estándar), 40 L/min (4 boquillas opcionales)\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización con doble batería\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100-DB\",\"d"
+          }
+        ],
+        "pares": [
+          {
+            "match": "pares",
+            "contexto": "=\"style__detailed-parameter-key___2hjK-\"> Cantidad 8 pares Sistema de rociado Modelo <"
+          },
+          {
+            "match": "pares",
+            "contexto": "de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de rociado\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"880 mm × 870 mm × 810 mm (barra de pulverización plegada)\\u003cbr\\u003e1020 mm × 1930 mm × 810 mm (barra de pulverizaci"
+          },
+          {
+            "match": "pares",
+            "contexto": "de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de rociado\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"880 mm × 870 mm × 810 mm (barra de pulverización plegada)\\u003cbr\\u003e1020 mm × 1930 mm × 810 mm (barra de pulverizaci"
+          }
+        ],
+        "helice": [
+          {
+            "match": "hélice",
+            "contexto": "ensiones 3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados) 1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas) 1105 mm × 1265 mm × 975 mm (brazos y hélices plegados) <li class=\"style__det"
+          },
+          {
+            "match": "hélice",
+            "contexto": "mm × 3224 mm × 975 mm (brazos y hélices desplegados) 1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas) 1105 mm × 1265 mm × 975 mm (brazos y hélices plegados) Rango de precisión en vuelo estacionario (con señal GNS"
+          },
+          {
+            "match": "hélice",
+            "contexto": "sp;mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas) 1105 mm × 1265 mm × 975 mm (brazos y hélices plegados) Rango de precisión en vuelo estacionario (con señal GNSS fuerte) <div cla"
+          },
+          {
+            "match": "Hélice",
+            "contexto": "i> Sistema de propulsión - Hélices Material Compuesto de fibra de carbono <ul class=\"style__detailed"
+          },
+          {
+            "match": "hélice",
+            "contexto": "re ejes máxima\",\"value\":\"2330 mm (diagonal)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1105 mm × 1265 mm × 975 mm (brazos y hélices plegados)\",\"description\":\"\"},{\"key\":\"Rango de precisión en vuelo estacionario (con señal GNSS fuerte)\",\"val"
+          },
+          {
+            "match": "hélice",
+            "contexto": ",\"value\":\"3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1105 mm × 1265 mm × 975 mm (brazos y hélices plegados)\",\"description\":\"\"},{\"key\":\"Rango de precisión en vuelo estacionario (con señal GNSS fuerte)\",\"value\":\"RTK habilitado:\\u003cbr\\u003e ±10 cm (horizontal), ±10 cm (vertical)\\u003cbr\\u"
+          }
+        ],
+        "motor": [
+          {
+            "match": "Motores",
+            "contexto": "i> Sistema de propulsión - Motores Tamaño del estátor 155 × 16 mm <ul class=\"style__de"
+          },
+          {
+            "match": "motor",
+            "contexto": "> Capacidad de aceite del motor 1.3 L Modelo de aceite del motor <li class=\"style__detai"
+          },
+          {
+            "match": "motor",
+            "contexto": "/ul> Modelo de aceite del motor SJ 10W-40 C12000 Smart Charger <ul class=\"style__detailed-parameter"
+          },
+          {
+            "match": "Motores",
+            "contexto": "escription\":\"\"},{\"key\":\"Resistencia máxima al viento\",\"value\":\"\\u003c6 m/s\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Motores\",\"specs\":[{\"key\":\"Tamaño del estátor\",\"value\":\"155 × 16 mm\",\"description\":\"\"},{\"key\":\"KV\",\"value\":\"60 rpm/V\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\""
+          },
+          {
+            "match": "motor",
+            "contexto": "ription\":\"\"},{\"key\":\"Consumo de combustible de referencia\",\"value\":\"500 mL/kWh\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"1.3 L\",\"description\":\"\"},{\"key\":\"Modelo de aceite del motor\",\"value\":\"SJ 10W-40\",\"description\":\"\"}]},{\"title\":\"C12000 Smart Charger\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX901-12000\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"456 mm ×"
+          },
+          {
+            "match": "motor",
+            "contexto": "0 mL/kWh\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"1.3 L\",\"description\":\"\"},{\"key\":\"Modelo de aceite del motor\",\"value\":\"SJ 10W-40\",\"description\":\"\"}]},{\"title\":\"C12000 Smart Charger\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX901-12000\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"456 mm × 291 mm × 107 mm\",\"description\":\"\"},{\"key\":\"\\u003chtml\\u003e\\u003chtml"
+          }
+        ],
+        "pulgadas": [
+          {
+            "match": "pulgadas",
+            "contexto": "yle__detailed-parameter-key___2hjK-\"> Dimensiones 62 pulgadas Cantidad 8 pares <div class=\"style__specs-pa"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "parameter-key___2hjK-\"> Pantalla Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m² Rango de temperatura de almacenamiento"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "- Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de rociado\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"880 mm × 870 mm × 810 mm (barra de pulverización plegada)\\u003cbr"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": ":\"Control remoto\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"TKPL 2\",\"description\":\"\"},{\"key\":\"Pantalla\",\"value\":\"Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m²\",\"description\":\"\"},{\"key\":\"Rango de temperatura de almacenamiento\",\"value\":\"Menos de un mes: De −30 a 45 °C (de −22 a 113 °F)\\u003cbr\\u003eDe uno a tres meses: De −30 a 35 °C (de −22 a 95 °F)\\u003cbr\\u003eDe tres m"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "frece el Sistema de Potencia del DJI Agras T100 en comparación con el Agras T50?\",\"answer\":\"Con hélices de fibra de carbono de 62 pulgadas, mejorando la eficiencia de potencia a plena carga en un 39 % y la eficiencia de las hélices en un 32 %.\"},{\"question\":\"¿Cuál es el sentido de rotación de las hélices de DJI Agras T100?\",\"answer\":\"\\u003cimg src=\\\"https://terra-1-g.djicdn.com/b20074248eff4b7f9"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "- Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de rociado\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"LS100\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"880 mm × 870 mm × 810 mm (barra de pulverización plegada)\\u003cbr"
+          }
+        ],
+        "ejes": [
+          {
+            "match": "entre ejes",
+            "contexto": "> Distancia diagonal entre ejes máxima 2330 mm (diagonal) Dimensiones <li class=\"style__detai"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "egue para la elevación: 170 kg (equipado con sistema de elevación de doble batería)\",\"description\":\"\"},{\"key\":\"Distancia diagonal entre ejes máxima\",\"value\":\"2330 mm (diagonal)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1105 mm × 1265 mm × 975"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "egue para la elevación: 170 kg (equipado con sistema de elevación de doble batería)\",\"description\":\"\"},{\"key\":\"Distancia diagonal entre ejes máxima\",\"value\":\"2330 mm (diagonal)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3220 mm × 3224 mm × 975 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 1840 mm × 975 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1105 mm × 1265 mm × 975"
+          }
+        ]
+      }
+    },
+    {
+      "uav": "T70P",
+      "locale": "es",
+      "url": "https://ag.dji.com/es/t70p/specs",
+      "status": 200,
+      "bytes": 407319,
+      "sha256": "9a71ef78b87c9c5cb3444064ebb19aa8f26ca15d31ae3f5f15d8b47b327fc503",
+      "archivo": "data/raw/specs_captures/t70p_es_9a71ef78b87c.html",
+      "content_type": "text/html;charset=utf-8",
+      "server": "nw",
+      "last_modified": null,
+      "segundos": 0.73,
+      "n_tablas_html": 0,
+      "terminos": {
+        "cantidad": [
+          {
+            "match": "Cantidad",
+            "contexto": ";pulgadas Cantidad 4 Sistema de pulverización - Tanque de pulverización <ul class=\"style__d"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "opcional) Cantidad 2 (Estándar) / 4 (Opcional) Distancia de las boquillas <li cl"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "agnética) Cantidad 2 Tasa de caudal máximo <li class=\"style__detailed-parameter_"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "l\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"70 L\",\"description\":\"\"},{\"key\":\"Capacidad de carga\",\"value\":\"70 kg\",\"descripti"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "ecs\":[{\"key\":\"Modelo\",\"value\":\"LX07550SX (Boquilla estándar) / LX09550SX (Boquilla de niebla opcional)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2 (Estándar) / 4 (Opcional)\",\"description\":\"\"},{\"key\":\"Distancia de las boquillas\",\"value\":\"1874 mm (boquillas traseras)\",\"description\":\"\"},{\"key\":\"Tamaño de microgotas\",\"value\":\"50 - 500 μm\",\"description\":\"\"},{\"key\":\"\\u003chtml\\u003e\\u003chtml\\u003"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "ema de pulverización - Bombas de entrega\",\"specs\":[{\"key\":\"Tipo\",\"value\":\"Bomba centrífuga (magnética)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2\",\"description\":\"\"},{\"key\":\"Tasa de caudal máximo\",\"value\":\"30 L/min (Estándar 2 pulverizaciones）\\u003cbr\\u003e40 L/min (Opcional 4 pulverizaciones)\",\"description\":\"\"}]},{\"title\":\"Sistema de esparcido 4.0\",\"specs\":[{\"key\":\"Diámetro de material comp"
+          }
+        ],
+        "helice": [
+          {
+            "match": "hélice",
+            "contexto": "2hjK-\"> Dimensiones 3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados) 1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas) 1160 mm × 900 mm × 960 mm (brazos y hélices plegadas) <li class=\"style__detailed-parameter-key___2hjK-"
+          },
+          {
+            "match": "hélice",
+            "contexto": "ojl\"> 3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados) 1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas) 1160 mm × 900 mm × 960 mm (brazos y hélices plegadas) Rango de precisión en vuelo estacionario (con señal GNSS fuerte)</h"
+          },
+          {
+            "match": "hélice",
+            "contexto": "hélices desplegados) 1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas) 1160 mm × 900 mm × 960 mm (brazos y hélices plegadas) Rango de precisión en vuelo estacionario (con señal GNSS fuerte) <div"
+          },
+          {
+            "match": "Hélice",
+            "contexto": "i> Sistema de propulsión - Hélices Material Compuesto de fibra de carbono <ul class=\"style__detailed"
+          },
+          {
+            "match": "hélice",
+            "contexto": "agonal entre ejes máxima\",\"value\":\"2440 mm\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1160 mm × 900 mm × 960 mm (brazos y hélices plegadas)\\u003cbr\\u003e\",\"description\":\"\"},{\"key\":\"Rango de precisión en vuelo estacionario (con señal GNSS"
+          },
+          {
+            "match": "hélice",
+            "contexto": "\"value\":\"3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1160 mm × 900 mm × 960 mm (brazos y hélices plegadas)\\u003cbr\\u003e\",\"description\":\"\"},{\"key\":\"Rango de precisión en vuelo estacionario (con señal GNSS fuerte)\",\"value\":\"RTK habilitado:\\u003cbr\\u003e ±10 cm (horizontal), ±10 cm (vertic"
+          }
+        ],
+        "motor": [
+          {
+            "match": "Motores",
+            "contexto": "i> Sistema de propulsión - Motores Tamaño del estátor 155 × 22 mm <ul class=\"style__detailed-par"
+          },
+          {
+            "match": "motor",
+            "contexto": "/ul> Modelo de aceite del motor SJ 10W-40 Capacidad de aceite del motor <li class=\"style"
+          },
+          {
+            "match": "motor",
+            "contexto": "> Capacidad de aceite del motor 1.3 L C12000 Smart Charger <ul class=\"style__detailed-parameter-lis"
+          },
+          {
+            "match": "Motores",
+            "contexto": "escription\":\"\"},{\"key\":\"Resistencia máxima al viento\",\"value\":\"\\u003c6 m/s\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Motores\",\"specs\":[{\"key\":\"Tamaño del estátor\",\"value\":\"155 × 22 mm\",\"description\":\"\"},{\"key\":\"KV\",\"value\":\"65 rpm/V\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\""
+          },
+          {
+            "match": "motor",
+            "contexto": "escription\":\"\"},{\"key\":\"Consumo de combustible de referencia\",\"value\":\"500 mL/kWh\",\"description\":\"\"},{\"key\":\"Modelo de aceite del motor\",\"value\":\"SJ 10W-40\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"1.3 L\",\"description\":\"\"}]},{\"title\":\"C12000 Smart Charger\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX901-12000\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"456 m"
+          },
+          {
+            "match": "motor",
+            "contexto": "/kWh\",\"description\":\"\"},{\"key\":\"Modelo de aceite del motor\",\"value\":\"SJ 10W-40\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"1.3 L\",\"description\":\"\"}]},{\"title\":\"C12000 Smart Charger\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX901-12000\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"456 mm × 291 mm × 107 mm\",\"description\":\"\"},{\"key\":\"\\u003chtml\\u003e\\u003chtml\\u00"
+          }
+        ],
+        "pulgadas": [
+          {
+            "match": "pulgadas",
+            "contexto": "yle__detailed-parameter-key___2hjK-\"> Dimensiones 62 pulgadas Cantidad 4 <div class=\"style__specs-parameter-wra"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "parameter-key___2hjK-\"> Pantalla Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m² Rango de temperatura de almacenamiento"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "- Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"70 L\",\"description\":\"\"},{\"key\":\"Capacidad"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": ":\"Control remoto\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"TKPL 2\",\"description\":\"\"},{\"key\":\"Pantalla\",\"value\":\"Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m²\",\"description\":\"\"},{\"key\":\"Rango de temperatura de almacenamiento\",\"value\":\"Menos de un mes: De −30 a 45 °C (de −22 a 113 °F)\\u003cbr\\u003eDe uno a tres meses: De −30 a 35 °C (de −22 a 95 °F)\\u003cbr\\u003eDe tres m"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "Sistema de Potencia del DJI Agras T70P en comparación con el Agras T50?\",\"answer\":\"Equipado con hélices de fibra de carbono de 62 pulgadas, la optimización electromagnética del motor y del proceso mejora la eficiencia energética en un 3 %; mejora de la eficiencia mecánica del fuselaje en un 18 %.\"},{\"question\":\"¿Cuál es el sentido de rotación de las hélices de DJI Agras T70P?\",\"answer\":\"\\u003cim"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "- Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"70 L\",\"description\":\"\"},{\"key\":\"Capacidad"
+          }
+        ],
+        "ejes": [
+          {
+            "match": "entre ejes",
+            "contexto": "> Distancia diagonal entre ejes máxima 2440 mm Dimensiones <li class=\"style__detailed-paramet"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "esparcido: 130 kg\\u003cbr\\u003ePeso máximo de despegue para la elevación: 118.5 kg\",\"description\":\"\"},{\"key\":\"Distancia diagonal entre ejes máxima\",\"value\":\"2440 mm\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1160 mm × 900 mm × 960 mm (brazos"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "esparcido: 130 kg\\u003cbr\\u003ePeso máximo de despegue para la elevación: 118.5 kg\",\"description\":\"\"},{\"key\":\"Distancia diagonal entre ejes máxima\",\"value\":\"2440 mm\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1160 mm × 900 mm × 960 mm (brazos"
+          }
+        ]
+      }
+    },
+    {
+      "uav": "T70P",
+      "locale": "zh",
+      "url": "https://ag.dji.com/cn/t70p/specs",
+      "status": 200,
+      "bytes": 407319,
+      "sha256": "9a71ef78b87c9c5cb3444064ebb19aa8f26ca15d31ae3f5f15d8b47b327fc503",
+      "archivo": "data/raw/specs_captures/t70p_zh_9a71ef78b87c.html",
+      "content_type": "text/html;charset=utf-8",
+      "server": "nw",
+      "last_modified": null,
+      "segundos": 0.99,
+      "n_tablas_html": 0,
+      "terminos": {
+        "cantidad": [
+          {
+            "match": "Cantidad",
+            "contexto": ";pulgadas Cantidad 4 Sistema de pulverización - Tanque de pulverización <ul class=\"style__d"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "opcional) Cantidad 2 (Estándar) / 4 (Opcional) Distancia de las boquillas <li cl"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "agnética) Cantidad 2 Tasa de caudal máximo <li class=\"style__detailed-parameter_"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "l\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"70 L\",\"description\":\"\"},{\"key\":\"Capacidad de carga\",\"value\":\"70 kg\",\"descripti"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "ecs\":[{\"key\":\"Modelo\",\"value\":\"LX07550SX (Boquilla estándar) / LX09550SX (Boquilla de niebla opcional)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2 (Estándar) / 4 (Opcional)\",\"description\":\"\"},{\"key\":\"Distancia de las boquillas\",\"value\":\"1874 mm (boquillas traseras)\",\"description\":\"\"},{\"key\":\"Tamaño de microgotas\",\"value\":\"50 - 500 μm\",\"description\":\"\"},{\"key\":\"\\u003chtml\\u003e\\u003chtml\\u003"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "ema de pulverización - Bombas de entrega\",\"specs\":[{\"key\":\"Tipo\",\"value\":\"Bomba centrífuga (magnética)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2\",\"description\":\"\"},{\"key\":\"Tasa de caudal máximo\",\"value\":\"30 L/min (Estándar 2 pulverizaciones）\\u003cbr\\u003e40 L/min (Opcional 4 pulverizaciones)\",\"description\":\"\"}]},{\"title\":\"Sistema de esparcido 4.0\",\"specs\":[{\"key\":\"Diámetro de material comp"
+          }
+        ],
+        "helice": [
+          {
+            "match": "hélice",
+            "contexto": "2hjK-\"> Dimensiones 3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados) 1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas) 1160 mm × 900 mm × 960 mm (brazos y hélices plegadas) <li class=\"style__detailed-parameter-key___2hjK-"
+          },
+          {
+            "match": "hélice",
+            "contexto": "ojl\"> 3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados) 1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas) 1160 mm × 900 mm × 960 mm (brazos y hélices plegadas) Rango de precisión en vuelo estacionario (con señal GNSS fuerte)</h"
+          },
+          {
+            "match": "hélice",
+            "contexto": "hélices desplegados) 1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas) 1160 mm × 900 mm × 960 mm (brazos y hélices plegadas) Rango de precisión en vuelo estacionario (con señal GNSS fuerte) <div"
+          },
+          {
+            "match": "Hélice",
+            "contexto": "i> Sistema de propulsión - Hélices Material Compuesto de fibra de carbono <ul class=\"style__detailed"
+          },
+          {
+            "match": "hélice",
+            "contexto": "agonal entre ejes máxima\",\"value\":\"2440 mm\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1160 mm × 900 mm × 960 mm (brazos y hélices plegadas)\\u003cbr\\u003e\",\"description\":\"\"},{\"key\":\"Rango de precisión en vuelo estacionario (con señal GNSS"
+          },
+          {
+            "match": "hélice",
+            "contexto": "\"value\":\"3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1160 mm × 900 mm × 960 mm (brazos y hélices plegadas)\\u003cbr\\u003e\",\"description\":\"\"},{\"key\":\"Rango de precisión en vuelo estacionario (con señal GNSS fuerte)\",\"value\":\"RTK habilitado:\\u003cbr\\u003e ±10 cm (horizontal), ±10 cm (vertic"
+          }
+        ],
+        "motor": [
+          {
+            "match": "Motores",
+            "contexto": "i> Sistema de propulsión - Motores Tamaño del estátor 155 × 22 mm <ul class=\"style__detailed-par"
+          },
+          {
+            "match": "motor",
+            "contexto": "/ul> Modelo de aceite del motor SJ 10W-40 Capacidad de aceite del motor <li class=\"style"
+          },
+          {
+            "match": "motor",
+            "contexto": "> Capacidad de aceite del motor 1.3 L C12000 Smart Charger <ul class=\"style__detailed-parameter-lis"
+          },
+          {
+            "match": "Motores",
+            "contexto": "escription\":\"\"},{\"key\":\"Resistencia máxima al viento\",\"value\":\"\\u003c6 m/s\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Motores\",\"specs\":[{\"key\":\"Tamaño del estátor\",\"value\":\"155 × 22 mm\",\"description\":\"\"},{\"key\":\"KV\",\"value\":\"65 rpm/V\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\""
+          },
+          {
+            "match": "motor",
+            "contexto": "escription\":\"\"},{\"key\":\"Consumo de combustible de referencia\",\"value\":\"500 mL/kWh\",\"description\":\"\"},{\"key\":\"Modelo de aceite del motor\",\"value\":\"SJ 10W-40\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"1.3 L\",\"description\":\"\"}]},{\"title\":\"C12000 Smart Charger\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX901-12000\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"456 m"
+          },
+          {
+            "match": "motor",
+            "contexto": "/kWh\",\"description\":\"\"},{\"key\":\"Modelo de aceite del motor\",\"value\":\"SJ 10W-40\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"1.3 L\",\"description\":\"\"}]},{\"title\":\"C12000 Smart Charger\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX901-12000\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"456 mm × 291 mm × 107 mm\",\"description\":\"\"},{\"key\":\"\\u003chtml\\u003e\\u003chtml\\u00"
+          }
+        ],
+        "pulgadas": [
+          {
+            "match": "pulgadas",
+            "contexto": "yle__detailed-parameter-key___2hjK-\"> Dimensiones 62 pulgadas Cantidad 4 <div class=\"style__specs-parameter-wra"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "parameter-key___2hjK-\"> Pantalla Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m² Rango de temperatura de almacenamiento"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "- Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"70 L\",\"description\":\"\"},{\"key\":\"Capacidad"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": ":\"Control remoto\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"TKPL 2\",\"description\":\"\"},{\"key\":\"Pantalla\",\"value\":\"Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m²\",\"description\":\"\"},{\"key\":\"Rango de temperatura de almacenamiento\",\"value\":\"Menos de un mes: De −30 a 45 °C (de −22 a 113 °F)\\u003cbr\\u003eDe uno a tres meses: De −30 a 35 °C (de −22 a 95 °F)\\u003cbr\\u003eDe tres m"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "Sistema de Potencia del DJI Agras T70P en comparación con el Agras T50?\",\"answer\":\"Equipado con hélices de fibra de carbono de 62 pulgadas, la optimización electromagnética del motor y del proceso mejora la eficiencia energética en un 3 %; mejora de la eficiencia mecánica del fuselaje en un 18 %.\"},{\"question\":\"¿Cuál es el sentido de rotación de las hélices de DJI Agras T70P?\",\"answer\":\"\\u003cim"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "- Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"70 L\",\"description\":\"\"},{\"key\":\"Capacidad"
+          }
+        ],
+        "ejes": [
+          {
+            "match": "entre ejes",
+            "contexto": "> Distancia diagonal entre ejes máxima 2440 mm Dimensiones <li class=\"style__detailed-paramet"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "esparcido: 130 kg\\u003cbr\\u003ePeso máximo de despegue para la elevación: 118.5 kg\",\"description\":\"\"},{\"key\":\"Distancia diagonal entre ejes máxima\",\"value\":\"2440 mm\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1160 mm × 900 mm × 960 mm (brazos"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "esparcido: 130 kg\\u003cbr\\u003ePeso máximo de despegue para la elevación: 118.5 kg\",\"description\":\"\"},{\"key\":\"Distancia diagonal entre ejes máxima\",\"value\":\"2440 mm\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"3200 mm × 3520 mm × 960 mm (brazos y hélices desplegados)\\u003cbr\\u003e1820 mm × 2100 mm × 960 mm (brazos desplegados y hélices plegadas)\\u003cbr\\u003e1160 mm × 900 mm × 960 mm (brazos"
+          }
+        ]
+      }
+    },
+    {
+      "uav": "T55",
+      "locale": "es",
+      "url": "https://ag.dji.com/es/t55/specs",
+      "status": 200,
+      "bytes": 358532,
+      "sha256": "941ab5aa0d8b00205e63e6c75e09ff09eaa58d150d75e415acee96ab6a97a482",
+      "archivo": "data/raw/specs_captures/t55_es_941ab5aa0d8b.html",
+      "content_type": "text/html;charset=utf-8",
+      "server": "nw",
+      "last_modified": null,
+      "segundos": 0.66,
+      "n_tablas_html": 0,
+      "terminos": {
+        "cantidad": [
+          {
+            "match": "Cantidad",
+            "contexto": "pulgadas Cantidad 4 pares Sistema de pulverización - Tanque de pulverización <ul class=\"st"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "opcional) Cantidad 2 (estándar) / 4 (opcional) Distancia entre aspersores <li cl"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "agnético) Cantidad 2 Tasa máxima de caudal <li class=\"style__detailed-parameter_"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "l\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"50 L\",\"description\":\"\"},{\"key\":\"Carga útil de funcionamiento\",\"value\":\"5"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "\"Modelo\",\"value\":\"LX09050DX (aspersor centrífugo estándar) / LX09510DX (aspersor nebulizador opcional)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2 (estándar) / 4 (opcional)\",\"description\":\"\"},{\"key\":\"Distancia entre aspersores\",\"value\":\"1800 mm (dos aspersores estándar)\",\"description\":\"\"},{\"key\":\"Tamaño de gota\",\"value\":\"50 - 500 μm\",\"description\":\"\"},{\"key\":\"Anchura efectiva de pulverizació"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "ón - Bombas de suministro\",\"specs\":[{\"key\":\"Tipo\",\"value\":\"Bomba de impulsor (accionamiento magnético)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2\",\"description\":\"\"},{\"key\":\"Tasa máxima de caudal\",\"value\":\"40 L/min (2 aspersores estándar), 50 L/min (4 aspersores opcionales)\",\"description\":\"\"}]},{\"title\":\"Sistema de esparcido DS80L\",\"specs\":[{\"key\":\"Volumen\",\"value\":\"80 L\",\"description\":\"\"},{"
+          }
+        ],
+        "pares": [
+          {
+            "match": "pares",
+            "contexto": "class=\"style__detailed-parameter-key___2hjK-\"> Cantidad 4 pares Sistema de pulverización - Tanque de pulverización <li class=\"style__detailed-parameter-ke"
+          },
+          {
+            "match": "pares",
+            "contexto": "de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"50 L\",\"description\":\"\"},{\"key\":\"Carga útil de funcionamiento\",\"value\":\"50 kg\",\"description"
+          },
+          {
+            "match": "pares",
+            "contexto": "de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"50 L\",\"description\":\"\"},{\"key\":\"Carga útil de funcionamiento\",\"value\":\"50 kg\",\"description"
+          }
+        ],
+        "helice": [
+          {
+            "match": "hélice",
+            "contexto": "ey___2hjK-\"> Dimensiones Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm; Brazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm; Brazos del bastidor plegados, hélices plegadas: 1120 mm × 896 mm × 934 mm; <ul class=\"style__detailed-parameter-list_"
+          },
+          {
+            "match": "hélice",
+            "contexto": "iv class=\"\">Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm; Brazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm; Brazos del bastidor plegados, hélices plegadas: 1120 mm × 896 mm × 934 mm; Rango de precisión en"
+          },
+          {
+            "match": "hélice",
+            "contexto": "0 mm × 934 mm; Brazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm; Brazos del bastidor plegados, hélices plegadas: 1120 mm × 896 mm × 934 mm; Rango de precisión en vuelo estacionario (con señal GNSS fuerte) <li class=\"style__detail"
+          },
+          {
+            "match": "Hélice",
+            "contexto": "i> Sistema de propulsión - Hélice Material Compuesto de fibra de carbono <ul class=\"style__detailed-"
+          },
+          {
+            "match": "hélice",
+            "contexto": "value\":\"2415 mm (distancia diagonal entre ejes)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor plegados, hélices plegadas: 1120 mm × 896 mm × 934 mm;\",\"description\":\"\"},{\"key\":\"Rango de p"
+          },
+          {
+            "match": "hélice",
+            "contexto": ":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor plegados, hélices plegadas: 1120 mm × 896 mm × 934 mm;\",\"description\":\"\"},{\"key\":\"Rango de precisión en vuelo estacionario\\u003cbr\\u003e(con señal GNSS fuerte)\",\"value\":\"RTK activado: ± 1"
+          }
+        ],
+        "motor": [
+          {
+            "match": "Motores",
+            "contexto": "i> Sistema de propulsión - Motores Dimensiones del estátor 155 × 16 mm <ul class=\"style__detailed-par"
+          },
+          {
+            "match": "motor",
+            "contexto": "> Capacidad de aceite del motor 0.8 L Tipo de aceite del motor <li class=\"style__detailed-par"
+          },
+          {
+            "match": "motor",
+            "contexto": "> Tipo de aceite del motor SN 15W-50 Fuente de alimentación inteligente C7000 <ul class=\"style__det"
+          },
+          {
+            "match": "Motores",
+            "contexto": "F)\",\"description\":\"\"},{\"key\":\"Resistencia máxima al viento\",\"value\":\"6 m/s\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Motores\",\"specs\":[{\"key\":\"Dimensiones del estátor\",\"value\":\"155 × 16 mm\",\"description\":\"\"},{\"key\":\"KV\",\"value\":\"55 rpm/V\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Hélice\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\""
+          },
+          {
+            "match": "motor",
+            "contexto": "ription\":\"\"},{\"key\":\"Consumo de combustible de referencia\",\"value\":\"500 mL/kWh\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"0.8 L\",\"description\":\"\"},{\"key\":\"Tipo de aceite del motor\",\"value\":\"SN 15W-50\",\"description\":\"\"}]},{\"title\":\"Fuente de alimentación inteligente C7000\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX711-7000\",\"description\":\"\"},{\"key\":\"Dimensiones\","
+          },
+          {
+            "match": "motor",
+            "contexto": "500 mL/kWh\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"0.8 L\",\"description\":\"\"},{\"key\":\"Tipo de aceite del motor\",\"value\":\"SN 15W-50\",\"description\":\"\"}]},{\"title\":\"Fuente de alimentación inteligente C7000\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX711-7000\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"460 mm × 160 mm × 80 mm\",\"description\":\"\"},{\"key\":\"Peso\",\"v"
+          }
+        ],
+        "pulgadas": [
+          {
+            "match": "pulgadas",
+            "contexto": "s=\"style__detailed-parameter-key___2hjK-\"> Dimensiones 62 pulgadas Cantidad 4 pares <div class=\"style__specs-paramet"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "parameter-key___2hjK-\"> Pantalla Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m² Temperatura de almacenamiento <div clas"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "n - Hélice\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"50 L\",\"description\":\"\"},{\"key\":\"Carg"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "DJI RC Plus 2 AG\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"TKPL 2\",\"description\":\"\"},{\"key\":\"Pantalla\",\"value\":\"Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m²\",\"description\":\"\"},{\"key\":\"Temperatura de almacenamiento\",\"value\":\"Dentro de un mes: de -30 °C a 45 °C (-22 °F a 140 °F)\\u003cbr\\u003eDe uno a tres meses: de -30 °C a 35 °C (-22 °F a 113 °F)\\u003cbr\\u003eDe tres me"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "n - Hélice\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"50 L\",\"description\":\"\"},{\"key\":\"Carg"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "DJI RC Plus 2 AG\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"TKPL 2\",\"description\":\"\"},{\"key\":\"Pantalla\",\"value\":\"Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m²\",\"description\":\"\"},{\"key\":\"Temperatura de almacenamiento\",\"value\":\"Dentro de un mes: de -30 °C a 45 °C (-22 °F a 140 °F)\\u003cbr\\u003eDe uno a tres meses: de -30 °C a 35 °C (-22 °F a 113 °F)\\u003cbr\\u003eDe tres me"
+          }
+        ],
+        "ejes": [
+          {
+            "match": "entre ejes",
+            "contexto": "ul class=\"style__detailed-parameter-list___27yjW\"> Distancia diagonal máxima entre ejes 2415 mm (distancia diagonal entre ejes) Dimensiones <li class"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "ancia diagonal máxima entre ejes 2415 mm (distancia diagonal entre ejes) Dimensiones Brazos del bastidor desplegados, hélices desplegadas: 319"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "áximo de despegue para elevación: 89 kg (con sistema de elevación instalado)\",\"description\":\"\"},{\"key\":\"Distancia diagonal máxima entre ejes\",\"value\":\"2415 mm (distancia diagonal entre ejes)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "ema de elevación instalado)\",\"description\":\"\"},{\"key\":\"Distancia diagonal máxima entre ejes\",\"value\":\"2415 mm (distancia diagonal entre ejes)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor pl"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "áximo de despegue para elevación: 89 kg (con sistema de elevación instalado)\",\"description\":\"\"},{\"key\":\"Distancia diagonal máxima entre ejes\",\"value\":\"2415 mm (distancia diagonal entre ejes)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "ema de elevación instalado)\",\"description\":\"\"},{\"key\":\"Distancia diagonal máxima entre ejes\",\"value\":\"2415 mm (distancia diagonal entre ejes)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor pl"
+          }
+        ]
+      }
+    },
+    {
+      "uav": "T55",
+      "locale": "zh",
+      "url": "https://ag.dji.com/cn/t55/specs",
+      "status": 200,
+      "bytes": 358532,
+      "sha256": "941ab5aa0d8b00205e63e6c75e09ff09eaa58d150d75e415acee96ab6a97a482",
+      "archivo": "data/raw/specs_captures/t55_zh_941ab5aa0d8b.html",
+      "content_type": "text/html;charset=utf-8",
+      "server": "nw",
+      "last_modified": null,
+      "segundos": 0.99,
+      "n_tablas_html": 0,
+      "terminos": {
+        "cantidad": [
+          {
+            "match": "Cantidad",
+            "contexto": "pulgadas Cantidad 4 pares Sistema de pulverización - Tanque de pulverización <ul class=\"st"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "opcional) Cantidad 2 (estándar) / 4 (opcional) Distancia entre aspersores <li cl"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "agnético) Cantidad 2 Tasa máxima de caudal <li class=\"style__detailed-parameter_"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "l\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"50 L\",\"description\":\"\"},{\"key\":\"Carga útil de funcionamiento\",\"value\":\"5"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "\"Modelo\",\"value\":\"LX09050DX (aspersor centrífugo estándar) / LX09510DX (aspersor nebulizador opcional)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2 (estándar) / 4 (opcional)\",\"description\":\"\"},{\"key\":\"Distancia entre aspersores\",\"value\":\"1800 mm (dos aspersores estándar)\",\"description\":\"\"},{\"key\":\"Tamaño de gota\",\"value\":\"50 - 500 μm\",\"description\":\"\"},{\"key\":\"Anchura efectiva de pulverizació"
+          },
+          {
+            "match": "Cantidad",
+            "contexto": "ón - Bombas de suministro\",\"specs\":[{\"key\":\"Tipo\",\"value\":\"Bomba de impulsor (accionamiento magnético)\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"2\",\"description\":\"\"},{\"key\":\"Tasa máxima de caudal\",\"value\":\"40 L/min (2 aspersores estándar), 50 L/min (4 aspersores opcionales)\",\"description\":\"\"}]},{\"title\":\"Sistema de esparcido DS80L\",\"specs\":[{\"key\":\"Volumen\",\"value\":\"80 L\",\"description\":\"\"},{"
+          }
+        ],
+        "pares": [
+          {
+            "match": "pares",
+            "contexto": "class=\"style__detailed-parameter-key___2hjK-\"> Cantidad 4 pares Sistema de pulverización - Tanque de pulverización <li class=\"style__detailed-parameter-ke"
+          },
+          {
+            "match": "pares",
+            "contexto": "de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"50 L\",\"description\":\"\"},{\"key\":\"Carga útil de funcionamiento\",\"value\":\"50 kg\",\"description"
+          },
+          {
+            "match": "pares",
+            "contexto": "de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"50 L\",\"description\":\"\"},{\"key\":\"Carga útil de funcionamiento\",\"value\":\"50 kg\",\"description"
+          }
+        ],
+        "helice": [
+          {
+            "match": "hélice",
+            "contexto": "ey___2hjK-\"> Dimensiones Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm; Brazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm; Brazos del bastidor plegados, hélices plegadas: 1120 mm × 896 mm × 934 mm; <ul class=\"style__detailed-parameter-list_"
+          },
+          {
+            "match": "hélice",
+            "contexto": "iv class=\"\">Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm; Brazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm; Brazos del bastidor plegados, hélices plegadas: 1120 mm × 896 mm × 934 mm; Rango de precisión en"
+          },
+          {
+            "match": "hélice",
+            "contexto": "0 mm × 934 mm; Brazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm; Brazos del bastidor plegados, hélices plegadas: 1120 mm × 896 mm × 934 mm; Rango de precisión en vuelo estacionario (con señal GNSS fuerte) <li class=\"style__detail"
+          },
+          {
+            "match": "Hélice",
+            "contexto": "i> Sistema de propulsión - Hélice Material Compuesto de fibra de carbono <ul class=\"style__detailed-"
+          },
+          {
+            "match": "hélice",
+            "contexto": "value\":\"2415 mm (distancia diagonal entre ejes)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor plegados, hélices plegadas: 1120 mm × 896 mm × 934 mm;\",\"description\":\"\"},{\"key\":\"Rango de p"
+          },
+          {
+            "match": "hélice",
+            "contexto": ":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor plegados, hélices plegadas: 1120 mm × 896 mm × 934 mm;\",\"description\":\"\"},{\"key\":\"Rango de precisión en vuelo estacionario\\u003cbr\\u003e(con señal GNSS fuerte)\",\"value\":\"RTK activado: ± 1"
+          }
+        ],
+        "motor": [
+          {
+            "match": "Motores",
+            "contexto": "i> Sistema de propulsión - Motores Dimensiones del estátor 155 × 16 mm <ul class=\"style__detailed-par"
+          },
+          {
+            "match": "motor",
+            "contexto": "> Capacidad de aceite del motor 0.8 L Tipo de aceite del motor <li class=\"style__detailed-par"
+          },
+          {
+            "match": "motor",
+            "contexto": "> Tipo de aceite del motor SN 15W-50 Fuente de alimentación inteligente C7000 <ul class=\"style__det"
+          },
+          {
+            "match": "Motores",
+            "contexto": "F)\",\"description\":\"\"},{\"key\":\"Resistencia máxima al viento\",\"value\":\"6 m/s\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Motores\",\"specs\":[{\"key\":\"Dimensiones del estátor\",\"value\":\"155 × 16 mm\",\"description\":\"\"},{\"key\":\"KV\",\"value\":\"55 rpm/V\",\"description\":\"\"}]},{\"title\":\"Sistema de propulsión - Hélice\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\""
+          },
+          {
+            "match": "motor",
+            "contexto": "ription\":\"\"},{\"key\":\"Consumo de combustible de referencia\",\"value\":\"500 mL/kWh\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"0.8 L\",\"description\":\"\"},{\"key\":\"Tipo de aceite del motor\",\"value\":\"SN 15W-50\",\"description\":\"\"}]},{\"title\":\"Fuente de alimentación inteligente C7000\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX711-7000\",\"description\":\"\"},{\"key\":\"Dimensiones\","
+          },
+          {
+            "match": "motor",
+            "contexto": "500 mL/kWh\",\"description\":\"\"},{\"key\":\"Capacidad de aceite del motor\",\"value\":\"0.8 L\",\"description\":\"\"},{\"key\":\"Tipo de aceite del motor\",\"value\":\"SN 15W-50\",\"description\":\"\"}]},{\"title\":\"Fuente de alimentación inteligente C7000\",\"specs\":[{\"key\":\"Modelo de cargador\",\"value\":\"CSX711-7000\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"460 mm × 160 mm × 80 mm\",\"description\":\"\"},{\"key\":\"Peso\",\"v"
+          }
+        ],
+        "pulgadas": [
+          {
+            "match": "pulgadas",
+            "contexto": "s=\"style__detailed-parameter-key___2hjK-\"> Dimensiones 62 pulgadas Cantidad 4 pares <div class=\"style__specs-paramet"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "parameter-key___2hjK-\"> Pantalla Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m² Temperatura de almacenamiento <div clas"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "n - Hélice\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"50 L\",\"description\":\"\"},{\"key\":\"Carg"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "DJI RC Plus 2 AG\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"TKPL 2\",\"description\":\"\"},{\"key\":\"Pantalla\",\"value\":\"Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m²\",\"description\":\"\"},{\"key\":\"Temperatura de almacenamiento\",\"value\":\"Dentro de un mes: de -30 °C a 45 °C (-22 °F a 140 °F)\\u003cbr\\u003eDe uno a tres meses: de -30 °C a 35 °C (-22 °F a 113 °F)\\u003cbr\\u003eDe tres me"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "n - Hélice\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"4 pares\",\"description\":\"\"}]},{\"title\":\"Sistema de pulverización - Tanque de pulverización\",\"specs\":[{\"key\":\"Material\",\"value\":\"HDPE\",\"description\":\"\"},{\"key\":\"Volumen\",\"value\":\"50 L\",\"description\":\"\"},{\"key\":\"Carg"
+          },
+          {
+            "match": "pulgadas",
+            "contexto": "DJI RC Plus 2 AG\",\"specs\":[{\"key\":\"Modelo\",\"value\":\"TKPL 2\",\"description\":\"\"},{\"key\":\"Pantalla\",\"value\":\"Pantalla táctil LCD de 7 pulgadas; resolución: 1920 × 1200; brillo: 1400 cd/m²\",\"description\":\"\"},{\"key\":\"Temperatura de almacenamiento\",\"value\":\"Dentro de un mes: de -30 °C a 45 °C (-22 °F a 140 °F)\\u003cbr\\u003eDe uno a tres meses: de -30 °C a 35 °C (-22 °F a 113 °F)\\u003cbr\\u003eDe tres me"
+          }
+        ],
+        "ejes": [
+          {
+            "match": "entre ejes",
+            "contexto": "ul class=\"style__detailed-parameter-list___27yjW\"> Distancia diagonal máxima entre ejes 2415 mm (distancia diagonal entre ejes) Dimensiones <li class"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "ancia diagonal máxima entre ejes 2415 mm (distancia diagonal entre ejes) Dimensiones Brazos del bastidor desplegados, hélices desplegadas: 319"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "áximo de despegue para elevación: 89 kg (con sistema de elevación instalado)\",\"description\":\"\"},{\"key\":\"Distancia diagonal máxima entre ejes\",\"value\":\"2415 mm (distancia diagonal entre ejes)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "ema de elevación instalado)\",\"description\":\"\"},{\"key\":\"Distancia diagonal máxima entre ejes\",\"value\":\"2415 mm (distancia diagonal entre ejes)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor pl"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "áximo de despegue para elevación: 89 kg (con sistema de elevación instalado)\",\"description\":\"\"},{\"key\":\"Distancia diagonal máxima entre ejes\",\"value\":\"2415 mm (distancia diagonal entre ejes)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170"
+          },
+          {
+            "match": "entre ejes",
+            "contexto": "ema de elevación instalado)\",\"description\":\"\"},{\"key\":\"Distancia diagonal máxima entre ejes\",\"value\":\"2415 mm (distancia diagonal entre ejes)\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"Brazos del bastidor desplegados, hélices desplegadas: 3190 mm × 3570 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor desplegados, hélices plegadas: 1800 mm × 2170 mm × 934 mm;\\u003cbr\\u003eBrazos del bastidor pl"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "fecha_utc": "2026-09-18T13:07:11.170031+00:00",
+  "objetivo": "obtener el texto chino original de la fila de helices (对 / 桨)",
+  "intentos": [
+    {
+      "nombre": "cn_zh_header",
+      "url": "https://ag.dji.com/cn/t100/specs",
+      "headers_extra": {
+        "Accept-Language": "zh-CN,zh;q=0.9"
+      },
+      "status": 200,
+      "url_final": "https://ag.dji.com/es/t100/specs",
+      "bytes": 422648,
+      "sha256": "f3c104af6a7d48bdabc5bb3e1429db8e9766674a453dfcd4e8e4892b6af32bf6",
+      "archivo": "data/raw/specs_captures/zh_cn_zh_header_f3c104af6a7d.html",
+      "lang_html": [
+        "es"
+      ],
+      "caracteres_CJK": 330,
+      "content_type": "text/html;charset=utf-8",
+      "filas_helices": [
+        "{\"title\":\"Sistema de propulsión - Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]}",
+        "{\"title\":\"Sistema de propulsión - Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]}"
+      ]
+    },
+    {
+      "nombre": "cn_cookie",
+      "url": "https://ag.dji.com/cn/t100/specs",
+      "headers_extra": {
+        "Accept-Language": "zh-CN,zh;q=0.9",
+        "Cookie": "locale=zh-CN; lang=zh-CN; dji_locale=zh-CN"
+      },
+      "status": 200,
+      "url_final": "https://ag.dji.com/es/t100/specs",
+      "bytes": 422648,
+      "sha256": "f3c104af6a7d48bdabc5bb3e1429db8e9766674a453dfcd4e8e4892b6af32bf6",
+      "archivo": "data/raw/specs_captures/zh_cn_cookie_f3c104af6a7d.html",
+      "lang_html": [
+        "es"
+      ],
+      "caracteres_CJK": 330,
+      "content_type": "text/html;charset=utf-8",
+      "filas_helices": [
+        "{\"title\":\"Sistema de propulsión - Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]}",
+        "{\"title\":\"Sistema de propulsión - Hélices\",\"specs\":[{\"key\":\"Material\",\"value\":\"Compuesto de fibra de carbono\",\"description\":\"\"},{\"key\":\"Dimensiones\",\"value\":\"62 pulgadas\",\"description\":\"\"},{\"key\":\"Cantidad\",\"value\":\"8 pares\",\"description\":\"\"}]}"
+      ]
+    },
+    {
+      "nombre": "intl_zh",
+      "url": "https://www.dji.com/cn/t100/specs",
+      "headers_extra": {
+        "Accept-Language": "zh-CN,zh;q=0.9"
+      },
+      "error": "HTTPError: HTTP Error 404: Not Found"
+    }
+  ]
+}

@@ -83,8 +83,11 @@ PLATFORMS = {
     "T70P": {
         "nombre": "DJI Agras T70P",
         "wheelbase_diagonal_mm": 2440,
-        "dims_desplegado_mm": [3175, 3490, 960],   # DJI Academy (P-A)
-        "dims_discrepancia": "ficha oficial dice 3200x3520x960; DJI Academy dice 3175x3490x960",
+        "dims_desplegado_mm": [3200, 3520, 960],   # ficha oficial vigente (P); ver evidence/CONFLICTS.md C-05
+        "dims_discrepancia": "RESUELTO (C-05): la ficha oficial vigente dice 3200x3520x960; el deck de "
+                             "DJI Academy decia 3175x3490x960 y se descarta. Convergencia entre el PDF del "
+                             "investigador y la captura en vivo del 2026-09-14 (dos fuentes del mismo emisor)",
+        "blade_model_6223": True,
         "rotor_diameter_m": 1.574,            # helice 6223 = 62 in (P-A)
         "masa_sin_bateria_kg": None,          # D
         "masa_con_bateria_kg": 56.0,          # con DB2160 (P) / 52 con DB1580

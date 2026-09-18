@@ -19,6 +19,23 @@
 - **Regla vigente:** con 1B abierto, todo CFD es **exploratorio** y no entra al dataset ni al paper
   como dato de la plataforma real. El DOE no se rehace hasta tener los rangos medidos.
 
+### Orden de ejecución acordado (2026-09-14, vinculante)
+
+```
+recaptura T55/T70P/T100 ✅  →  auditoría A9/A10 ✅  →  campaña T25P ⬅ SIGUIENTE
+   →  post-mortem metodológico  →  campaña v2  →  generar T55/T70P/T100
+```
+
+**Por qué este orden:** las hojas de campaña de T55/T70P/T100 **no se preparan todavía**.
+El piloto T25P existe para descubrir qué falta en la plantilla (campos, repeticiones,
+definición de incertidumbre); generarlas antes produciría cuatro documentos a corregir.
+Y preparar campañas con incertidumbre documental abierta arriesga **medir lo innecesario**.
+
+- **Regla de actualización de evidencia:** ante nueva evidencia documental se actualiza
+  **únicamente `evidence/CONFLICTS.md`**. Ningún manifiesto ni `rotor_count` cambia
+  automáticamente, aunque una captura parezca resolverlo. Promover a `M` exige **convergencia
+  entre tabla + fotografía/diagrama + inspección física**.
+
 ---
 
 ## Log Entries
@@ -365,5 +382,82 @@ sistema de referencia, repetibilidad, instrumentos o nomenclatura **antes** de l
   Verificado que el gate **sigue bloqueando**: el script de congelación no tiene flag de forzado.
 
 - **Estado:** `PHASE_01_SPECIFICATIONS`. Nada medido, ningún gate cerrado, CFD no ejecutado.
+
+### Entry 012 | Recaptura forense de fichas oficiales: A9 gana precisión, A10 no se resuelve
+- **Date:** 2026-09-14
+- **Disparador:** cuarta revisión del investigador. Orden vinculante registrado:
+  **`recaptura T55/T70P/T100 → auditoría A9/A10 → campaña T25P → post-mortem metodológico →
+  campaña v2 → generar T55/T70P/T100`**. Acordado: **no preparar las otras tres campañas ahora**,
+  porque el piloto T25P existe precisamente para descubrir qué está mal en la plantilla.
+
+**1. Recaptura forense** — `scripts/capture_official_specs.py`
+
+- Vía de red: **PowerShell y `curl.exe` fallan** (schannel `SEC_E_NO_CREDENTIALS`), pero
+  **Python/urllib funciona**. Registrado para futuras sesiones.
+- 6 capturas (T100/T70P/T55 × es/zh), con URL, fecha UTC, user-agent, cabeceras, HTML crudo y
+  **sha256**. Manifiesto en `data/raw/specs_captures/capturas_manifest.json`.
+- **Hallazgo forense:** `/es/` y `/cn/` devuelven **bytes idénticos** (mismo sha256), `lang="es"` y
+  el payload **en español**. El contenido se hidrata por JavaScript (0 tablas HTML). Se intentó
+  además `Accept-Language: zh-CN`, cookie de locale y `www.dji.com/cn/...` (404):
+  **el texto chino original no es accesible por HTTP**. El punto 3 del encargo (conservar 对 sin
+  traducir) **queda sin satisfacer por esta vía**, y así queda registrado en
+  `data/raw/specs_captures/intentos_chino.json`.
+- **Vía que sí funcionó:** extraer el **payload JSON embebido**
+  (`scripts/extract_spec_payload.py` → `spec_tables.json`). Da la **fila completa con sus
+  encabezados** (`key`/`value`) y el texto literal, sin OCR ni maquetación.
+
+**2. A9 — el conflicto cambia de naturaleza (y empeora de forma útil)**
+
+La recaptura confirma que **el OCR era correcto** y la cifra es literal:
+
+| Plataforma | `Cantidad` en la fila de hélices |
+|---|---|
+| T100 | **`8 pares`** |
+| T55 | **`4 pares`** |
+| T70P | **`4`** ← ¡sin la palabra "pares"! |
+
+**Corrección:** el `Cantidad` del T70P **no estaba vacío** — dice `4` a secas. El hueco era del PDF
+capturado, no de la ficha. **Vía barata cerrada** (era uno de los objetivos de la recaptura).
+
+**Por qué sigue abierto y ahora es más interesante:** los tres UAV tienen la **misma arquitectura
+de 4 brazos con par coaxial**, y sin embargo DJI escribe `8 pares` / `4 pares` / `4`. Esa
+**inconsistencia de unidad dentro de la misma casa** demuestra que el campo **no se puede leer como
+conteo físico** sin más. Hipótesis registradas, ninguna adoptada (ver `evidence/CONFLICTS.md` C-01):
+"pares" cuenta hélices (16 hélices en T100); "pares" es criterio comercial de suministro; el `4`
+pelado del T70P cuenta otra cosa; o versión distinta.
+
+→ **Refuerza exactamente la advertencia del investigador**: "8 pares" quizá **no** sea un conflicto
+8-vs-16 rotores. Ya no es una sospecha: es una ambigüedad **demostrada en la fuente oficial**.
+
+**3. A10 — sigue sin resolverse, sin atajo documental**
+
+Las fichas oficiales **no declaran** número de motores ni de ESC por brazo: el grupo
+`Sistema de propulsión - Motores` solo da estátor y KV. Combinado con el barrido negativo de los
+10 decks, **A10 exige inspección física o manual de servicio**. Confirmado como el punto ciego
+central del modelo coaxial.
+
+**4. Artefacto nuevo: `evidence/CONFLICTS.md`**
+
+Registro único de los conflictos, con evidencia citada (archivo + línea + hash). Se crea siguiendo
+la instrucción de que **ese es el único documento que se actualiza** ante evidencia documental.
+`rotor_count` y compañía **no se tocan automáticamente**.
+
+**5. Un conflicto SÍ se cerró, y con el criterio correcto**
+
+**C-05 resuelto:** la ficha oficial vigente da T70P **3200 × 3520 × 960 mm** (coincide con el PDF del
+investigador); el deck de Academy decía 3175 × 3490 × 960 y **se descarta**. Es convergencia entre
+dos fuentes independientes del mismo emisor, que es el criterio exigido → manifiesto del T70P
+actualizado, y su prueba de consistencia pasa de +3,92 % a **+3,10 %** (sigue sin cerrar: C-04).
+
+**6. Conflictos nuevos detectados por la recaptura:** C-06 (masa de pulverización del T100: la ficha
+dice 75 kg y cierra con el MTOW; Academy 73 kg no cierra) y C-07 (MTOW de **esparcido** discrepante
+en T55/T70P — **fuera de alcance** de este paper, se registra y no se corrige).
+
+**7. Lo que la propia investigación se lleva de método:** la recaptura **no promovió nada a `M`**.
+Sirvió para (a) cerrar una vía barata, (b) convertir una duda de digitalización en una ambigüedad
+semántica demostrada, y (c) refutar la expectativa de que la web resolvería A9. Ningún gate cambió
+de estado.
+
+- **Estado:** `PHASE_01_SPECIFICATIONS`. **Siguiente paso acordado: campaña física del T25P.**
 
 ---
