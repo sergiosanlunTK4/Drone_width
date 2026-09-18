@@ -1,38 +1,56 @@
-protocol: composite C+B CFD architecture, coaxial thrust split, per-platform gates
+physics: retirar Q_u = Q_l como restriccion universal del par coaxial
 
-Arquitectura CFD decidida (ya no es disyuntiva):
-  C como restriccion fisica global (sum T_i + W = 0) + B como representacion CFD
-  local (actuator disk). A (RPM prescrita) queda como modelo secundario para
-  cuantificar si el disco reproduce la estructura de estela relevante para H3.
+La objecion es correcta. Lo que exige un UAV en hover sin aceleracion de guinada es la
+suma algebraica GLOBAL de reacciones:
 
-mg/N NO se adopta como verdad experimental. Nuevo analisis
-geometry/coaxial_thrust_split.md: la restriccion real es el equilibrio de momento
-angular Q_u(w_u) = Q_l(w_l), de donde w_l/w_u = sqrt(C_Qu/C_Ql) y
-T_l/T_u = (C_Tl/C_Tu)*(C_Qu/C_Ql). El rotor superior gira mas rapido y el reparto
-depende de la interferencia, no de una simetria.
+    sum_i s_i * Q_i ~ 0
 
-Punto ciego nuevo (item A10): si el par coaxial es solidario o tiene dos motores/ESC
-independientes. El material DJI no lo declara; sin esto el modelo de empuje del
-coaxial no esta definido. La separacion axial del par (A6) pasa a ser parametro del
-modelo, no una cota decorativa.
+NO que cada pareja coaxial tenga par neto nulo: el controlador puede compensar
+desequilibrios entre brazos.
 
-GATE 1A se cierra POR PLATAFORMA. Nuevo scripts/freeze_geometry_v1.py: valida y
-congela geometry-v1/<uav>/ con manifest, STL, SOURCES.md, README.md y SHA256SUMS.
-Sin flag de forzado. Verificacion con --verify.
-Estado real del dry-run: T25P 1 bloqueante (medicion), T55 3, T70P 1, T100 2
-(conflicto 8 vs 16 rotores abierto).
+Se retiran como resultados, por no estar justificados:
+  - w_l/w_u = sqrt(C_Qu/C_Ql)
+  - que el rotor superior deba girar mas rapido
+  - toda particion T_l/T_u por defecto
 
-Esquema del CSV de mediciones ampliado: value, unit, uncertainty, method,
-instrument, timestamp, operator, source_class, reference_frame, notes.
+Queda como HIPOTESIS CONDICIONAL explicita (accionamiento independiente Y par neto nulo
+por pareja), util solo como modelo candidato falsable con A11 y D5a-D5c.
 
-Multimedia: la premisa de que el EMF era vectorial y por tanto escalable sin perdida
-resulto FALSA. El objeto de 16 MB es un mapa de bits envuelto en un metafile, sin
-trazados. Inkscape no esta instalado y winget esta bloqueado en este entorno; se
-resolvio con Pillow/GDI (scripts/convert_vector_media.py). Los rotulos son cuadros de
-texto de PowerPoint, asi que la geometria se extrae del XML en EMU, que es dato
-exacto: scripts/extract_pptx_shape_geometry.py -> data/processed/shape_geometry/
-(285 formas + 17 conectores de la slide 09). El mapeo rotulo-componente por cercania
-de linea guia es AMBIGUO (17 conectores vs 22 rotulos) y no se cita como hecho; lo
-exacto son las posiciones de las formas. Todo sigue siendo clase S, no M.
+Lo unico robusto es aerodinamico: el rotor inferior opera en la estela del superior
+(v_in,l = v_u + delta*v_i), lo que degrada su C_T y encarece su C_Q. Como se reparte esa
+degradacion entre T y w es asignacion de control, no aerodinamica: no se afirma sin medir.
 
-No se ejecuto CFD. Ningun gate cerrado.
+A10 queda confirmado como mas importante de lo previsto: sin el no se sabe que restriccion
+aplica. El CFD correra con la particion como PARAMETRO y analisis de sensibilidad.
+
+Barrido documental de decks 04-09 (extraidos los 6 restantes; 10 en total):
+  - RESULTADO NEGATIVO: el T55 no aparece en ninguno de los 10 decks, ni por alias.
+    Queda enteramente dependiente de medicion fisica.
+  - A9: origen del "8 pares" LOCALIZADO. No era lectura ambigua: valor de tabla de la
+    ficha oficial (T100_ocr.txt lineas 56-67). Contraste: T55_ocr.txt dice "4 pares" con
+    la misma helice de 62 in. El campo Cantidad del T70P esta VACIO en la captura
+    (hueco recuperable recapturando la pagina oficial, no incognita de medicion).
+    Anadida la hipotesis de ambiguedad de traduccion (el original usa 对, "par").
+    NO se resuelve por interpretacion: se resuelve por conteo fisico.
+  - A10: sigue sin resolverse. El deck 08 menciona "Motores y ESC" en una lista de
+    limpieza sin contar unidades. El deck 04 trata del generador, no de la propulsion.
+
+Hoja de campana T25P PREPARADA, no ejecutada (geometry/campana_T25P.md):
+  el T25P pasa de "el primero que se puede cerrar" a ENSAYO DEL PROPIO METODO
+  EXPERIMENTAL, porque al no tener par coaxial permite depurar de punta a punta
+  documentacion -> M -> incertidumbre -> manifest -> GATE 1A -> freeze -> SHA256
+  antes de enfrentar los coaxiales.
+
+  Incluye puntos de carga derivados de datos publicos (33+20f -> 33/38/43/48/53 kg,
+  coherente con MTOW 53 kg), referencias de nivel 0 para CONTRASTAR (A_disco 5.067 m2,
+  DL 102.6 N/m2, v_ind 6.62 m/s), bloques A-D con precisiones objetivo, checklist de
+  instrumentos calibrados, repeticiones, seguridad (R11) y criterio de cierre.
+  A6, A10 y A11 no aplican al T25P: precisamente lo que lo hace buen piloto.
+
+data/raw/mediciones_geometria.csv creado SOLO con cabecera y 0 filas. Verificado que el
+gate sigue bloqueando las 4 plataformas: el congelador no tiene flag de forzado.
+
+Nuevos scripts: audit_documentary_evidence.py (reporta, no concluye),
+prepare_t25p_campaign.py.
+
+Nada medido. Ningun gate cerrado. CFD no ejecutado.

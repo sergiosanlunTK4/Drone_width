@@ -294,4 +294,76 @@ y masa del T100 (75 kg specs vs 73 kg Academy).
 - **Estado:** `PHASE_01_SPECIFICATIONS`. Próximo hito sin cambios: **cerrar GATE 1A por plataforma**,
   empezando por T25P.
 
+### Entry 011 | Corrección del reparto coaxial, barrido documental 04–09 y hoja de campaña T25P
+- **Date:** 2026-09-14
+- **Disparador:** tercera revisión del investigador. Objeción aceptada: la restricción
+  `Q_u(ω_u) = Q_l(ω_l)` **no es una restricción universal**.
+
+**1. Corrección de física en `geometry/coaxial_thrust_split.md`**
+
+Lo que exige un UAV en hover sin aceleración de guiñada es la **suma algebraica global**:
+
+```
+Σ_i  s_i · Q_i  ≈  0          (s_i = ±1 según el sentido de giro)
+```
+
+**No** que cada pareja coaxial tenga par neto nulo: el controlador puede compensar desequilibrios
+entre brazos. Por tanto **se retiran** como resultados:
+- `ω_l/ω_u = √(C_Qu/C_Ql)`;
+- la afirmación de que el rotor superior *debe* girar más rápido;
+- toda partición `T_l/T_u` por defecto.
+
+Lo que queda es una **hipótesis condicional explícita** (accionamiento independiente **y** par neto
+nulo por pareja), útil solo como **modelo candidato falsable** con A11 y D5a–D5c.
+Lo único robusto es aerodinámico: el rotor inferior opera en la estela del superior
+(`v_in,l = v_u + δ·v_i`) y eso degrada su `C_T` y encarece su `C_Q`. **Cómo se reparte esa
+degradación en `T` y `ω` es asignación de control, no aerodinámica: no se puede afirmar sin medir.**
+
+→ `A10` (accionamiento del par) queda confirmado como **más importante de lo que parecía**: sin él
+no se sabe ni qué restricción aplica. El CFD correrá con la partición **como parámetro**, con
+análisis de sensibilidad.
+
+**2. Barrido documental de los decks 04–09** (`scripts/audit_documentary_evidence.py`)
+
+Extraídos los 6 decks restantes (10 decks en total, ~1 600 líneas). Auditor con criterios
+explícitos: alias de identidad por modelo + 13 términos técnicos, reportando archivo y línea.
+**El script reporta; no concluye** (regla del encargo).
+
+- **RESULTADO NEGATIVO — el T55 no existe en la carpeta.** Cero coincidencias de identidad en los
+  10 decks, ni por alias. Los decks 04–09 tratan de energía/generador, agroquímicos, seguridad,
+  instructor, mantenimiento y operación práctica. El material formativo cubre **T100, T70P, T25P y
+  la generación T40/T50**. → el T55 queda **enteramente dependiente de medición física**; no hay
+  más evidencia documental que explotar aquí.
+- **A9 — origen del "8 pares" LOCALIZADO.** No era lectura ambigua: es un valor de tabla explícito
+  de la ficha oficial. `data/raw/T100_ocr.txt` líneas 56–67 (`Sistema de propulsion - Hélices` →
+  `62 pulgadas` → `Cantidad` → **`8 pares`**). Contraste: `T55_ocr.txt` líneas 60–66 dice
+  **`4 pares`** con la misma hélice de 62 in. `T70P_ocr.txt` líneas 58–68 tiene el campo
+  `Cantidad` **vacío**.
+  → Lecturas posibles registradas (16 hélices / nomenclatura que cuenta hélices / otra versión).
+  **No se resuelve por interpretación**: se resuelve por conteo físico. Añadida la hipótesis de
+  **ambigüedad de traducción** (el original probablemente usa 对, "par").
+  → **Subproducto:** el `Cantidad` vacío del T70P es un **hueco recuperable recapturando la página
+  oficial** — vía barata identificada, no incógnita de medición.
+- **A10 — sigue sin resolverse.** El deck 08 menciona la categoría "Motores y ESC" en una lista de
+  limpieza, sin contar unidades ni describir el accionamiento. El deck 04 trata del **generador**,
+  no de la propulsión. **No hay atajo documental: exige inspección física o manual de servicio.**
+
+**3. Hoja de campaña T25P preparada, NO ejecutada** (`geometry/campana_T25P.md`)
+
+El T25P pasa de "el primero que se puede cerrar" a **ensayo del propio método experimental**: al no
+tener par coaxial, permite depurar de punta a punta
+`documentación → M → incertidumbre → manifest → GATE 1A → freeze → SHA256` y corregir problemas de
+sistema de referencia, repetibilidad, instrumentos o nomenclatura **antes** de los coaxiales.
+
+- Generada por `scripts/prepare_t25p_campaign.py`: puntos de carga derivados de datos públicos
+  (33 + 20·f → 33 / 38 / 43 / 48 / 53 kg, coherente con MTOW 53 kg ✓), referencias de nivel 0
+  (A_disco = 5,067 m², DL = 102,6 N/m², v_ind = 6,62 m/s) **para contrastar, no para sustituir**,
+  bloques A/B/C/D con métodos y precisiones objetivo, checklist de instrumentos calibrados,
+  repeticiones, seguridad (R11) y criterio de cierre con `freeze_geometry_v1.py`.
+- **A6, A10 y A11 no aplican al T25P** (no hay par coaxial): precisamente lo que lo hace buen piloto.
+- `data/raw/mediciones_geometria.csv` creado **solo con cabecera y 0 filas**.
+  Verificado que el gate **sigue bloqueando**: el script de congelación no tiene flag de forzado.
+
+- **Estado:** `PHASE_01_SPECIFICATIONS`. Nada medido, ningún gate cerrado, CFD no ejecutado.
+
 ---

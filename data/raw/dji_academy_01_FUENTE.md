@@ -9,9 +9,15 @@
 | 01b | `01 Introducción al Flujo de Trabajo de Entrega de Productos DJI AGRAS.pptx` | 14 901 317 B | `data/raw/dji_academy_01_intro_flujo_trabajo.txt` | ✅ extraída (sin datos técnicos de plataforma) |
 | 02 | `02 Planificación de Misión y Modos de Operación en drones DJI AGRAS.pptx` | 60 248 687 B | `data/raw/dji_academy_02_planificacion_mision.txt` | ✅ extraída (§6) |
 | 03 | `03 Recomendaciones para la Configuración de Parámetros de aplicación en drones DJI AGRAS.pptx` | 2 612 652 B | `data/raw/dji_academy_03_parametros_aplicacion.txt` | ✅ extraída (§7 — **la más útil para el DOE**) |
-| 04–09 | Energía, agroquímicos, seguridad, instructores, mantenimiento, operación práctica | varios | no extraídas | ⬜ pendientes |
+| 04 | `04 Instrucciones de uso del sistema de energía.pptx` | 18 200 000 B | `data/raw/dji_academy_04_sistema_energia.txt` | ✅ extraída (§8 — sin evidencia útil) |
+| 05 | `05 Precauciones para el uso de agroquímicos con drones AGRAS.pptx` | 6 100 000 B | `data/raw/dji_academy_05_agroquimicos.txt` | ✅ extraída (§8 — sin evidencia útil) |
+| 06 | `06 Capacitación sobre seguridad operativa.pptx` | 484 000 000 B | `data/raw/dji_academy_06_seguridad_operativa.txt` | ✅ extraída (§8 — sin evidencia útil) |
+| 07 | `07 Requerimientos básicos de habilidades de enseñanza para instructores.pptx` | 6 200 000 B | `data/raw/dji_academy_07_instructores.txt` | ✅ extraída (§8 — sin evidencia útil) |
+| 08 | `08 Mantenimiento y cuidado de los equipos.pptx` | 12 600 000 B | `data/raw/dji_academy_08_mantenimiento.txt` | ✅ extraída (§8 — sin evidencia útil para A9/A10) |
+| 09 | `09 Operación practica y proceso de evaluación de drones para la agricultura.pptx` | 5 000 000 B | `data/raw/dji_academy_09_operacion_practica.txt` | ✅ extraída (§8 — sin evidencia útil) |
 
 La presentación **01a** es la fuente técnica principal; la **03** es la más relevante para el DOE.
+**La carpeta completa ya está extraída y auditada** (10 decks, ~1 600 líneas de texto).
 
 **Naturaleza de la fuente:** material de formación oficial de DJI (DJI Academy) para
 distribuidores. Es **P (público)**, pero de jerarquía distinta a `ag.dji.com/.../specs`:
@@ -184,4 +190,61 @@ Esto es, a la vez, **la confirmación del gap de novedad** y una **restricción 
   nominal a 3 m** de las fichas verificadas: coherencia en el orden de magnitud de la altura.
 - El **giro del disco de 800–1000 rpm** (esparcidor T40/T50) y los **14 000 rpm del motor del
   atomizador** (T100/T70P) son regímenes de componentes distintos y **ninguno es la RPM del rotor**.
+
+---
+
+## 8. Barrido de los decks 04–09: búsqueda de T55, A9 y A10
+
+**Método:** `scripts/audit_documentary_evidence.py` — busca alias de modelo (identidad) y términos
+técnicos (tema) en los 10 decks extraídos, y reporta cada coincidencia con archivo y número de
+línea. **El script reporta; no concluye.**
+
+### 8.1 Resultado negativo: el T55 no aparece
+
+**El T55 no está en ninguno de los 10 decks.** Cero coincidencias de identidad, ni siquiera por
+alias (`T55`, `Agras 55`, `55 kg/L/pulgadas`). Los decks 04–09 tratan de: sistema de energía y
+generador, agroquímicos, seguridad operativa, habilidades de instructor, mantenimiento y operación
+práctica. El material formativo está centrado en **T100, T70P, T25P y la generación T40/T50**.
+
+**Consecuencia para GATE 1A del T55:** no hay evidencia documental adicional que explotar en esta
+carpeta. El T55 queda **enteramente dependiente de medición física** (o de documentación DJI
+específica que no está en esta carpeta).
+
+### 8.2 A9 — origen documental del "8 pares" del T100: LOCALIZADO
+
+La cifra **no es una lectura ambigua**: es un valor de tabla explícito de la ficha oficial.
+
+| Fuente | Archivo | Línea | Contenido |
+|---|---|---|---|
+| Ficha oficial T100 | `data/raw/T100_ocr.txt` | 56–67 | `Sistema de propulsion - Hélices` … `Dimensiones` `62 pulgadas` … `Cantidad` **`8 pares`** |
+| Ficha oficial T55 | `data/raw/T55_ocr.txt` | 60–66 | `Sistema de propulsion - Helice` … `62 pulgadas` … `Cantidad` **`4 pares`** |
+| Ficha oficial T70P | `data/raw/T70P_ocr.txt` | 58–68 | `Sistema de propulsion - Hélices` … `62 pulgadas` … `Cantidad` **[vacío]** |
+
+**Lecturas posibles del "8 pares" del T100:**
+1. 8 pares coaxiales = **16 hélices** (lectura literal);
+2. nomenclatura de "pares" que en realidad cuenta **hélices** ⇒ 8 hélices (4 pares);
+3. una **versión o configuración distinta** de la plataforma.
+
+**Lo que dice el material Academy:** 4 brazos, par coaxial por brazo ⇒ **8 hélices**, sin cuantificar
+"pares" en texto.
+
+> ⚠ **NO se resuelve aquí.** Queda como conflicto abierto (A9) con ambas fuentes citadas y sus
+> líneas exactas, para que la resolución sea por **conteo físico** y no por interpretación.
+> Nota de contexto: el fraseo "8 pares" es una traducción (el original probablemente usa 对,
+> "par"). Una ambigüedad de traducción es una hipótesis más, no una conclusión.
+
+**Dato nuevo colateral:** el campo `Cantidad` del **T70P está vacío en la captura**. Es un hueco
+recuperable volviendo a capturar la página oficial, no una incógnita de medición. **Vía barata
+identificada.**
+
+### 8.3 A10 — accionamiento del par coaxial: SIGUE SIN RESOLVERSE
+
+Barrido específico de `ESC`, `motor`, `coaxial`, `brazo` en los decks 04–09:
+- Deck 08 (mantenimiento) menciona la categoría **"Motores y ESC"** en una lista de tareas de
+  limpieza, **sin contar unidades ni describir el accionamiento**.
+- Deck 04 (energía) trata del **generador** (aceite de motor del generador), no de la propulsión.
+- Ningún deck declara si el par coaxial es solidario o de dos motores independientes.
+
+**A10 permanece abierto.** No hay atajo documental: exige inspección física o manual de servicio.
+
 
