@@ -471,6 +471,8 @@ re-ejecutar los casos que dependían de v1.
 | `data/processed/geometry_master.csv` | `scripts/build_geometry_manifests.py` | ✅ |
 | `geometry/models/<uav>_control.stl` + `.meta.json` | `scripts/generate_control_geometry_v2.py` | ✅ geometría de control (no CAD fiel) |
 | `data/raw/media/`, `data/processed/media_inventory.csv`, `figures/contact_sheets/` | `scripts/extract_pptx_media.py` | ✅ 178 objetos catalogados |
+| `data/raw/media_converted/` | `scripts/convert_vector_media.py` (Pillow/GDI) | ✅ render a alta resolución; los `.wdp` no son legibles |
+| `data/processed/shape_geometry/` | `scripts/extract_pptx_shape_geometry.py` | ✅ 285 formas + conectores en EMU (clase `S`) |
 | `geometry/coaxial_thrust_split.md` | análisis + plan de medición del par coaxial | ✅ abierto, con derivación |
 | `data/raw/mediciones_geometria.csv` | campaña de campo (bloques A–D, §5) | ⬜ **cuello de botella** |
 | `geometry-v1/<uav>/` | `scripts/freeze_geometry_v1.py` tras cerrar 1A | ⬜ |
