@@ -1,44 +1,65 @@
-fix: class IOdictionary -> dictionary (bug SISTEMICO en los 128 casos), rutas de scripts y diagnostico
+fix: BUG CONCEPTUAL #6 — actuationDiskSource no impone el empuje (arquitectura C->B no implementada)
 
-GATE CFD-0 se ejecuto por primera vez en WSL y ENCONTRO UN BUG REAL. Era exactamente para
-eso: blockMesh y checkMesh pasaron, y el fallo aparecio en el solver.
+Ejecutando GATE CFD-0 en WSL aparecieron CINCO bugs de implementacion, todos corregidos, y
+despues un SEXTO HALLAZGO que no es de sintaxis sino de FORMULACION.
 
-BUG 1 (SISTEMICO, afectaba a los 128 casos):
-  FOAM FATAL IO ERROR: unexpected class name IOdictionary expected dictionary
-      while reading object transportProperties
-  Mi generador escribia `class IOdictionary` en transportProperties y
-  turbulenceProperties. OpenFOAM 2412 exige `class dictionary`.
-  -> Corregido en scripts/build_case_suite.py y REGENERADOS los 128 casos.
-  -> Verificado: 128/128 con class dictionary y 0 fallos estructurales.
+BUGS DE IMPLEMENTACION (corregidos, detectados solo al ejecutar):
+  1. class IOdictionary -> dictionary en transportProperties y turbulenceProperties.
+     SISTEMICO: los 128 casos. blockMesh y checkMesh no lo detectan porque no leen el fichero.
+  2. Rutas a los .py mal calculadas (../../scripts desde cfd/cases/<caso>/ no existe).
+  3. topoSet: `type cylinderToCell` -> es una FUENTE: `type cellSet ; source cylinderToCell`.
+  4. topoSet: falta la entrada `action`; y el cilindro media 2 cm con celdas de 0.2 m, asi que
+     la cellZone salia VACIA (cellLabels List<label> 0()) y fvOptions avisaba "No cells selected".
+     Corregido: grosor = 1.5 * tamano de celda base.
+  5. fvOptions: `options` era una LISTA y debe ser SUB-DICCIONARIO; faltaba `upstreamPoint`
+     (obligatorio en 2412); y `Cp = 0` provoca "Cp and Ct must be greater than zero".
+     Cp se deriva ahora de teoria de disco: Cp = Ct*(1-a), a = (1-sqrt(1-Ct))/2.
 
-  Por que blockMesh no lo detecto: no lee ese fichero. Solo el solver lo hace. Es el
-  argumento de por que hacia falta el smoke test y no bastaba la verificacion de ficheros.
+ESTADO TRAS LAS CORRECCIONES: blockMesh OK, checkMesh "Mesh OK" (skewness 5e-14), topoSet
+escribe 4 cellZones, simpleFoam CONVERGE en 268 iteraciones, los 3 function objects escriben,
+postprocess_case.py escribe la fila en cfd_airflow.
 
-BUG 2 (rutas):
-  El gate invocaba `python3 ../../scripts/check_cfd0_evidence.py`, que desde
-  cfd/cases/<caso>/ resuelve a cfd/scripts y NO EXISTE:
-      python3: can't open file '.../cfd/scripts/check_cfd0_evidence.py'
-  -> Corregido: SCRIPT_DIR y PROYECTO calculados con ruta ABSOLUTA al inicio del script.
-     Aplicado en gate_cfd0.sh y run_cfd_suite.sh.
+BUG CONCEPTUAL #6 (CONFIRMADO EXPERIMENTALMENTE, no resuelto):
+  El perfil de downwash bajo el rotor da Uz ~ 1e-7: EL FLUJO ES HORIZONTAL, NO HAY DOWNWASH.
+  El disco se aplica (el log lista los 4 actuationDiskSource) pero no deflecta el flujo.
 
-BUG 3 (menor): banner duplicado en el gate, y script ejecutado dos veces.
+  CAUSA: `actuationDiskSource` en su metodo Froude NO aplica un empuje prescrito: lo CALCULA a
+  partir del flujo incidente axial:
+        T = 2 rho A |Uo . n|^2 a (1-a),      a = 1 - Cp/Ct
+  Con flujo PERPENDICULAR al disco, Uo.n ~ 0 => T ~ 0, por muy correctos que sean Cp, Ct,
+  diskArea, las cellZone y el solver.
 
-MEJORAS AL GATE:
-  - volcado automatico de la cola de log.topoSet y log.simpleFoam cuando algo falla,
-    para no tener que pedir los logs a mano.
-  - foamVersion: es una FUNCION de shell, no un ejecutable; el chequeo con `command -v`
-    daba un falso "[OK] foamVersion -> foamVersion". Ahora se invoca de verdad.
+  PRUEBA DISCRIMINANTE (scripts/test_axial_source.sh, copia TEMPORAL, el caso real intacto;
+  el caso de prueba se elimino despues para no contaminar el conteo):
+      flujo horizontal (3.108 0 0)   ->  Uz ~ 1e-7     (nulo)
+      flujo vertical   (0 0 -3.108)  ->  Uz = -0.289 m/s (downwash real)
+  Con flujo axial aparece downwash; con flujo perpendicular no. Confirmado.
 
-NUEVO: scripts/verify_case_suite.py — verificacion estructural de los 128 casos contra las
-  invariantes que ya conocemos, para detectar errores de generacion SIN lanzar el solver
-  caso por caso. Comprueba: ficheros requeridos, clase correcta, una cellZone por rotor,
-  un actuationDiskSource por rotor, diskDir hacia abajo, BC con traslacion (no (0 0 0)),
-  sides/top slip (no symmetry), campos de turbulencia, y suelo a -H real.
+  POR QUE ES GRAVE: el caso fisico del proyecto es el PEOR posible para este modelo. En hover el
+  flujo axial entrante es ~0 porque el disco GENERA el flujo, no lo recibe. actuationDiskSource
+  esta pensado para turbinas/helices en avance (flujo incidente -> T calculado); nosotros
+  necesitamos lo contrario (T prescrito -> flujo generado). La arquitectura C->B queda sin
+  implementar: T_i deja de ser una entrada y pasa a ser una salida.
 
-ESTADO DE CFD-0: 7 criterios fallidos de la primera ejecucion, ya corregidos los que
-dependian del generador y de las rutas. QUEDA PENDIENTE el fallo de topoSet:
-    [FALLO] topoSet   rotores definidos: 4   zonas creadas: 0
-Necesito su log (el gate ahora lo vuelca solo) porque no puedo reproducirlo desde el agente.
+  NO ERA UN PROBLEMA DE MALLA. La hipotesis de resolucion insuficiente se descarto ANTES de
+  gastar computo, con una sola ejecucion. Refinar habria dado una representacion mas fina de
+  una fuerza nula.
 
-LO QUE SI QUEDO CONFIRMADO: blockMesh OK y checkMesh "Mesh OK" con Max skewness = 5e-14.
-La malla base es correcta.
+  CONSECUENCIAS: CFD-0 NO se cierra (un caso que converge a fisica nula no valida nada); la
+  suite de 128 casos NO se escala con esta formulacion; cualquier downwash o deposicion obtenido
+  asi seria invalido.
+
+  CORRECCION NECESARIA: fuente de momento explicita que imponga
+      integral_{V_disk,i} f dV = T_i     (vectorial, del equilibrio del UAV)
+  con independencia del flujo incidente. Requisitos: independiente de U (debe funcionar con
+  U_axial = 0), direccional segun el eje del rotor, vectorial por disco, y verificable
+  integrando la fuerza aplicada. `meanVelocityForce` NO sirve: aplica fuerza global sobre todo
+  el dominio, no por disco.
+
+ARTEFACTOS: evidence/BUG_conceptual_06_actuationDisk.md, scripts/test_axial_source.sh,
+evidence/CONFLICTS.md (C-08), protocolo actualizado.
+
+LECCION DE METODO (queda escrita): cada capa de verificacion dio un "OK" que no significaba lo
+que parecia. blockMesh y checkMesh pasaron; los 128 casos pasaron la verificacion estructural;
+el solver convergio y escribio resultados. Solo la PRUEBA FISICA DISCRIMINANTE identifico la
+causa real. Un caso que corre sin errores no es un caso correcto.

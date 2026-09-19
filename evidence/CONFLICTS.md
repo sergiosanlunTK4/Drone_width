@@ -230,6 +230,40 @@ no se corrige el `specs_master.csv` —que es de pulverización— en esta ronda
 
 ---
 
+## C-08 · `actuationDiskSource` no implementa la arquitectura C→B **CONFIRMADO EXPERIMENTALMENTE**
+
+**Detectado:** 2026-09-19, ejecutando GATE CFD-0 en WSL. **Detalle completo:**
+`evidence/BUG_conceptual_06_actuationDisk.md`.
+
+**Qué pasa:** el método Froude de `actuationDiskSource` calcula el empuje **a partir del flujo
+incidente axial**, `T = 2ρA|U_o·n|²a(1−a)`. Si el flujo es perpendicular al disco, `T ≈ 0`
+**aunque `Cp`, `Ct`, `diskArea`, las `cellZone` y el solver sean correctos**.
+
+**Prueba discriminante** (`scripts/test_axial_source.sh`, copia temporal, el caso real intacto):
+
+| Flujo de entrada | `Uz` medido bajo el rotor |
+|---|---|
+| Horizontal `(3.108, 0, 0)` — caso nominal | **≈ 1×10⁻⁷** (nulo) |
+| Vertical `(0, 0, −3.108)` — test axial | **−0.289 m/s** |
+
+**Por qué es grave:** el caso físico del proyecto es el peor posible para este modelo. En hover
+el flujo axial entrante es ≈ 0 porque **el disco genera el flujo, no lo recibe**. El modelo está
+pensado para turbinas/hélices en avance (flujo incidente → T calculado); nosotros necesitamos lo
+contrario (T prescrito → flujo generado).
+
+**Consecuencias:** CFD-0 **no se cierra** (corre y converge, pero la física es nula); la suite de
+128 casos **no se escala** con esta formulación; cualquier downwash o deposición obtenido así
+sería inválido.
+
+**Corrección:** fuente de momento explícita con `∫_V f dV = T_i`, independiente de `U`.
+`meanVelocityForce` no sirve (fuerza global, no por disco). Candidatos y requisitos en el
+documento del bug.
+
+**Lo que NO era:** un problema de malla. La hipótesis de resolución insuficiente se descartó
+**antes** de gastar cómputo, con una prueba de una sola ejecución.
+
+---
+
 ## Resumen de estado
 
 | ID | Conflicto | Estado | Se cierra con |
@@ -241,6 +275,7 @@ no se corrige el `specs_master.csv` —que es de pulverización— en esta ronda
 | C-05 | T70P dimensiones | ✅ **RESUELTO** (ficha oficial vigente) | — |
 | C-06 | T100 masa de pulverización | **ABIERTO (menor)** | medición en báscula |
 | C-07 | MTOW de esparcido | **ABIERTO (fuera de alcance)** | no aplica a este paper |
+| **C-08** | **`actuationDiskSource` no impone el empuje (arquitectura C→B no implementada)** | **CONFIRMADO experimentalmente** | **sustituir por fuente de momento explícita** |
 
 **De los 7 conflictos, 1 quedó resuelto por convergencia documental.** Lo importante: C-01 pasó de
 "posible error de OCR" a **"ambigüedad semántica demostrada en la documentación oficial de DJI"**,

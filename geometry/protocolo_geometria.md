@@ -73,7 +73,7 @@ blockMesh  →  checkMesh  →  topoSet  →  solver ~100-500 iteraciones
 **Bloquea:** escalar a los 128 casos, y toda la capa Lagrangiana de deposición.
 **NO bloquea:** la capa analítica, el diseño del DOE ni la especificación Lagrangiana.
 
-### Estado del entorno — DIAGNÓSTICO CORREGIDO (2026-09-14)
+### Estado del entorno — DIAGNÓSTICO CORREGIDO (2026-09-19)
 
 > **Corrección de un diagnóstico previo mío, que era erróneo.**
 >
@@ -119,6 +119,57 @@ entorno con autodetección.
 ```bash
 cd /mnt/c/Users/Dimasur/Downloads/AUTOMATIONS/DRONEWITH
 ```
+
+### Ejecución real de CFD-0 (2026-09-19) — 5 bugs corregidos, 1 bloqueo conceptual
+
+**OpenFOAM SÍ funciona** (el fallo era el acceso del agente a WSL). Ejecutando el gate aparecieron
+**cinco bugs que sólo se detectan ejecutando**, todos ya corregidos:
+
+| # | Bug | Síntoma |
+|---|---|---|
+| 1 | `class IOdictionary` en vez de `dictionary` | `FOAM FATAL IO ERROR: unexpected class name` — **sistémico, los 128 casos** |
+| 2 | Rutas a los `.py` mal calculadas (`../../scripts`) | `can't open file '.../cfd/scripts/...'` |
+| 3 | `type cylinderToCell` en topoSetDict | `Unknown set type cylinderToCell` — es una **fuente**, no un tipo |
+| 4 | Faltaba `action`; y el cilindro medía 2 cm con celdas de 0.2 m | `Entry 'action' not found` y luego **cellZone vacía** (`cellLabels List<label> 0()`) |
+| 5 | `options` como lista; faltaba `upstreamPoint`; `Cp = 0` | `not a sub-dictionary`; `Entry 'upstreamPoint' not found`; `Cp and Ct must be greater than zero` |
+
+**Estado tras las correcciones:**
+
+```
+blockMesh ................... OK
+checkMesh ................... Mesh OK, max skewness 4.96e-14
+topoSet ..................... 4 cellZones escritas en constant/polyMesh/cellZones
+simpleFoam .................. CONVERGE en 268 iteraciones
+function objects ............ receptorPlane (1072 ficheros), downwashLines, forces
+postprocess_case.py ......... escribe la fila en cfd_airflow
+```
+
+**PERO CFD-0 SIGUE ABIERTO, y ahora sabemos exactamente por qué:**
+
+El perfil de downwash bajo el rotor da `Uz ≈ 1×10⁻⁷`: **el flujo es horizontal y no hay downwash**.
+El disco se aplica (el log lo confirma) pero **no deflecta el flujo**.
+
+→ **Causa raíz confirmada: `actuationDiskSource` (método Froude) no impone el empuje; lo calcula
+a partir del flujo incidente axial**, `T = 2ρA|U_o·n|²a(1−a)`. Con flujo perpendicular al disco,
+`T ≈ 0`.
+
+**Prueba discriminante** (`scripts/test_axial_source.sh`, copia temporal, caso real intacto):
+
+| Flujo de entrada | `Uz` bajo el rotor |
+|---|---|
+| Horizontal `(3.108, 0, 0)` — nominal | **≈ 1×10⁻⁷** (nulo) |
+| Vertical `(0, 0, −3.108)` — test axial | **−0.289 m/s** |
+
+**NO era un problema de malla.** La hipótesis de resolución insuficiente se descartó **antes** de
+gastar cómputo, con una sola ejecución. Detalle: `evidence/BUG_conceptual_06_actuationDisk.md`.
+
+**Corrección pendiente:** sustituir `actuationDiskSource` por una **fuente de momento explícita**
+que imponga `∫_V f dV = T_i` **con independencia del flujo incidente** (requisito esencial: debe
+funcionar en hover, con `U_axial = 0`). `meanVelocityForce` no sirve: aplica fuerza global sobre
+todo el dominio, no por disco.
+
+**Consecuencia:** la suite de **128 casos no se escala** hasta que el modelo imponga el empuje.
+Escalarla ahora produciría 128 conjuntos de resultados vacíos, correctamente formateados.
 
 ### Qué falta para que cada gate cierre
 
