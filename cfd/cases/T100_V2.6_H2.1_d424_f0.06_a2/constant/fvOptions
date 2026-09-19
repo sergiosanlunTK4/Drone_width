@@ -17,8 +17,10 @@ FoamFile
 // Empuje PRESCRITO por disco (arquitectura C -> B de geometry/coaxial_thrust_split.md).
 // `diskDir (0 0 -1)`: en vuelo nivelado el rotor empuja el aire hacia abajo.
 // El reparto superior/inferior en coaxiales es un PARAMETRO barrido, no una suposicion.
+// OJO: `options` es un SUB-DICCIONARIO (llaves), no una lista (parentesis).
 options
-(
+{
+    // rotor 1 (R1_upper): T = 105.901 N   (masa 81.32 kg, split 0.531)
     rotor1
     {
         type            actuationDiskSource;
@@ -27,19 +29,20 @@ options
         cellZone        rotor1;
         fields          (U);
 
-        // empuje PRESCRITO por disco (arquitectura C -> B)
-        // T = 105.901 N   masa = 81.32 kg   split = 0.531   rotor = R1_upper
-        // El empuje debe actuar en la direccion del eje del rotor.
+        // El empuje actua en la direccion del eje del rotor.
         // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
+        // OpenFOAM 2412 exige esta entrada.
         diskDir         (0 0 -1);
+        upstreamPoint   (0.8238 0.8238 0.6800);
         diskArea        1.945805;
-        thrustCoeff     constant 92.907806;
+        // Coeficientes referidos a Uref = 1 m/s
+        Uref            1.0000;
+        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
+        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
         writeMultiVal   false;
-        U               U;
-        Uref            30;
-        Cp              constant 0.0;
-        Ct              constant 92.907806;
     }
+    // rotor 2 (R1_lower): T = 93.536 N   (masa 81.32 kg, split 0.531)
     rotor2
     {
         type            actuationDiskSource;
@@ -48,19 +51,20 @@ options
         cellZone        rotor2;
         fields          (U);
 
-        // empuje PRESCRITO por disco (arquitectura C -> B)
-        // T = 93.536 N   masa = 81.32 kg   split = 0.531   rotor = R1_lower
-        // El empuje debe actuar en la direccion del eje del rotor.
+        // El empuje actua en la direccion del eje del rotor.
         // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
+        // OpenFOAM 2412 exige esta entrada.
         diskDir         (0 0 -1);
+        upstreamPoint   (0.8238 0.8238 0.4800);
         diskArea        1.945805;
-        thrustCoeff     constant 82.059813;
+        // Coeficientes referidos a Uref = 1 m/s
+        Uref            1.0000;
+        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
+        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
         writeMultiVal   false;
-        U               U;
-        Uref            30;
-        Cp              constant 0.0;
-        Ct              constant 82.059813;
     }
+    // rotor 3 (R2_upper): T = 105.901 N   (masa 81.32 kg, split 0.531)
     rotor3
     {
         type            actuationDiskSource;
@@ -69,19 +73,20 @@ options
         cellZone        rotor3;
         fields          (U);
 
-        // empuje PRESCRITO por disco (arquitectura C -> B)
-        // T = 105.901 N   masa = 81.32 kg   split = 0.531   rotor = R2_upper
-        // El empuje debe actuar en la direccion del eje del rotor.
+        // El empuje actua en la direccion del eje del rotor.
         // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
+        // OpenFOAM 2412 exige esta entrada.
         diskDir         (0 0 -1);
+        upstreamPoint   (-0.8238 0.8238 0.6800);
         diskArea        1.945805;
-        thrustCoeff     constant 92.907806;
+        // Coeficientes referidos a Uref = 1 m/s
+        Uref            1.0000;
+        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
+        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
         writeMultiVal   false;
-        U               U;
-        Uref            30;
-        Cp              constant 0.0;
-        Ct              constant 92.907806;
     }
+    // rotor 4 (R2_lower): T = 93.536 N   (masa 81.32 kg, split 0.531)
     rotor4
     {
         type            actuationDiskSource;
@@ -90,19 +95,20 @@ options
         cellZone        rotor4;
         fields          (U);
 
-        // empuje PRESCRITO por disco (arquitectura C -> B)
-        // T = 93.536 N   masa = 81.32 kg   split = 0.531   rotor = R2_lower
-        // El empuje debe actuar en la direccion del eje del rotor.
+        // El empuje actua en la direccion del eje del rotor.
         // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
+        // OpenFOAM 2412 exige esta entrada.
         diskDir         (0 0 -1);
+        upstreamPoint   (-0.8238 0.8238 0.4800);
         diskArea        1.945805;
-        thrustCoeff     constant 82.059813;
+        // Coeficientes referidos a Uref = 1 m/s
+        Uref            1.0000;
+        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
+        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
         writeMultiVal   false;
-        U               U;
-        Uref            30;
-        Cp              constant 0.0;
-        Ct              constant 82.059813;
     }
+    // rotor 5 (R3_upper): T = 105.901 N   (masa 81.32 kg, split 0.531)
     rotor5
     {
         type            actuationDiskSource;
@@ -111,19 +117,20 @@ options
         cellZone        rotor5;
         fields          (U);
 
-        // empuje PRESCRITO por disco (arquitectura C -> B)
-        // T = 105.901 N   masa = 81.32 kg   split = 0.531   rotor = R3_upper
-        // El empuje debe actuar en la direccion del eje del rotor.
+        // El empuje actua en la direccion del eje del rotor.
         // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
+        // OpenFOAM 2412 exige esta entrada.
         diskDir         (0 0 -1);
+        upstreamPoint   (-0.8238 -0.8238 0.6800);
         diskArea        1.945805;
-        thrustCoeff     constant 92.907806;
+        // Coeficientes referidos a Uref = 1 m/s
+        Uref            1.0000;
+        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
+        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
         writeMultiVal   false;
-        U               U;
-        Uref            30;
-        Cp              constant 0.0;
-        Ct              constant 92.907806;
     }
+    // rotor 6 (R3_lower): T = 93.536 N   (masa 81.32 kg, split 0.531)
     rotor6
     {
         type            actuationDiskSource;
@@ -132,19 +139,20 @@ options
         cellZone        rotor6;
         fields          (U);
 
-        // empuje PRESCRITO por disco (arquitectura C -> B)
-        // T = 93.536 N   masa = 81.32 kg   split = 0.531   rotor = R3_lower
-        // El empuje debe actuar en la direccion del eje del rotor.
+        // El empuje actua en la direccion del eje del rotor.
         // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
+        // OpenFOAM 2412 exige esta entrada.
         diskDir         (0 0 -1);
+        upstreamPoint   (-0.8238 -0.8238 0.4800);
         diskArea        1.945805;
-        thrustCoeff     constant 82.059813;
+        // Coeficientes referidos a Uref = 1 m/s
+        Uref            1.0000;
+        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
+        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
         writeMultiVal   false;
-        U               U;
-        Uref            30;
-        Cp              constant 0.0;
-        Ct              constant 82.059813;
     }
+    // rotor 7 (R4_upper): T = 105.901 N   (masa 81.32 kg, split 0.531)
     rotor7
     {
         type            actuationDiskSource;
@@ -153,19 +161,20 @@ options
         cellZone        rotor7;
         fields          (U);
 
-        // empuje PRESCRITO por disco (arquitectura C -> B)
-        // T = 105.901 N   masa = 81.32 kg   split = 0.531   rotor = R4_upper
-        // El empuje debe actuar en la direccion del eje del rotor.
+        // El empuje actua en la direccion del eje del rotor.
         // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
+        // OpenFOAM 2412 exige esta entrada.
         diskDir         (0 0 -1);
+        upstreamPoint   (0.8238 -0.8238 0.6800);
         diskArea        1.945805;
-        thrustCoeff     constant 92.907806;
+        // Coeficientes referidos a Uref = 1 m/s
+        Uref            1.0000;
+        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
+        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
         writeMultiVal   false;
-        U               U;
-        Uref            30;
-        Cp              constant 0.0;
-        Ct              constant 92.907806;
     }
+    // rotor 8 (R4_lower): T = 93.536 N   (masa 81.32 kg, split 0.531)
     rotor8
     {
         type            actuationDiskSource;
@@ -174,17 +183,17 @@ options
         cellZone        rotor8;
         fields          (U);
 
-        // empuje PRESCRITO por disco (arquitectura C -> B)
-        // T = 93.536 N   masa = 81.32 kg   split = 0.531   rotor = R4_lower
-        // El empuje debe actuar en la direccion del eje del rotor.
+        // El empuje actua en la direccion del eje del rotor.
         // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
+        // OpenFOAM 2412 exige esta entrada.
         diskDir         (0 0 -1);
+        upstreamPoint   (0.8238 -0.8238 0.4800);
         diskArea        1.945805;
-        thrustCoeff     constant 82.059813;
+        // Coeficientes referidos a Uref = 1 m/s
+        Uref            1.0000;
+        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
+        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
         writeMultiVal   false;
-        U               U;
-        Uref            30;
-        Cp              constant 0.0;
-        Ct              constant 82.059813;
     }
-);
+}

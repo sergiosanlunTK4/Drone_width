@@ -99,7 +99,16 @@ CASO_PATH="${CASES_DIR}/${CASO}"
 
 echo "=============================================================="
 echo " caso: ${CASO}"
-echo "=============================================================="cd "${CASO_PATH}"
+echo "=============================================================="
+
+# Entrar al caso. Se VERIFICA explicitamente: si el cd falla se aborta en vez de ejecutar
+# OpenFOAM desde el directorio equivocado (ese fue el fallo de la primera ejecucion: los
+# comandos corrian desde la raiz del proyecto y buscaban system/controlDict en el sitio mal).
+if ! cd "${CASO_PATH}"; then
+  echo "[FALLO] no se pudo entrar al caso: ${CASO_PATH}"
+  exit 1
+fi
+echo "  directorio de trabajo: $(pwd)"
 
 FALLOS=0
 check() {  # check <descripcion> <comando...>
@@ -111,6 +120,18 @@ check() {  # check <descripcion> <comando...>
     FALLOS=$((FALLOS+1))
   fi
 }
+
+# --- 0b. limpieza: el smoke test debe partir de cero -----------------------------
+# Sin esto se arrastran mallas y logs de ejecuciones anteriores, y un fallo antiguo
+# puede enmascarar el estado real.
+echo
+echo "-- 0b. limpieza previa"
+rm -f log.* 2>/dev/null
+rm -rf postProcessing processor* 2>/dev/null
+rm -rf constant/polyMesh 2>/dev/null
+# conservar solo el tiempo 0 (los campos base)
+for d in [1-9]*; do [[ -d "${d}" ]] && rm -rf "${d}"; done
+echo "  [OK]    logs, postProcessing, malla y tiempos previos eliminados"
 
 # --- 1. mallado base -------------------------------------------------------------
 echo
@@ -133,11 +154,20 @@ grep -E "Max non-orthogonality|Max skewness|Failed" log.checkMesh | sed 's/^/   
 echo
 echo "-- 3. topoSet: cellZones por rotor"
 topoSet > log.topoSet 2>&1 && echo "  [OK]    topoSet" || { echo "  [FALLO] topoSet"; FALLOS=$((FALLOS+1)); }
-N_ROTORES_ESPERADOS=$(grep -c "cellZone rotor" system/topoSetDict || echo 0)
-N_ZONAS=$(grep -c "rotor" constant/polyMesh/cellZones 2>/dev/null || echo 0)
-echo "          rotores definidos: ${N_ROTORES_ESPERADOS}   zonas creadas: ${N_ZONAS}"
-if [[ "${N_ZONAS}" -lt 1 ]]; then
-  echo "  [FALLO] no se creo ninguna cellZone de rotor"
+# Contar en el DICT las zonas definidas (cellZoneSet con name rotorN)
+N_ROTORES_ESPERADOS=$(grep -c "type    cellZoneSet" system/topoSetDict 2>/dev/null || echo 0)
+# Y confirmar que se ESCRIBIERON en polyMesh/cellZones (esto es lo que importa)
+N_ZONAS=0
+if [[ -f constant/polyMesh/cellZones ]]; then
+  N_ZONAS=$(grep -c "rotor" constant/polyMesh/cellZones 2>/dev/null || echo 0)
+fi
+echo "          cellZoneSet definidas en el dict: ${N_ROTORES_ESPERADOS}"
+echo "          zonas escritas en polyMesh/cellZones: ${N_ZONAS}"
+if [[ "${N_ZONAS}" -ge 1 ]]; then
+  echo "  [OK]    las cellZone de rotor existen en la malla"
+else
+  echo "  [FALLO] no se creo ninguna cellZone en constant/polyMesh/cellZones"
+  echo "          (sin ellas, fvOptions NO puede aplicar el empuje)"
   FALLOS=$((FALLOS+1))
 fi
 
@@ -200,11 +230,16 @@ if [[ ${FALLOS} -gt 0 ]]; then
   echo "=============================================================="
   echo " DIAGNOSTICO: cola de los logs (copiar y pegar)"
   echo "=============================================================="
-  for lg in log.topoSet log.simpleFoam; do
+  for lg in log.blockMesh log.checkMesh log.topoSet log.simpleFoam; do
     if [[ -f "${lg}" ]]; then
       echo
-      echo "----- ${lg} (ultimas 30 lineas) -----"
-      tail -30 "${lg}"
+      echo "=============== ${lg}  (${lg}: $(wc -l < "${lg}") lineas) ==============="
+      # para topoSet mostramos TODO el log: es corto y contiene el error completo
+      if [[ "${lg}" == "log.topoSet" ]]; then
+        cat "${lg}"
+      else
+        tail -25 "${lg}"
+      fi
     fi
   done
 fi

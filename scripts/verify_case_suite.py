@@ -80,26 +80,72 @@ def revisar_caso(caso: Path) -> list[str]:
     n_rot = meta.get("derivados_analiticos", {}).get("n_rotores_modelados", 0)
 
     # 3. cellZones de rotor en topoSetDict
+    #    Estructura correcta en OpenFOAM 2412 (dos bugs reales encontrados ejecutando):
+    #      rotorSetN  { type cellSet ; action new ; source cylinderToCell ; ... }
+    #      rotorZoneN { type cellZoneSet ; action new ; source setToCellZone ; set rotorSetN }
+    #    Errores historicos:
+    #      - `type cylinderToCell`  -> "Unknown set type cylinderToCell" (es una FUENTE)
+    #      - falta `action`         -> "Entry 'action' not found"
+    #      - `cellZone rotorN`      -> "Entry 'name' not found"
     ts = caso / "system" / "topoSetDict"
     if ts.exists():
-        n_zonas = len(re.findall(r"cellZone\s+rotor\d+", ts.read_text(errors="ignore")))
+        t = ts.read_text(errors="ignore")
+        n_sets = len(re.findall(r"type\s+cellSet\s*;", t))
+        n_source_cyl = len(re.findall(r"source\s+cylinderToCell\s*;", t))
+        n_zonas = len(re.findall(r"type\s+cellZoneSet\s*;", t))
+        n_set2zone = len(re.findall(r"source\s+setToCellZone\s*;", t))
+        n_action = len(re.findall(r"\baction\s+\w+\s*;", t))
+        if n_rot and n_sets != n_rot:
+            fallos.append(f"topoSetDict: {n_sets} cellSet vs {n_rot} rotores")
+        if n_rot and n_source_cyl != n_rot:
+            fallos.append(f"topoSetDict: {n_source_cyl} source cylinderToCell vs {n_rot} rotores")
         if n_rot and n_zonas != n_rot:
-            fallos.append(f"topoSetDict: {n_zonas} cellZones vs {n_rot} rotores modelados")
-        for i in range(1, n_zonas + 1):
-            if f"rotor{i}" not in ts.read_text(errors="ignore"):
-                fallos.append(f"topoSetDict: falta rotor{i}")
+            fallos.append(f"topoSetDict: {n_zonas} cellZoneSet vs {n_rot} rotores")
+        if n_rot and n_set2zone != n_rot:
+            fallos.append(f"topoSetDict: {n_set2zone} setToCellZone vs {n_rot} rotores")
+        if n_action < 2 * n_rot:
+            fallos.append(f"topoSetDict: {n_action} entradas 'action' para {2*n_rot} acciones")
+        # errores historicos que no deben reaparecer
+        if re.search(r"type\s+cylinderToCell\s*;", t):
+            fallos.append("topoSetDict: 'type cylinderToCell' (es una FUENTE, debe ser 'source')")
+        if re.search(r"cellZone\s+rotor\d", t):
+            fallos.append("topoSetDict: 'cellZone rotorN' dentro de la accion (sintaxis invalida)")
+        for i in range(1, n_rot + 1):
+            if f"rotorSet{i}" not in t:
+                fallos.append(f"topoSetDict: falta rotorSet{i}")
+            if f"name    rotor{i};" not in t:
+                fallos.append(f"topoSetDict: falta la cellZone rotor{i}")
 
     # 4/5. fvOptions: un disco por rotor y diskDir hacia abajo
+    #    OJO: `options` debe ser SUB-DICCIONARIO (llaves) y no lista (parentesis).
+    #    Bug historico: `options ( rotor1 {...} )` -> fvOptions no cargaba y el EMPUJE
+    #    NUNCA se aplicaba (solver converge a campo sin discos, residuales ~1e-10).
     fo = caso / "constant" / "fvOptions"
     if fo.exists():
         t = fo.read_text(errors="ignore")
-        n_discos = len(re.findall(r"type\s+actuationDiskSource", t))
+        n_discos = len(re.findall(r"type\s+actuationDiskSource\s*;", t))
         if n_rot and n_discos != n_rot:
             fallos.append(f"fvOptions: {n_discos} discos vs {n_rot} rotores")
+        if re.search(r"^\s*options\s*\(", t, re.M):
+            fallos.append("fvOptions: 'options' es una LISTA; debe ser SUB-DICCIONARIO (llaves)")
+        if not re.search(r"^\s*options\s*\{", t, re.M):
+            fallos.append("fvOptions: falta el sub-diccionario 'options { ... }'")
+        for i in range(1, n_rot + 1):
+            if f"cellZone        rotor{i};" not in t:
+                fallos.append(f"fvOptions: falta la referencia a la cellZone rotor{i}")
         for m in re.finditer(r"diskDir\s+\(([^)]*)\)", t):
             comps = [float(x) for x in m.group(1).split()]
             if not (len(comps) == 3 and comps[2] < 0):
                 fallos.append(f"fvOptions: diskDir=({m.group(1)}) no apunta hacia abajo")
+        # Cp > 0 es OBLIGATORIO: OpenFOAM aborta con "Cp and Ct must be greater than zero"
+        for m in re.finditer(r"^\s*Cp\s+([-\d.eE+]+)\s*;", t, re.M):
+            if float(m.group(1)) <= 0:
+                fallos.append(f"fvOptions: Cp={m.group(1)} (debe ser > 0)")
+        for m in re.finditer(r"^\s*Ct\s+([-\d.eE+]+)\s*;", t, re.M):
+            if float(m.group(1)) <= 0:
+                fallos.append(f"fvOptions: Ct={m.group(1)} (debe ser > 0)")
+        if "upstreamPoint" not in t:
+            fallos.append("fvOptions: falta upstreamPoint (obligatorio en 2412)")
 
     # 6/7. condiciones de contorno
     up = caso / "0" / "U"

@@ -235,6 +235,11 @@ def write_case(case_dir: Path, row: dict, p: dict) -> None:
     x0, x1 = -6.0, 14.0
     y0, y1 = -6.0, 6.0
     z0, z1 = -H, 4.0
+    # division de la malla base y tamano de celda resultante.
+    # Se usa para dimensionar el cilindro del disco: un cilindro mas fino que una celda
+    # NO contiene ninguna celda y la cellZone sale vacia (bug detectado en GATE CFD-0).
+    NDIV_X, NDIV_Y, NDIV_Z = 80, 48, 48
+    base_cell = max((x1 - x0) / NDIV_X, (y1 - y0) / NDIV_Y, (z1 - z0) / NDIV_Z)
 
     # ---- blockMeshDict
     (case_dir / "system" / "blockMeshDict").write_text(
@@ -255,7 +260,7 @@ vertices
 
 blocks
 (
-    hex (0 1 2 3 4 5 6 7) (80 48 48) simpleGrading (1 1 1)
+    hex (0 1 2 3 4 5 6 7) ({NDIV_X} {NDIV_Y} {NDIV_Z}) simpleGrading (1 1 1)
 );
 
 edges ();
@@ -498,30 +503,76 @@ boundaryField
 """, encoding="utf-8")
 
     # ---- topoSet: una cellZone cilindrica por rotor
-    sets = []
+    # SINTAXIS CORRECTA (tres bugs detectados ejecutando GATE CFD-0):
+    #   1) `cylinderToCell` es una FUENTE, no un tipo: type cellSet ; source cylinderToCell
+    #      (el error decia: Unknown set type cylinderToCell)
+    #   2) cada accion exige `action` (new/add/...): Entry 'action' not found
+    #   3) GROSOR DEL CILINDRO: con la malla base (184320 celdas, ~0.2 m por celda) un
+    #      cilindro de 2 cm NO CONTENIA NINGUNA CELDA y la cellZone salia vacia:
+    #          cellLabels List<label> 0()
+    #      => fvOptions avisaba "No cells selected!" y el empuje no se aplicaba.
+    #      Se usa un grosor de 1.5 * tamano de celda base, que garantiza celdas dentro.
+    #      NOTA: el grosor solo selecciona celdas; la fuerza se aplica segun diskDir, asi
+    #      que el modelo sigue siendo de disco. En la suite definitiva esto se sustituye
+    #      por refinamiento local (ver proyecto: refinamiento en el tubo de estela).
+    dz_disco = 1.5 * base_cell
+    acciones = []
     for i, (c, T) in enumerate(zip(centros, empujes), start=1):
-        sets.append(f"""    rotor{i}
+        acciones.append(f"""    // rotor {i} ({c['id']}): cellSet cilindrico -> cellZone   (grosor {dz_disco:.4f} m)
+    rotorSet{i}
     {{
-        type    cylinderToCell;
-        p1      ({c['x']:.4f} {c['y']:.4f} {c['z'] - 0.01:.4f});
-        p2      ({c['x']:.4f} {c['y']:.4f} {c['z'] + 0.01:.4f});
+        name    rotorSet{i};
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        p1      ({c['x']:.4f} {c['y']:.4f} {c['z'] - dz_disco/2:.4f});
+        p2      ({c['x']:.4f} {c['y']:.4f} {c['z'] + dz_disco/2:.4f});
         radius  {r_rot:.4f};
-        cellZone rotor{i};
+    }}
+    rotorZone{i}
+    {{
+        name    rotor{i};
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     rotorSet{i};
     }}""")
     (case_dir / "system" / "topoSetDict").write_text(
         foam_header("dictionary", "topoSetDict") + f"""
+// Crea una cellZone cilindrica por rotor (volumen barrido del disco).
+// cylinderToCell -> cellSet ; cellZoneSet -> cellZone.
 actions
 (
-{chr(10).join(sets)}
+{chr(10).join(acciones)}
 );
 """, encoding="utf-8")
 
     # ---- fvOptions: actuationDiskSource por rotor con empuje PRESCRITO
+    # SINTAXIS CORRECTA (bug detectado ejecutando GATE CFD-0):
+    #   `options` debe ser un SUB-DICCIONARIO, no una lista:
+    #       Entry 'options' found but not a sub-dictionary in dictionary "constant/fvOptions"
+    #   La version anterior escribia `options ( rotor1 {...} ... );` y fvOptions no se
+    #   cargaba => EL EMPUJE NUNCA SE APLICABA y el solver convergia a un campo sin discos.
+    #   Sintoma: residuales ~1e-10 y ninguna mencion de actuationDisk en el log.
     opts = []
     for i, (c, T) in enumerate(zip(centros, empujes), start=1):
         A_disk = math.pi * r_rot ** 2
-        ct = T / (0.5 * RHO * A_disk * 1.0 ** 2)
-        opts.append(f"""    rotor{i}
+        # Coeficientes del disco actuador derivados de la teoria de cantidad de movimiento.
+        # OJO: OpenFOAM EXIGE Cp > 0:
+        #     Cp and Ct must be greater than zero.
+        #     Cp = 0, Ct = 171.55894
+        # Cp no es decorativo: es la potencia que el disco extrae del flujo.
+        # Relacion estandar:  Cp = Ct * (1 - a),  con  a = (1 - sqrt(1 - Ct)) / 2
+        # (a = factor de induccion axial). Referimos a Uref = 1 m/s, asi que
+        # Ct = T / (0.5 * rho * A * Uref^2).
+        Uref = 1.0
+        ct = T / (0.5 * RHO * A_disk * Uref ** 2)
+        ct_acotado = min(ct, 0.999)          # Ct >= 1 no tiene solucion en teoria de disco
+        a_ind = (1.0 - math.sqrt(max(0.0, 1.0 - ct_acotado))) / 2.0
+        cp = ct_acotado * (1.0 - a_ind)
+        cp = max(cp, 1e-6)                   # nunca cero: OpenFOAM lo rechaza
+        opts.append(f"""    // rotor {i} ({c['id']}): T = {T:.3f} N   (masa {masa:.2f} kg, split {split:.3f})
+    rotor{i}
     {{
         type            actuationDiskSource;
         libs            ("libfvOptions.so");
@@ -529,28 +580,29 @@ actions
         cellZone        rotor{i};
         fields          (U);
 
-        // empuje PRESCRITO por disco (arquitectura C -> B)
-        // T = {T:.3f} N   masa = {masa:.2f} kg   split = {split:.3f}   rotor = {c['id']}
-        // El empuje debe actuar en la direccion del eje del rotor.
+        // El empuje actua en la direccion del eje del rotor.
         // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
+        // OpenFOAM 2412 exige esta entrada.
         diskDir         (0 0 -1);
+        upstreamPoint   ({c['x']:.4f} {c['y']:.4f} {c['z'] + 0.5:.4f});
         diskArea        {A_disk:.6f};
-        thrustCoeff     constant {ct:.8g};
+        // Coeficientes referidos a Uref = 1 m/s
+        Uref            {Uref:.4f};
+        Ct              {ct_acotado:.8g};      // T = Ct * 0.5*rho*A*Uref^2
+        Cp              {cp:.8g};              // potencia extraida, Cp = Ct*(1-a)
         writeMultiVal   false;
-        U               U;
-        Uref            30;
-        Cp              constant 0.0;
-        Ct              constant {ct:.8g};
     }}""")
     (case_dir / "constant" / "fvOptions").write_text(
         foam_header("dictionary", "fvOptions") + f"""
 // Empuje PRESCRITO por disco (arquitectura C -> B de geometry/coaxial_thrust_split.md).
 // `diskDir (0 0 -1)`: en vuelo nivelado el rotor empuja el aire hacia abajo.
 // El reparto superior/inferior en coaxiales es un PARAMETRO barrido, no una suposicion.
+// OJO: `options` es un SUB-DICCIONARIO (llaves), no una lista (parentesis).
 options
-(
+{{
 {chr(10).join(opts)}
-);
+}}
 """, encoding="utf-8")
 
     # ---- snappyHexMeshDict (mallado del cuerpo, opcional)
