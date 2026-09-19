@@ -1,0 +1,54 @@
+{
+  "case_id": "T25P_V12.6_H2.5_d237_f0.37_a2",
+  "plataforma": "T25P",
+  "nombre_plataforma": "DJI Agras T25P",
+  "arquitectura_cfd": "C (equilibrio fisico) -> B (actuator disk con empuje prescrito)",
+  "entradas": {
+    "V_inf_ms": 12.59,
+    "H_m": 2.53,
+    "DV05_um": 236.9,
+    "carga_fraccion": 0.3683,
+    "masa_total_kg": 40.37,
+    "atomizadores": 2,
+    "split_coaxial_superior": 0.5
+  },
+  "derivados_analiticos": {
+    "n_rotores_modelados": 4,
+    "r_rotor_m": 0.635,
+    "area_disco_total_m2": 5.0671,
+    "empuje_total_N": 396.03,
+    "empuje_por_disco_N": {
+      "R1": 99.01,
+      "R2": 99.01,
+      "R3": 99.01,
+      "R4": 99.01
+    },
+    "v_inducida_hover_ms": 5.775
+  },
+  "dominio": {
+    "x": [
+      -6.0,
+      14.0
+    ],
+    "y": [
+      -6.0,
+      6.0
+    ],
+    "z": [
+      -2.53,
+      4.0
+    ],
+    "nota": "suelo a -H (altura real)"
+  },
+  "propiedades_fluido": {
+    "rho": 1.1716,
+    "nu": 1.5e-05,
+    "p_atm": 101325.0,
+    "agua_rho": 996.2,
+    "agua_mu": 0.000836,
+    "agua_sigma": 0.0719
+  },
+  "clasificacion_geometria": "P/S/O/I — NO M. Ver geometry/presupuesto_hipotesis.md",
+  "estado": "generado_no_ejecutado",
+  "no_contiene": "ningun resultado de CFD: este archivo describe el caso, no su salida"
+}

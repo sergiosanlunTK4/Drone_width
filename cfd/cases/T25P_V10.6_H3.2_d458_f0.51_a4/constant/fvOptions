@@ -1,0 +1,106 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Empuje PRESCRITO por disco (arquitectura C -> B de geometry/coaxial_thrust_split.md).
+// `diskDir (0 0 -1)`: en vuelo nivelado el rotor empuja el aire hacia abajo.
+// El reparto superior/inferior en coaxiales es un PARAMETRO barrido, no una suposicion.
+options
+(
+    rotor1
+    {
+        type            actuationDiskSource;
+        libs            ("libfvOptions.so");
+        selectionMode   cellZone;
+        cellZone        rotor1;
+        fields          (U);
+
+        // empuje PRESCRITO por disco (arquitectura C -> B)
+        // T = 106.095 N   masa = 43.26 kg   split = 0.500   rotor = R1
+        // El empuje debe actuar en la direccion del eje del rotor.
+        // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        diskDir         (0 0 -1);
+        diskArea        1.266769;
+        thrustCoeff     constant 142.97129;
+        writeMultiVal   false;
+        U               U;
+        Uref            30;
+        Cp              constant 0.0;
+        Ct              constant 142.97129;
+    }
+    rotor2
+    {
+        type            actuationDiskSource;
+        libs            ("libfvOptions.so");
+        selectionMode   cellZone;
+        cellZone        rotor2;
+        fields          (U);
+
+        // empuje PRESCRITO por disco (arquitectura C -> B)
+        // T = 106.095 N   masa = 43.26 kg   split = 0.500   rotor = R2
+        // El empuje debe actuar en la direccion del eje del rotor.
+        // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        diskDir         (0 0 -1);
+        diskArea        1.266769;
+        thrustCoeff     constant 142.97129;
+        writeMultiVal   false;
+        U               U;
+        Uref            30;
+        Cp              constant 0.0;
+        Ct              constant 142.97129;
+    }
+    rotor3
+    {
+        type            actuationDiskSource;
+        libs            ("libfvOptions.so");
+        selectionMode   cellZone;
+        cellZone        rotor3;
+        fields          (U);
+
+        // empuje PRESCRITO por disco (arquitectura C -> B)
+        // T = 106.095 N   masa = 43.26 kg   split = 0.500   rotor = R3
+        // El empuje debe actuar en la direccion del eje del rotor.
+        // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        diskDir         (0 0 -1);
+        diskArea        1.266769;
+        thrustCoeff     constant 142.97129;
+        writeMultiVal   false;
+        U               U;
+        Uref            30;
+        Cp              constant 0.0;
+        Ct              constant 142.97129;
+    }
+    rotor4
+    {
+        type            actuationDiskSource;
+        libs            ("libfvOptions.so");
+        selectionMode   cellZone;
+        cellZone        rotor4;
+        fields          (U);
+
+        // empuje PRESCRITO por disco (arquitectura C -> B)
+        // T = 106.095 N   masa = 43.26 kg   split = 0.500   rotor = R4
+        // El empuje debe actuar en la direccion del eje del rotor.
+        // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
+        diskDir         (0 0 -1);
+        diskArea        1.266769;
+        thrustCoeff     constant 142.97129;
+        writeMultiVal   false;
+        U               U;
+        Uref            30;
+        Cp              constant 0.0;
+        Ct              constant 142.97129;
+    }
+);

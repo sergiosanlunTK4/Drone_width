@@ -1,0 +1,83 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+    rotor1
+    {
+        type    cylinderToCell;
+        p1      (0.8238 0.8238 0.1700);
+        p2      (0.8238 0.8238 0.1900);
+        radius  0.7870;
+        cellZone rotor1;
+    }
+    rotor2
+    {
+        type    cylinderToCell;
+        p1      (0.8238 0.8238 -0.0300);
+        p2      (0.8238 0.8238 -0.0100);
+        radius  0.7870;
+        cellZone rotor2;
+    }
+    rotor3
+    {
+        type    cylinderToCell;
+        p1      (-0.8238 0.8238 0.1700);
+        p2      (-0.8238 0.8238 0.1900);
+        radius  0.7870;
+        cellZone rotor3;
+    }
+    rotor4
+    {
+        type    cylinderToCell;
+        p1      (-0.8238 0.8238 -0.0300);
+        p2      (-0.8238 0.8238 -0.0100);
+        radius  0.7870;
+        cellZone rotor4;
+    }
+    rotor5
+    {
+        type    cylinderToCell;
+        p1      (-0.8238 -0.8238 0.1700);
+        p2      (-0.8238 -0.8238 0.1900);
+        radius  0.7870;
+        cellZone rotor5;
+    }
+    rotor6
+    {
+        type    cylinderToCell;
+        p1      (-0.8238 -0.8238 -0.0300);
+        p2      (-0.8238 -0.8238 -0.0100);
+        radius  0.7870;
+        cellZone rotor6;
+    }
+    rotor7
+    {
+        type    cylinderToCell;
+        p1      (0.8238 -0.8238 0.1700);
+        p2      (0.8238 -0.8238 0.1900);
+        radius  0.7870;
+        cellZone rotor7;
+    }
+    rotor8
+    {
+        type    cylinderToCell;
+        p1      (0.8238 -0.8238 -0.0300);
+        p2      (0.8238 -0.8238 -0.0100);
+        radius  0.7870;
+        cellZone rotor8;
+    }
+);

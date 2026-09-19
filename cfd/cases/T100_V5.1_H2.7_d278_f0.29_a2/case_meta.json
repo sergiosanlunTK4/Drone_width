@@ -1,0 +1,58 @@
+{
+  "case_id": "T100_V5.1_H2.7_d278_f0.29_a2",
+  "plataforma": "T100",
+  "nombre_plataforma": "DJI Agras T100",
+  "arquitectura_cfd": "C (equilibrio fisico) -> B (actuator disk con empuje prescrito)",
+  "entradas": {
+    "V_inf_ms": 5.117,
+    "H_m": 2.705,
+    "DV05_um": 277.8,
+    "carga_fraccion": 0.2877,
+    "masa_total_kg": 103.77,
+    "atomizadores": 2,
+    "split_coaxial_superior": 0.621
+  },
+  "derivados_analiticos": {
+    "n_rotores_modelados": 8,
+    "r_rotor_m": 0.787,
+    "area_disco_total_m2": 15.5664,
+    "empuje_total_N": 1017.98,
+    "empuje_por_disco_N": {
+      "R1_upper": 158.04,
+      "R1_lower": 96.45,
+      "R2_upper": 158.04,
+      "R2_lower": 96.45,
+      "R3_upper": 158.04,
+      "R3_lower": 96.45,
+      "R4_upper": 158.04,
+      "R4_lower": 96.45
+    },
+    "v_inducida_hover_ms": 5.283
+  },
+  "dominio": {
+    "x": [
+      -6.0,
+      14.0
+    ],
+    "y": [
+      -6.0,
+      6.0
+    ],
+    "z": [
+      -2.705,
+      4.0
+    ],
+    "nota": "suelo a -H (altura real)"
+  },
+  "propiedades_fluido": {
+    "rho": 1.1716,
+    "nu": 1.5e-05,
+    "p_atm": 101325.0,
+    "agua_rho": 996.2,
+    "agua_mu": 0.000836,
+    "agua_sigma": 0.0719
+  },
+  "clasificacion_geometria": "P/S/O/I — NO M. Ver geometry/presupuesto_hipotesis.md",
+  "estado": "generado_no_ejecutado",
+  "no_contiene": "ningun resultado de CFD: este archivo describe el caso, no su salida"
+}

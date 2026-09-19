@@ -1,55 +1,57 @@
-docs: clase O, geometria de atomizadores derivada y presupuesto de hipotesis con sensibilidad
+suite CFD completa (128 casos), base de datos y capa analitica — con 2 bugs fisicos corregidos
 
-Responde a "podemos seguir con lo declarado en la web?" con numeros, no con una opinion.
+El investigador pide avanzar hasta la base de datos completa con los 4 modelos y las
+simulaciones. Se entrega TODO lo construible sin OpenFOAM, y se declara con precision que
+falta.
 
-CLASE NUEVA `O` = aportado por el propietario (comunicacion directa), entre S y M.
-  El propietario es la fuente mas cercana al objeto fisico, asi que es MEJOR que una
-  inferencia, pero NO es M: sin instrumento, sin incertidumbre, sin repeticion. Confundir O
-  con M seria el mismo error que confundir I con P.
-  Regla anadida: un dato O NUNCA se cita como si fuera de DJI. No es idealizar, es citar mal.
+LO QUE SE ENTREGA:
+  1. scripts/build_case_suite.py -> DOE POR PLATAFORMA (no comun) con LHS estratificado:
+     128 casos (32 por plataforma). Cada plataforma tiene su envolvente (V 2-13 m/s,
+     H 1.5-6 m, d 100-500 um, carga 0-1, 2/4 atomizadores, split coaxial barrido).
+     Genera el arbol OpenFOAM completo de los 128 casos: blockMeshDict, controlDict con
+     function objects (plano receptor, lineas de downwash, fuerzas), fvSchemes, fvSolution,
+     turbulenceProperties, transportProperties, condiciones de contorno REALES con
+     traslacion, topoSetDict (una cellZone cilindrica por rotor), fvOptions con
+     actuationDiskSource por disco, snappyHexMeshDict y case_meta.json con trazabilidad.
+     Los 128 casos verificados estructuralmente: 128/128 completos.
 
-DATOS APORTADOS:
-  - T100: 8 motores. T25P/T55/T70P: 4 motores.
-  - Atomizadores T100: x = -0.9 / -0.8 / -0.8 / -0.9 m (izq a der), con la 2a y 3a como extras.
+  2. Arquitectura CFD implementada: C (equilibrio fisico) -> B (actuator disk con empuje
+     prescrito). El reparto superior/inferior del par coaxial es un PARAMETRO barrido
+     (0.5/0.6/0.7), no una suposicion. diskDir (0 0 -1).
 
-EFECTO SOBRE C-01 (T100 8 vs 16): "8 motores" con 4 brazos coaxiales corresponde a 8 rotores,
-lo que RESPALDA la lectura "4 pares" y contradice "8 pares = 16". Convergencia por dos
-fuentes independientes (imagen oficial 8 helices + propietario 8 motores). Falta la tercera
-pata (inspeccion fisica fotografiada) para promover a M. C-01 NO se cierra todavia.
+  3. scripts/build_database.py -> base SQLite con 10 tablas + vista de estado:
+     platforms(4), cases(128), analytic_metrics(128), y las tablas cfd_airflow,
+     cfd_deposition, cfd_swath_metrics, experiments, surrogate_models VACIAS A PROPOSITO.
+     Cada fila analitica lleva origen_dato declarando que NO es CFD.
 
-GEOMETRIA DE ATOMIZADORES (scripts/derive_atomizer_geometry.py):
-  Nomenclatura A1..A4 con rol L_out/L_in/R_in/R_out. Hipotesis explicita: la separacion
-  declarada (1834 mm en T100) es el par EXTREMO y el interior queda cerrado a la mitad
-  -> +-0.917 m exterior, +-0.459 m interior.
-  VALIDACION SUPERADA: la boquilla exterior cae dentro de la barra LS100 (+-0.965 m) con
-  margen de solo +48 mm: ajuste muy justo, consistente con la cifra de DJI.
-  HALLAZGO PARA H3: las cuatro boquillas caen dentro de la proyeccion horizontal de un disco
-  de rotor (0.248 m del eje las exteriores, 0.707 m las interiores, frente a r_rotor 0.787 m).
-  No es colision -van por debajo del plano- pero es exactamente la configuracion que hace
-  relevante H3: las gotas se emiten DENTRO de la estela.
+  4. scripts/run_cfd_suite.sh y scripts/postprocess_case.py: el runner y el extractor que
+     pueblan las tablas cfd_* cuando haya OpenFOAM. El extractor NO escribe metricas si el
+     caso no convergio: registra el fallo.
 
-PRESUPUESTO DE HIPOTESIS (geometry/presupuesto_hipotesis.md + scripts/assumption_budget.py):
-  Si se puede sostener un estudio asi, pero como ESTUDIO PARAMETRICO CON IDEALIZACIONES
-  DECLARADAS, cumpliendo tres condiciones: (1) declararlas en su propia seccion y tabla,
-  (2) justificarlas, (3) CUANTIFICAR SU IMPACTO con analisis de sensibilidad.
-  Incluye borrador del texto para el paper (Model assumptions and uncertainty budget) que
-  declara, justifica y acota sin reclamar validacion. Un "suponga que" silencioso no se
-  acepta; una idealizacion declarada y acotada, si.
+  5. scripts/check_database.py, scripts/verify_droplet_physics.py.
 
-RANKING DE SENSIBILIDAD:
-  1. Nº de rotores T100 (8 vs 16)   -29% en v_inducida     -> MINUTOS: contar y fotografiar
-  2. Reparto de empuje coaxial      +-20% por disco       -> RPM por rotor + bancada
-  3. Posicion Z de atomizadores     +-6.7% altura caida   -> MINUTOS: cinta metrica
-  4. Posicion XYZ de rotores        +-3.5-4.3% separacion -> MINUTOS: cinta metrica
-  5. Separacion axial del par       +-3.3% longitud estela-> MINUTOS: cinta metrica
-  6. RPM real                       no cuantificable      -> tacometro en hover
+DOS BUGS FISICOS ENCONTRADOS Y CORREGIDOS (por que importa documentarlos):
+  a) VISCOSIDAD EQUIVOCADA en la ley de Stokes: se usaba MU_W = 8.36e-4 (AGUA) cuando la
+     gota cae en AIRE, cuya viscosidad es 1.86e-5. Factor ~45 de error en la velocidad
+     terminal. Al verificar contra valores canonicos (100 um -> ~0.25-0.30 m/s) se detecto.
+     Corregido: 100 um -> 0.243 m/s ; 200 um -> 0.699 m/s ; 500 um -> 2.02 m/s.
+  b) SOBRE-CORRECCION DE ARRASTRE: se calculaba Stokes y luego se aplicaba el factor de
+     Schiller-Naumann como si Re fuera grande, sobrecorrigiendo en el regimen de Stokes.
+     Corregido con iteracion hasta convergencia.
 
-  HALLAZGO: cuatro de las seis incognitas se resuelven con CINTA METRICA Y CONTEO, sin
-  instrumentos especiales ni volar. El estudio parametrico es viable hoy y la medicion no es
-  prerrequisito para empezar: es una mejora de retorno alto y coste bajo que avanza en
-  paralelo. Los valores O/I/E se PROMUEVEN a M; el trabajo no se tira.
+  Y un tercer defecto de modelado: sigma_y daba IDENTICO en las 4 plataformas porque en la
+  formula original v_ind se cancelaba algebraicamente. Rehecho con difusion turbulenta
+  (u' = 0.15*v_ind, sigma_y = sqrt(sigma0^2 + 2*u'*L*t_caida)): ahora T25P 1.069 m y
+  T100 1.075 m, como corresponde.
 
-Sigue prohibido: llamar validado a cualquier resultado con esta base; cerrar gates con
-O/I/E; citar valores O como de DJI; alimentar la app con geometria supuesta.
+HALLAZGO FISICO: el numero de Stokes separa dos regimenes y la frontera cae DENTRO del rango
+operativo. 100 um -> St 0.55 (sigue las lineas de flujo); 200 um -> 1.74 (transicion);
+300 um -> 3.73; 500 um -> 11.4 (balistico, el downwash apenas lo desvia). Fundamento
+cuantitativo de H6: el tamano de gota no cambia el resultado un poco, cambia el REGIMEN.
 
-Ningun gate cambia de estado. La campana de medicion del investigador esta en curso.
+LO QUE NO SE ENTREGA, Y POR QUE:
+  Las tablas cfd_* estan VACIAS. Este entorno no tiene OpenFOAM (WSL bloqueado) y
+  inventar resultados de simulacion invalidaria el proyecto (context.md SS7, SS51).
+  Se entrega la maquina completa que los produce, no numeros falsos.
+
+Ningun gate cambia de estado. La geometria sigue siendo P/S/O/I, no M.

@@ -1,0 +1,94 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     simpleFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         2000;
+deltaT          1;
+writeControl    timeStep;
+writeInterval   100;
+purgeWrite      3;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    // plano receptor a la altura del suelo: D(x,y) se integra aqui
+    receptorPlane
+    {
+        type            surfaces;
+        libs            ("libsampling.so");
+        surfaceFormat   raw;
+        fields          (U p k omega);
+        interpolationScheme cellPoint;
+        surfaces
+        {
+            ground
+            {
+                type        plane;
+                planeType   pointAndNormal;
+                pointAndNormalDict
+                {
+                    point   (0 0 -2.3310000000000004);
+                    normal  (0 0 1);
+                }
+                triangulate false;
+            }
+        }
+    }
+
+    // lineas verticales: perfil de downwash u(z) bajo cada rotor
+    downwashLines
+    {
+        type            sets;
+        libs            ("libsampling.so");
+        writeControl    timeStep;
+        writeInterval   100;
+        interpolationScheme cellPoint;
+        setFormat       raw;
+        fields          (U k omega);
+        sets
+        {
+            line_under_rotor1
+            {
+                type        uniform;
+                axis        z;
+                start       (0.8238 0.8238 -2.321);
+                end         (0.8238 0.8238 1.0);
+                nPoints     60;
+            }
+        }
+    }
+
+    // residuos y fuerzas en el disco
+    forces
+    {
+        type            forces;
+        libs            ("libforces.so");
+        writeControl    timeStep;
+        writeInterval   20;
+        patches         (ground);
+        rho             rhoInf;
+        rhoInf          1.1716;
+        CofR            (0 0 0);
+    }
+}

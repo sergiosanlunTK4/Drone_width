@@ -1,0 +1,58 @@
+{
+  "case_id": "T70P_V2.5_H1.5_d177_f0.20_a4",
+  "plataforma": "T70P",
+  "nombre_plataforma": "DJI Agras T70P",
+  "arquitectura_cfd": "C (equilibrio fisico) -> B (actuator disk con empuje prescrito)",
+  "entradas": {
+    "V_inf_ms": 2.488,
+    "H_m": 1.549,
+    "DV05_um": 177.0,
+    "carga_fraccion": 0.1984,
+    "masa_total_kg": 69.89,
+    "atomizadores": 4,
+    "split_coaxial_superior": 0.698
+  },
+  "derivados_analiticos": {
+    "n_rotores_modelados": 8,
+    "r_rotor_m": 0.787,
+    "area_disco_total_m2": 15.5664,
+    "empuje_total_N": 685.62,
+    "empuje_por_disco_N": {
+      "R1_upper": 119.64,
+      "R1_lower": 51.76,
+      "R2_upper": 119.64,
+      "R2_lower": 51.76,
+      "R3_upper": 119.64,
+      "R3_lower": 51.76,
+      "R4_upper": 119.64,
+      "R4_lower": 51.76
+    },
+    "v_inducida_hover_ms": 4.336
+  },
+  "dominio": {
+    "x": [
+      -6.0,
+      14.0
+    ],
+    "y": [
+      -6.0,
+      6.0
+    ],
+    "z": [
+      -1.549,
+      4.0
+    ],
+    "nota": "suelo a -H (altura real)"
+  },
+  "propiedades_fluido": {
+    "rho": 1.1716,
+    "nu": 1.5e-05,
+    "p_atm": 101325.0,
+    "agua_rho": 996.2,
+    "agua_mu": 0.000836,
+    "agua_sigma": 0.0719
+  },
+  "clasificacion_geometria": "P/S/O/I — NO M. Ver geometry/presupuesto_hipotesis.md",
+  "estado": "generado_no_ejecutado",
+  "no_contiene": "ningun resultado de CFD: este archivo describe el caso, no su salida"
+}
