@@ -119,18 +119,56 @@ def analitico(plat: dict, masa: float, d_um: float, H: float, V: float, n_atom: 
     t_free = H / v_term if v_term > 0 else float("inf")
     dominancia_estela = max(0.0, min(1.0, 1.0 - t_free / t_caida)) if t_caida > 0 else 0.0
 
-    # --- DISPERSION LATERAL: difusion turbulenta durante el tiempo de caida.
-    k_turb = 0.15                                # u' ~ k_turb * v_ind
+    # --- NUMERO DE STOKES: NO EXISTE UNO SOLO.
+    # St = tau_p / tau_f, y tau_f depende de QUE fenomeno se compara. Reportar "St = 2.1"
+    # sin declarar tau_f es indefendible. Aqui se calculan VARIAS definiciones, cada una
+    # con su escala declarada, y se guarda la principal con su definicion explicita.
+    #
+    #   St_rotor : tau_f = r_rotor / v_dw      -> tiempo de paso por el disco (escala GLOBAL)
+    #   St_estela: tau_f = L_estela / v_dw     -> tiempo de residencia en la estela
+    #   St_turb  : tau_f = L_turb / u'         -> escala turbulenta (turbulencia inducida)
+    #
+    # La escala del rotor pierde sentido lejos del disco (allí la estela ha decaido y la
+    # turbulencia local es menor). La escala turbulenta es la correcta para juzgar el
+    # SEGUIMIENTO DE FLUCTUACIONES, que es lo unico que un St alto permite afirmar.
+    tau_p = RHO_W * dp ** 2 / (18.0 * MU_AIR)          # tiempo de respuesta de la gota
+
+    # escala 1: rotor / downwash global
+    tau_f_rotor = r / max(v_dw, 1e-6)
+    St_rotor = tau_p / tau_f_rotor
+
+    # escala 2: residencia en la estela (longitud de estela ~ altura de vuelo)
+    L_estela = H
+    tau_f_estela = L_estela / max(v_dw, 1e-6)
+    St_estela = tau_p / tau_f_estela
+
+    # escala 3: turbulenta. u' = k_turb * v_ind ; L_turb ~ r_rotor
+    k_turb = 0.15
     u_prime = k_turb * v_ind
-    L_turb = r                                   # escala de mezcla ~ radio del rotor
+    L_turb = r
+    tau_f_turb = L_turb / max(u_prime, 1e-6)
+    St_turb = tau_p / tau_f_turb
+
+    # St de referencia declarado = el de la escala que se usa para la afirmacion fisica
+    St = St_rotor
+    definicion_St = "St_rotor = tau_p / (r_rotor/v_dw): escala del disco/downwash global"
+
+    # --- ACELERACION POR EL CAMPO MEDIO (esto NO lo dice el numero de Stokes).
+    # Un St alto implica menor seguimiento de FLUCTUACIONES y de la curvatura de las lineas
+    # de flujo. NO implica ausencia de aceleracion por el campo medio.
+    # La comparacion relevante es arrastre del campo medio frente a gravedad.
+    F_grav = (RHO_W - RHO) * (math.pi / 6.0) * dp ** 3 * G          # peso neto
+    # arrastre en el campo medio del downwash, con Cd(Re) coherente
+    Re_dw = RHO * v_dw * dp / MU_AIR
+    Cd_dw = 24.0 / max(Re_dw, 1e-12) * (1.0 + 0.15 * max(Re_dw, 1e-12) ** 0.687)
+    A_p = math.pi * r_p ** 2
+    F_drag_dw = 0.5 * RHO * Cd_dw * A_p * v_dw ** 2
+    ratio_arrastre_gravedad = F_drag_dw / F_grav if F_grav > 0 else float("inf")
+
+    # --- DISPERSION LATERAL: difusion turbulenta durante el tiempo de caida.
     sigma0 = 0.10 * (plat["atom_sep"] / 2000.0)  # abanico inicial del atomizador
     sigma_y = math.sqrt(sigma0 ** 2 + 2.0 * (u_prime * L_turb) * t_caida)
     W_eff = 4.0 * sigma_y
-
-    # --- numero de Stokes: inercia de la gota frente al tiempo caracteristico del flujo
-    tau_p = RHO_W * dp ** 2 / (18.0 * MU_AIR)
-    tau_f = r / max(v_dw, 1e-6)
-    St = tau_p / tau_f
 
     # CV de solape para un interlineado s: modelo de solape de perfiles Gaussianos
     def cv_para_spacing(s: float) -> float:
@@ -182,7 +220,17 @@ def analitico(plat: dict, masa: float, d_um: float, H: float, V: float, n_atom: 
         "tiempo_residencia_estela_s": round(t_caida, 4),
         "v_terminal_gota_ms": round(v_term, 4),
         "Re_particula": round(Re_p, 3),
+        # --- numeros de Stokes: SIEMPRE con su definicion declarada
         "Stokes_number": round(St, 4),
+        "St_definicion": definicion_St,
+        "St_rotor": round(St_rotor, 4),
+        "St_estela": round(St_estela, 4),
+        "St_turbulento": round(St_turb, 4),
+        "tau_particula_s": round(tau_p, 8),
+        # --- campo medio frente a gravedad (lo que el St NO dice)
+        "F_gravedad_N": round(F_grav, 12),
+        "F_arrastre_downwash_N": round(F_drag_dw, 12),
+        "ratio_arrastre_gravedad": round(ratio_arrastre_gravedad, 4),
         "dominancia_estela": round(dominancia_estela, 4),
         "sigma_y_m": round(sigma_y, 4),
         "ancho_efectivo_analitico_m": round(W_eff, 3),
@@ -237,7 +285,18 @@ CREATE TABLE IF NOT EXISTS analytic_metrics (
     empuje_total_N REAL, v_inducida_hover_ms REAL, v_downwash_nucleo_ms REAL,
     potencia_ideal_W REAL, potencia_estimada_W REAL, figura_merito_supuesta REAL,
     tiempo_residencia_estela_s REAL, v_terminal_gota_ms REAL, Re_particula REAL,
-    Stokes_number REAL, dominancia_estela REAL, sigma_y_m REAL,
+    -- numeros de Stokes: NUNCA uno solo. Cada uno con su escala temporal declarada.
+    Stokes_number REAL,
+    St_definicion TEXT,
+    St_rotor REAL,
+    St_estela REAL,
+    St_turbulento REAL,
+    tau_particula_s REAL,
+    -- campo medio frente a gravedad: lo que el numero de Stokes NO informa
+    F_gravedad_N REAL,
+    F_arrastre_downwash_N REAL,
+    ratio_arrastre_gravedad REAL,
+    dominancia_estela REAL, sigma_y_m REAL,
     ancho_efectivo_analitico_m REAL, interlineado_recomendado_m REAL,
     cv_en_interlineado_recomendado_pct REAL, D_center_normalizado REAL,
     deriva_estimada_ms REAL,
@@ -349,12 +408,16 @@ def main() -> int:
         m = analitico(plat, float(f["masa_total_kg"]), float(f["DV05_um"]),
                       float(f["H_m"]), float(f["V_inf_ms"]), int(f["atomizadores"]))
         con.execute(
-            "INSERT INTO analytic_metrics VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO analytic_metrics VALUES ("
+            + ",".join(["?"] * 30) + ")",
             (f["case_id"], m["n_rotores"], m["area_disco_total_m2"], m["carga_disco_N_m2"],
              m["empuje_total_N"], m["v_inducida_hover_ms"], m["v_downwash_nucleo_ms"],
              m["potencia_ideal_W"], m["potencia_estimada_W"], m["figura_merito_supuesta"],
              m["tiempo_residencia_estela_s"], m["v_terminal_gota_ms"], m["Re_particula"],
-             m["Stokes_number"], m["dominancia_estela"], m["sigma_y_m"],
+             m["Stokes_number"], m["St_definicion"], m["St_rotor"], m["St_estela"],
+             m["St_turbulento"], m["tau_particula_s"],
+             m["F_gravedad_N"], m["F_arrastre_downwash_N"], m["ratio_arrastre_gravedad"],
+             m["dominancia_estela"], m["sigma_y_m"],
              m["ancho_efectivo_analitico_m"], m["interlineado_recomendado_m"],
              m["cv_en_interlineado_recomendado_pct"], m["D_center_normalizado"],
              m["deriva_estimada_ms"], m["origen_dato"]))

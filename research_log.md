@@ -665,4 +665,103 @@ a `M` cuando lleguen las filas; el trabajo no se tira.
 
 - **Estado:** `PHASE_01_SPECIFICATIONS`. Estudio paramétrico **habilitado**; medición **en curso**.
 
+### Entry 016 | GATE CFD-0, corrección del número de Stokes y módulo Lagrangiano especificado
+- **Date:** 2026-09-14
+- **Disparador:** séptima revisión del investigador. Tres objeciones, las tres aceptadas.
+
+**1. Objeción aceptada: "128/128 estructuralmente verificados" NO es "128 casos CFD validados"**
+
+Es correcto y era una afirmación mía que no se sostenía. `actuationDiskSource`, las `cellZone`,
+el **signo del empuje**, las BC de traslación y los `function objects` son **hipótesis de
+implementación** hasta que un caso corra de punta a punta.
+
+→ Creado **GATE CFD-0** (protocolo §0), bloqueante, con alcance de **un solo caso T25P nominal**:
+
+```
+blockMesh → checkMesh → topoSet → solver 100-500 iter
+          → confirmar actuationDiskSource → function objects → postprocess
+```
+
+Criterios verificables: `checkMesh` sin errores; una `cellZone` por rotor con el número correcto;
+≥100 iteraciones sin divergir; **evidencia cuantitativa de que el disco actúa**; **signo del
+downwash verificado** (el error más probable y más silencioso, porque el solver converge igual);
+`function objects` con ficheros no vacíos; `postprocess_case.py` que los lea; y coste medido.
+
+Artefactos: `scripts/gate_cfd0.sh` (secuencia completa con criterios) y
+`scripts/check_cfd0_evidence.py` (comprueba que el perfil de downwash **no sea constante**, que el
+signo sea correcto y que la magnitud esté dentro de un factor 5 de `√(T/2ρA)`).
+
+> **CFD-0 NO se ha podido ejecutar.** Verificado: no hay `blockMesh`, `checkMesh`, `simpleFoam`
+> ni `topoSet` en el PATH, no hay instalación en rutas típicas, y **WSL devuelve acceso denegado**.
+> Además, `bash` **también está bloqueado** en este entorno, así que los tres `.sh`
+> (`run_cfd_suite.sh`, `gate_cfd0.sh`) **no se han podido ejecutar ni verificar aquí** y se
+> declaran como no probados.
+> **Consecuencia:** los 128 casos son **casos generados, no casos CFD validados**, y así deben
+> citarse. Escalar la suite queda bloqueado hasta cerrar CFD-0.
+
+**2. Objeción aceptada: el número de Stokes no existe sin declarar la escala temporal**
+
+Corregido en el código, no solo matizado. `analytic_metrics` ahora guarda **tres definiciones**
+con su escala explícita y un campo `St_definicion` que declara cuál es la principal:
+
+| Definición | τ_f | 100 µm | 500 µm |
+|---|---|---|---|
+| `St_rotor` | `r_rotor / v_dw` (escala global) | 0,519 | 12,97 |
+| `St_estela` | `H / v_dw` | 0,136 | 3,40 |
+| `St_turbulento` | `L_turb / u'` | 0,039 | **0,973** |
+
+**Y la afirmación sobre H6 estaba mal, no solo mal formulada.** Se retira:
+
+> ~~"St = 11,4 ⇒ balístico, el downwash apenas lo desvía"~~
+
+Es **falso** en este rango. Añadido el criterio correcto (que el St **no** informa): el cociente
+entre arrastre del campo medio y peso neto, `F_arrastre/F_gravedad`, que va de **198** (100 µm) a
+**20** (500 µm). **Donde hay downwash, el arrastre supera al peso en más de un orden de magnitud
+para todos los tamaños del rango operativo.** Un St alto implica menor seguimiento de
+*fluctuaciones* y de la curvatura de líneas de flujo, **no** ausencia de aceleración por el campo
+medio.
+
+**Reformulación de H6 con lo que sí se sostiene:** el tamaño de gota **no** separa limpiamente
+"sigue la estela" de "penetra balísticamente". Lo que cambia con el tamaño es (a) el seguimiento
+de las **fluctuaciones** (St_turb de 0,039 a 0,973, cruza 1 dentro del rango) y (b) el **tiempo de
+residencia** en la estela, porque la velocidad terminal crece mucho más rápido que el arrastre.
+Artefacto: `scripts/report_stokes.py`.
+
+**3. Objeción aceptada: separación conceptual del módulo Lagrangiano**
+
+Regla incorporada al código y a la especificación:
+
+```
+flujo de aire → trayectorias de gotas → D(x,y) → ancho efectivo / uniformidad
+```
+
+- **`sigma_y` analítico NO alimenta la deposición CFD.** Queda como **baseline independiente**
+  contra el cual comparar. Si se usara, se construiría en la simulación aquello que luego se
+  pretende descubrir.
+- **D(x,y) sale de contar impactos**, no de una fórmula.
+
+`scripts/build_lagrangian_spec.py` → `lagrangian_spec.json` + `constant/cloudProperties` por caso.
+**Especificado y validado estructuralmente, NO ejecutado.** Contiene lo que el investigador pidió:
+
+- inyección desde la **posición y orientación real** del atomizador (con la **Z como parámetro**,
+  porque sigue en `D`: se barre −0,10 / −0,20 / −0,30 m);
+- **distribución de diámetros** Rosin-Rammler discretizada en 12 bins (no una sola gota), con
+  `q = 2.0` marcado como **supuesto declarado**;
+- velocidad inicial, gravedad y **arrastre dependiente de Re_p** (`sphereDrag`,
+  Cd = 24/Re·(1+0,15Re^0,687)); se documenta explícitamente que **no** se usa ley lineal de Stokes
+  porque Re_p va de ~1 a ~30 en el rango 100–500 µm;
+- **evaporación, breakup y turbulencia estocástica declarados y desactivados por defecto**, con su
+  razón escrita, activables por caso para análisis de sensibilidad — **no introducidos en silencio
+  como "realismo"**;
+- detección de impacto en el patch `ground`, con `stick` declarado.
+
+**4. Orden de ejecución actualizado (vinculante)**
+
+```
+Stokes explícito ✅ → Lagrangiano diseñado ✅ sin ejecutar → esperar mediciones
+   → cerrar T25P GATE 1A → UN smoke case (CFD-0) → recién entonces escalar a los 128
+```
+
+- **Estado:** `PHASE_01_SPECIFICATIONS`. Nada medido, ningún gate cerrado, CFD no ejecutado.
+
 ---

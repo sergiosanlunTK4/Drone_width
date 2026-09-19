@@ -1,57 +1,63 @@
-suite CFD completa (128 casos), base de datos y capa analitica — con 2 bugs fisicos corregidos
+GATE CFD-0, correccion del numero de Stokes y modulo Lagrangiano especificado
 
-El investigador pide avanzar hasta la base de datos completa con los 4 modelos y las
-simulaciones. Se entrega TODO lo construible sin OpenFOAM, y se declara con precision que
-falta.
+Tres objeciones del investigador, las tres aceptadas.
 
-LO QUE SE ENTREGA:
-  1. scripts/build_case_suite.py -> DOE POR PLATAFORMA (no comun) con LHS estratificado:
-     128 casos (32 por plataforma). Cada plataforma tiene su envolvente (V 2-13 m/s,
-     H 1.5-6 m, d 100-500 um, carga 0-1, 2/4 atomizadores, split coaxial barrido).
-     Genera el arbol OpenFOAM completo de los 128 casos: blockMeshDict, controlDict con
-     function objects (plano receptor, lineas de downwash, fuerzas), fvSchemes, fvSolution,
-     turbulenceProperties, transportProperties, condiciones de contorno REALES con
-     traslacion, topoSetDict (una cellZone cilindrica por rotor), fvOptions con
-     actuationDiskSource por disco, snappyHexMeshDict y case_meta.json con trazabilidad.
-     Los 128 casos verificados estructuralmente: 128/128 completos.
+1. "128/128 estructuralmente verificados" NO es "128 casos CFD validados". Correcto: era una
+   afirmacion mia que no se sostenia. actuationDiskSource, las cellZone, el SIGNO del empuje,
+   las BC de traslacion y los function objects son hipotesis de implementacion hasta que un
+   caso corra de punta a punta.
 
-  2. Arquitectura CFD implementada: C (equilibrio fisico) -> B (actuator disk con empuje
-     prescrito). El reparto superior/inferior del par coaxial es un PARAMETRO barrido
-     (0.5/0.6/0.7), no una suposicion. diskDir (0 0 -1).
+   -> GATE CFD-0 (protocolo), bloqueante, alcance UN caso T25P nominal:
+      blockMesh -> checkMesh -> topoSet -> solver 100-500 iter -> confirmar
+      actuationDiskSource -> function objects -> postprocess
+   Criterios verificables, incluido el SIGNO del downwash (el error mas probable y mas
+   silencioso, porque el solver converge igual con el signo invertido).
+   Artefactos: scripts/gate_cfd0.sh y scripts/check_cfd0_evidence.py (comprueba que el
+   perfil no sea constante, que el signo sea correcto y que la magnitud este dentro de un
+   factor 5 de sqrt(T/2 rho A)).
 
-  3. scripts/build_database.py -> base SQLite con 10 tablas + vista de estado:
-     platforms(4), cases(128), analytic_metrics(128), y las tablas cfd_airflow,
-     cfd_deposition, cfd_swath_metrics, experiments, surrogate_models VACIAS A PROPOSITO.
-     Cada fila analitica lleva origen_dato declarando que NO es CFD.
+   CFD-0 NO se ha podido ejecutar: no hay blockMesh/checkMesh/simpleFoam/topoSet en el PATH,
+   no hay instalacion en rutas tipicas, y WSL devuelve acceso denegado. Ademas bash TAMBIEN
+   esta bloqueado, asi que los .sh no se han podido ejecutar ni verificar aqui y se declaran
+   NO PROBADOS. Consecuencia: los 128 casos son CASOS GENERADOS, no CFD validados.
 
-  4. scripts/run_cfd_suite.sh y scripts/postprocess_case.py: el runner y el extractor que
-     pueblan las tablas cfd_* cuando haya OpenFOAM. El extractor NO escribe metricas si el
-     caso no convergio: registra el fallo.
+2. El numero de Stokes no existe sin declarar la escala temporal. Corregido en el CODIGO, no
+   solo matizado: analytic_metrics guarda TRES definiciones con su escala y un campo
+   St_definicion que declara la principal.
 
-  5. scripts/check_database.py, scripts/verify_droplet_physics.py.
+     St_rotor      (r_rotor/v_dw)   100um 0.519   500um 12.97
+     St_estela     (H/v_dw)         100um 0.136   500um 3.40
+     St_turbulento (L_turb/u')      100um 0.039   500um 0.973
 
-DOS BUGS FISICOS ENCONTRADOS Y CORREGIDOS (por que importa documentarlos):
-  a) VISCOSIDAD EQUIVOCADA en la ley de Stokes: se usaba MU_W = 8.36e-4 (AGUA) cuando la
-     gota cae en AIRE, cuya viscosidad es 1.86e-5. Factor ~45 de error en la velocidad
-     terminal. Al verificar contra valores canonicos (100 um -> ~0.25-0.30 m/s) se detecto.
-     Corregido: 100 um -> 0.243 m/s ; 200 um -> 0.699 m/s ; 500 um -> 2.02 m/s.
-  b) SOBRE-CORRECCION DE ARRASTRE: se calculaba Stokes y luego se aplicaba el factor de
-     Schiller-Naumann como si Re fuera grande, sobrecorrigiendo en el regimen de Stokes.
-     Corregido con iteracion hasta convergencia.
+   Y la afirmacion sobre H6 estaba MAL, no solo mal formulada. Se retira:
+     "St = 11.4 => balistico, el downwash apenas lo desvia"   <- FALSO en este rango
+   Anadido el criterio correcto que el St NO informa: el cociente arrastre del campo medio
+   frente a peso neto, F_arrastre/F_gravedad, que va de 198 (100 um) a 20 (500 um). DONDE HAY
+   DOWNWASH EL ARRASTRE SUPERA AL PESO EN MAS DE UN ORDEN DE MAGNITUD para todos los tamanos
+   del rango operativo. Un St alto implica menor seguimiento de FLUCTUACIONES, no ausencia de
+   aceleracion por el campo medio.
 
-  Y un tercer defecto de modelado: sigma_y daba IDENTICO en las 4 plataformas porque en la
-  formula original v_ind se cancelaba algebraicamente. Rehecho con difusion turbulenta
-  (u' = 0.15*v_ind, sigma_y = sqrt(sigma0^2 + 2*u'*L*t_caida)): ahora T25P 1.069 m y
-  T100 1.075 m, como corresponde.
+   H6 reformulada con lo que si se sostiene: el tamano de gota NO separa limpiamente "sigue la
+   estela" de "penetra balisticamente". Cambian (a) el seguimiento de las fluctuaciones
+   (St_turb de 0.039 a 0.973, cruza 1) y (b) el tiempo de residencia en la estela.
+   Artefacto: scripts/report_stokes.py.
 
-HALLAZGO FISICO: el numero de Stokes separa dos regimenes y la frontera cae DENTRO del rango
-operativo. 100 um -> St 0.55 (sigue las lineas de flujo); 200 um -> 1.74 (transicion);
-300 um -> 3.73; 500 um -> 11.4 (balistico, el downwash apenas lo desvia). Fundamento
-cuantitativo de H6: el tamano de gota no cambia el resultado un poco, cambia el REGIMEN.
+3. Separacion conceptual del Lagrangiano, incorporada al codigo:
+     flujo de aire -> trayectorias -> D(x,y) -> ancho efectivo/uniformidad
+   sigma_y analitico NO alimenta la deposicion CFD: queda como baseline independiente. D(x,y)
+   sale de CONTAR IMPACTOS, no de una formula.
 
-LO QUE NO SE ENTREGA, Y POR QUE:
-  Las tablas cfd_* estan VACIAS. Este entorno no tiene OpenFOAM (WSL bloqueado) y
-  inventar resultados de simulacion invalidaria el proyecto (context.md SS7, SS51).
-  Se entrega la maquina completa que los produce, no numeros falsos.
+   scripts/build_lagrangian_spec.py -> lagrangian_spec.json + constant/cloudProperties por
+   caso. ESPECIFICADO, NO EJECUTADO. Incluye: inyeccion desde posicion y orientacion real del
+   atomizador (con la Z como PARAMETRO, porque sigue en D: se barre -0.10/-0.20/-0.30 m);
+   distribucion de diametros Rosin-Rammler en 12 bins con q=2.0 marcado como supuesto
+   declarado; gravedad y arrastre dependiente de Re_p (sphereDrag, NO ley lineal de Stokes,
+   porque Re_p va de ~1 a ~30); evaporacion, breakup y turbulencia estocastica DECLARADOS Y
+   DESACTIVADOS por defecto con su razon escrita, activables para sensibilidad; y deteccion de
+   impacto en el patch ground con stick.
 
-Ningun gate cambia de estado. La geometria sigue siendo P/S/O/I, no M.
+ORDEN ACTUALIZADO (vinculante):
+  Stokes explicito (hecho) -> Lagrangiano disenado (hecho) sin ejecutar -> esperar mediciones
+  -> cerrar T25P GATE 1A -> UN smoke case (CFD-0) -> recien entonces escalar a los 128.
+
+Ningun gate cerrado. Nada medido. CFD no ejecutado.

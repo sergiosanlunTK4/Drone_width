@@ -35,6 +35,58 @@ configuración de rotor ↔ condición atmosférica** (§6.1).
 **NO bloquea:** validar topología, dominios, refinamientos ni comparaciones relativas entre
 plataformas a igualdad de hipótesis de empuje.
 
+### GATE CFD-0 — la suite es ejecutable (nuevo, 2026-09-14)
+
+**El problema que resuelve:** haber generado 128 casos y verificado que su estructura de ficheros
+está completa **no significa que sean físicamente ejecutables**. `actuationDiskSource`, las
+`cellZone`, los signos y direcciones del empuje, las condiciones de contorno de traslación y los
+`function objects` siguen siendo **hipótesis de implementación** hasta que un caso corra de
+principio a fin. Decir "128/128 verificados" sin haber ejecutado ninguno es una afirmación que no
+se sostiene.
+
+**Alcance: UN SOLO caso, T25P nominal.** No se escala a los 128 antes de cerrar este gate.
+
+**Secuencia obligatoria:**
+
+```
+blockMesh  →  checkMesh  →  topoSet  →  solver ~100-500 iteraciones
+           →  confirmar actuationDiskSource  →  function objects  →  postprocess
+```
+
+**Criterios de cierre (todos verificables, ninguno interpretable):**
+
+- [ ] `blockMesh` termina sin errores y `checkMesh` reporta **0 errores** de calidad
+      (se reportan también `maxNonOrtho` y `maxSkewness` aunque pasen).
+- [ ] `topoSet` crea **una `cellZone` por rotor** y el número coincide con los rotores modelados.
+- [ ] El solver corre **≥100 iteraciones** sin divergir; se reporta la evolución de residuales.
+- [ ] **`actuationDiskSource` se confirma efectivamente aplicado:** evidencia de que el disco
+      introduce el empuje previsto. Criterio cuantitativo: el salto de presión/velocidad en la
+      zona del disco es del orden del esperado por momentum theory
+      (`v_ind = sqrt(T/(2·rho·A_disk))`), no cero ni un orden de magnitud fuera.
+- [ ] **Signo del empuje verificado:** el downwash va **hacia abajo** (`Uz < 0` bajo el disco).
+      Un signo invertido es el error más probable y más silencioso de toda la configuración.
+- [ ] Los **`function objects` producen ficheros**: el plano receptor, las líneas de downwash y
+      las fuerzas existen en `postProcessing/` y tienen contenido no vacío.
+- [ ] `postprocess_case.py` **lee** esas salidas y escribe la fila en `cfd_airflow`.
+- [ ] Se reporta el **coste** (núcleos, tiempo de pared por iteración) para dimensionar la suite.
+
+**Bloquea:** escalar a los 128 casos, y toda la capa Lagrangiana de deposición.
+**NO bloquea:** la capa analítica, el diseño del DOE ni la especificación Lagrangiana.
+
+> **Estado actual: CFD-0 NO se ha podido ejecutar** porque este entorno **no tiene OpenFOAM**
+> (`blockMesh`, `checkMesh`, `simpleFoam`, `topoSet` no están en el PATH) y **WSL está bloqueado**.
+> Por tanto, los 128 casos son **casos generados, no casos CFD validados**. Así deben citarse.
+
+### Qué falta para que cada gate cierre
+
+| Gate | Qué lo cierra | Estado |
+|---|---|---|
+| **1A** | medición física (bloques A/B) | ⬜ 0 filas |
+| **1B** | RPM real + reparto de empuje | ⬜ |
+| **CFD-0** | un caso T25P ejecutado de punta a punta | ⬜ sin OpenFOAM |
+| **CFD-suite** | 128 casos ejecutados y convergidos | ⬜ requiere CFD-0 |
+| **Lagrangiano** | deposición D(x,y) por conteo de impactos | ⬜ requiere CFD-suite |
+
 > Regla de honestidad: todo resultado obtenido con 1B abierto debe declararse como
 > **exploratorio** y no puede entrar al dataset ni al paper como dato de la plataforma real.
 
