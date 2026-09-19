@@ -73,9 +73,52 @@ blockMesh  →  checkMesh  →  topoSet  →  solver ~100-500 iteraciones
 **Bloquea:** escalar a los 128 casos, y toda la capa Lagrangiana de deposición.
 **NO bloquea:** la capa analítica, el diseño del DOE ni la especificación Lagrangiana.
 
-> **Estado actual: CFD-0 NO se ha podido ejecutar** porque este entorno **no tiene OpenFOAM**
-> (`blockMesh`, `checkMesh`, `simpleFoam`, `topoSet` no están en el PATH) y **WSL está bloqueado**.
-> Por tanto, los 128 casos son **casos generados, no casos CFD validados**. Así deben citarse.
+### Estado del entorno — DIAGNÓSTICO CORREGIDO (2026-09-14)
+
+> **Corrección de un diagnóstico previo mío, que era erróneo.**
+>
+> Afirmé que "este entorno no tiene OpenFOAM". **Es falso.** Lo que falla es el **acceso del
+> agente a WSL**, no la instalación. Verificado desde la terminal del investigador:
+
+```text
+WSL:            Ubuntu 2, disponible (wsl -l -v)
+Instalación:    /usr/lib/openfoam/openfoam2412     ← NO en /opt (ese camino no existe)
+Comando:        openfoam2412                        → abre shell de sesión OpenFOAM
+Build:          _b8cf4d35-20260127 (patch=260127), linux64GccDPInt32Opt, mpi=sys-openmpi
+```
+
+El build **coincide exactamente** con el que figura en `cfd/cases/T25P_baseline/log.snappyHexMesh`
+(`Build: _b8cf4d35-20260127 OPENFOAM=2412 patch=260127`), lo que confirma que la instalación es la
+misma que ya produjo la malla de ese caso. **OpenFOAM funcionaba y funciona.**
+
+**La distinción que importa:**
+
+| Afirmación | Verdadero/Falso |
+|---|---|
+| "OpenFOAM no está instalado" | ❌ **FALSO** |
+| "El agente no puede alcanzar WSL desde esta sesión" | ✅ **CIERTO** |
+| "`wsl -l -v` desde la sesión del agente devuelve `E_ACCESSDENIED`" | ✅ CIERTO |
+| "`bash` desde la sesión del agente también falla" | ✅ CIERTO |
+
+**Consecuencia operativa:** las herramientas `.sh` **no se han podido ejecutar ni probar desde el
+agente**, pero **sí se pueden ejecutar desde la terminal del investigador**. El gate CFD-0 es
+**ejecutable hoy**; lo que no puede es lanzarlo el agente.
+
+**Detalle crítico para el runner:** en una shell **no interactiva** el entorno de OpenFOAM **no
+está cargado** (`foamVersion: command not found`). El runner debe cargarlo explícitamente:
+
+```bash
+source /usr/lib/openfoam/openfoam2412/etc/bashrc     # vía no interactiva
+```
+
+Las tres herramientas `.sh` (`run_cfd_suite.sh`, `gate_cfd0.sh`) ya incorporan esta carga de
+entorno con autodetección.
+
+**Ruta del proyecto dentro de WSL:**
+
+```bash
+cd /mnt/c/Users/Dimasur/Downloads/AUTOMATIONS/DRONEWITH
+```
 
 ### Qué falta para que cada gate cierre
 
@@ -83,7 +126,7 @@ blockMesh  →  checkMesh  →  topoSet  →  solver ~100-500 iteraciones
 |---|---|---|
 | **1A** | medición física (bloques A/B) | ⬜ 0 filas |
 | **1B** | RPM real + reparto de empuje | ⬜ |
-| **CFD-0** | un caso T25P ejecutado de punta a punta | ⬜ sin OpenFOAM |
+| **CFD-0** | un caso T25P ejecutado de punta a punta | ⬜ **ejecutable ya desde la terminal del investigador** |
 | **CFD-suite** | 128 casos ejecutados y convergidos | ⬜ requiere CFD-0 |
 | **Lagrangiano** | deposición D(x,y) por conteo de impactos | ⬜ requiere CFD-suite |
 

@@ -25,31 +25,91 @@ set -uo pipefail
 CASES_DIR="${CASES_DIR:-cfd/cases}"
 ITER_TEST="${ITER_TEST:-300}"
 
-command -v blockMesh >/dev/null 2>&1 || {
-  echo "=============================================================="
-  echo " GATE CFD-0: BLOQUEADO"
-  echo "=============================================================="
-  echo " OpenFOAM no esta en el PATH. No se puede ejecutar el smoke test."
-  echo " Los 128 casos siguen siendo CASOS GENERADOS, no CFD validados."
-  echo "=============================================================="
-  exit 127
+# -----------------------------------------------------------------------------
+# CARGA DEL ENTORNO DE OpenFOAM
+#   En una shell NO interactiva el entorno NO esta cargado (foamVersion da
+#   "command not found"), aunque OpenFOAM este instalado. Hay que cargarlo aqui.
+#   Instalacion verificada en esta maquina:
+#       /usr/lib/openfoam/openfoam2412      (NO esta en /opt)
+#   Uso interactivo habitual: el comando `openfoam2412`, que abre shell de sesion.
+# -----------------------------------------------------------------------------
+cargar_openfoam() {
+  if command -v blockMesh >/dev/null 2>&1; then
+    return 0
+  fi
+  local candidatos=(
+    /usr/lib/openfoam/openfoam2412/etc/bashrc
+    /usr/lib/openfoam/openfoam*/etc/bashrc
+    /opt/openfoam*/etc/bashrc
+    "$HOME/OpenFOAM/OpenFOAM-*/etc/bashrc"
+  )
+  for c in "${candidatos[@]}"; do
+    # shellcheck disable=SC2086
+    for f in $(ls -d ${c} 2>/dev/null); do
+      # shellcheck disable=SC1090
+      if source "${f}" >/dev/null 2>&1; then
+        echo "  entorno OpenFOAM cargado desde: ${f}"
+        return 0
+      fi
+    done
+  done
+  return 1
 }
 
+echo "=============================================================="
+echo " GATE CFD-0 — smoke test"
+echo "=============================================================="
+echo "-- 0. entorno OpenFOAM"
+if ! cargar_openfoam; then
+  echo "  [BLOQUEADO] no se pudo cargar el entorno de OpenFOAM."
+  echo "  Comprueba desde tu terminal:"
+  echo "      wsl -d Ubuntu"
+  echo "      openfoam2412          # abre shell de sesion"
+  echo "      which blockMesh"
+  echo "      ls -d /usr/lib/openfoam/openfoam*"
+  echo "  Los 128 casos siguen siendo CASOS GENERADOS, no CFD validados."
+  exit 127
+fi
+echo "  [OK]    foamVersion = $(foamVersion 2>/dev/null || echo '?')"
+echo "  [OK]    blockMesh   = $(command -v blockMesh)"
+echo "  [OK]    checkMesh   = $(command -v checkMesh)"
+echo "  [OK]    topoSet     = $(command -v topoSet)"
+echo "  [OK]    simpleFoam  = $(command -v simpleFoam)"
+
 if [[ "${1:-}" == "--list" ]]; then
-  find "${CASES_DIR}" -maxdepth 1 -type d -name "T25P_*" | sort | head -40
+  echo "Casos T25P disponibles (y distancia a operacion tipica V=5, H=3, d=200):"
+  bash -c 'cd "'"${CASES_DIR}"'" 2>/dev/null || exit 1
+    for d in T25P_V*; do
+      [ -d "$d" ] || continue
+      V=$(echo "$d" | sed -E "s/.*_V([0-9.]+)_.*/\1/")
+      H=$(echo "$d" | sed -E "s/.*_H([0-9.]+)_.*/\1/")
+      D=$(echo "$d" | sed -E "s/.*_d([0-9]+)_.*/\1/")
+      echo "$d V=$V H=$H d=$D"
+    done | head -40'
   exit 0
 fi
 
-# Caso por defecto: el T25P mas cercano a operacion tipica (V~5 m/s, H~3 m, d~200 um)
+# Caso por defecto: el T25P mas cercano a operacion tipica (V~5 m/s, H~3 m, d~200 um).
+# Parseo explicito de campos, sin depender de Python ni de separadores fragiles.
 if [[ -n "${1:-}" ]]; then
   CASO="${1}"
 else
-  CASO="$(find "${CASES_DIR}" -maxdepth 1 -type d -name "T25P_*" | sort | \
-    awk -F'[VHd]' '{print $0}' | head -1)"
+  CASO="$(find "${CASES_DIR}" -maxdepth 1 -type d -name "T25P_V*" -printf '%f\n' 2>/dev/null | \
+    while IFS= read -r n; do
+      V="${n#*_V}"; V="${V%%_H*}"
+      H="${n#*_H}"; H="${H%%_d*}"
+      D="${n#*_d}"; D="${D%%_f*}"
+      case "${V}${H}${D}" in
+        *[!0-9.]*) continue ;;
+      esac
+      awk -v v="${V}" -v h="${H}" -v d="${D}" -v n="${n}" 'BEGIN{
+        printf "%.8f %s\n", ((v-5.0)/5.0)^2 + ((h-3.0)/3.0)^2 + ((d-200.0)/200.0)^2, n
+      }'
+    done | sort -g | head -1 | cut -d' ' -f2-)"
 fi
 CASO_PATH="${CASES_DIR}/${CASO}"
 
-[[ -d "${CASO_PATH}" ]] || { echo "no existe el caso ${CASO_PATH}"; exit 1; }
+[[ -d "${CASO_PATH}" ]] || { echo "no existe el caso '${CASO_PATH}'"; exit 1; }
 
 echo "=============================================================="
 echo " GATE CFD-0 — smoke test"

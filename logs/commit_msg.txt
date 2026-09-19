@@ -1,63 +1,53 @@
-GATE CFD-0, correccion del numero de Stokes y modulo Lagrangiano especificado
+diagnostico CORREGIDO: OpenFOAM SI esta instalado — falla el acceso del agente a WSL
 
-Tres objeciones del investigador, las tres aceptadas.
+El investigador objeta mi diagnostico de Entry 016 ("este entorno no tiene OpenFOAM").
+SU OBJECION ES CORRECTA Y LA MIA ERA ERRONEA.
 
-1. "128/128 estructuralmente verificados" NO es "128 casos CFD validados". Correcto: era una
-   afirmacion mia que no se sostenia. actuationDiskSource, las cellZone, el SIGNO del empuje,
-   las BC de traslacion y los function objects son hipotesis de implementacion hasta que un
-   caso corra de punta a punta.
+Verificado desde la terminal del investigador:
+  WSL Ubuntu 2 disponible
+  Instalacion: /usr/lib/openfoam/openfoam2412   <- NO en /opt (ese camino no existe)
+  Comando:     openfoam2412                      -> abre shell de sesion OpenFOAM
+  Build:       _b8cf4d35-20260127 (patch=260127), linux64GccDPInt32Opt
 
-   -> GATE CFD-0 (protocolo), bloqueante, alcance UN caso T25P nominal:
-      blockMesh -> checkMesh -> topoSet -> solver 100-500 iter -> confirmar
-      actuationDiskSource -> function objects -> postprocess
-   Criterios verificables, incluido el SIGNO del downwash (el error mas probable y mas
-   silencioso, porque el solver converge igual con el signo invertido).
-   Artefactos: scripts/gate_cfd0.sh y scripts/check_cfd0_evidence.py (comprueba que el
-   perfil no sea constante, que el signo sea correcto y que la magnitud este dentro de un
-   factor 5 de sqrt(T/2 rho A)).
+LA PRUEBA DECISIVA: ese build COINCIDE EXACTAMENTE con el de
+cfd/cases/T25P_baseline/log.snappyHexMesh. Es la MISMA instalacion que ya genero esa malla.
+OpenFOAM funcionaba.
 
-   CFD-0 NO se ha podido ejecutar: no hay blockMesh/checkMesh/simpleFoam/topoSet en el PATH,
-   no hay instalacion en rutas tipicas, y WSL devuelve acceso denegado. Ademas bash TAMBIEN
-   esta bloqueado, asi que los .sh no se han podido ejecutar ni verificar aqui y se declaran
-   NO PROBADOS. Consecuencia: los 128 casos son CASOS GENERADOS, no CFD validados.
+Lo verdadero y lo falso:
+  "OpenFOAM no esta instalado"                              -> FALSO
+  "el agente no puede alcanzar WSL desde esta sesion"        -> cierto
+  "wsl -l -v desde el agente -> E_ACCESSDENIED"              -> cierto
+  "bash desde el agente tambien falla"                       -> cierto
 
-2. El numero de Stokes no existe sin declarar la escala temporal. Corregido en el CODIGO, no
-   solo matizado: analytic_metrics guarda TRES definiciones con su escala y un campo
-   St_definicion que declara la principal.
+LECCION DE METODO: busque en rutas tipicas de Linux (/opt/openfoam*), no encontre nada y
+concluí ausencia de instalacion. El error fue saltar de "no lo encuentro desde aqui" a
+"no existe". No accesible != inexistente. Es el mismo tipo de error que este proyecto lleva
+quince revisiones evitando en el terreno de los datos, aplicado a mi mismo.
 
-     St_rotor      (r_rotor/v_dw)   100um 0.519   500um 12.97
-     St_estela     (H/v_dw)         100um 0.136   500um 3.40
-     St_turbulento (L_turb/u')      100um 0.039   500um 0.973
+BUG REAL EN LAS HERRAMIENTAS .sh (encontrado gracias al diagnostico correcto):
+  En shell NO interactiva el entorno de OpenFOAM NO esta cargado (foamVersion: command not
+  found) aunque este instalado. Mis tres .sh comprobaban `command -v blockMesh` y abortaban:
+  habrian fallado en la terminal del investigador con OpenFOAM perfectamente instalado.
+  -> Anadida funcion cargar_openfoam() con autodeteccion en gate_cfd0.sh, run_cfd_suite.sh y
+     verify_cfd_prereqs.sh. Los mensajes de ayuda ahora citan la ruta correcta.
 
-   Y la afirmacion sobre H6 estaba MAL, no solo mal formulada. Se retira:
-     "St = 11.4 => balistico, el downwash apenas lo desvia"   <- FALSO en este rango
-   Anadido el criterio correcto que el St NO informa: el cociente arrastre del campo medio
-   frente a peso neto, F_arrastre/F_gravedad, que va de 198 (100 um) a 20 (500 um). DONDE HAY
-   DOWNWASH EL ARRASTRE SUPERA AL PESO EN MAS DE UN ORDEN DE MAGNITUD para todos los tamanos
-   del rango operativo. Un St alto implica menor seguimiento de FLUCTUACIONES, no ausencia de
-   aceleracion por el campo medio.
+SEGUNDO BUG CORREGIDO: eleccion del caso CFD-0
+  El selector usaba head -1 sobre orden alfabetico (daba un T25P arbitrario), aunque el
+  comentario prometia "el mas cercano a operacion tipica". Reescrito con parseo explicito y
+  minimizacion de distancia relativa a V=5, H=3, d=200. Verificado sobre el FS real:
+  selecciona T25P_V3.1_H2.8_d190_f0.95_a4 (score 0.151). Implementado SIN depender de Python,
+  porque `which python3` no aparecio en la verificacion y puede no estar en el WSL.
 
-   H6 reformulada con lo que si se sostiene: el tamano de gota NO separa limpiamente "sigue la
-   estela" de "penetra balisticamente". Cambian (a) el seguimiento de las fluctuaciones
-   (St_turb de 0.039 a 0.973, cruza 1) y (b) el tiempo de residencia en la estela.
-   Artefacto: scripts/report_stokes.py.
+PREREQUISITO NUEVO DETECTADO: python3
+  postprocess_case.py y check_cfd0_evidence.py lo necesitan. Nuevo scripts/verify_cfd_prereqs.sh
+  que lo comprueba y falla con instruccion de instalacion en vez de romper a mitad del smoke test.
 
-3. Separacion conceptual del Lagrangiano, incorporada al codigo:
-     flujo de aire -> trayectorias -> D(x,y) -> ancho efectivo/uniformidad
-   sigma_y analitico NO alimenta la deposicion CFD: queda como baseline independiente. D(x,y)
-   sale de CONTAR IMPACTOS, no de una formula.
+GUIA OPERATIVA: geometry/COMO_EJECUTAR_CFD0.md — secuencia exacta PowerShell -> WSL ->
+openfoam2412 -> proyecto -> verify_cfd_prereqs.sh -> gate_cfd0.sh, con tabla de que significa
+cada fallo y que traer de vuelta.
 
-   scripts/build_lagrangian_spec.py -> lagrangian_spec.json + constant/cloudProperties por
-   caso. ESPECIFICADO, NO EJECUTADO. Incluye: inyeccion desde posicion y orientacion real del
-   atomizador (con la Z como PARAMETRO, porque sigue en D: se barre -0.10/-0.20/-0.30 m);
-   distribucion de diametros Rosin-Rammler en 12 bins con q=2.0 marcado como supuesto
-   declarado; gravedad y arrastre dependiente de Re_p (sphereDrag, NO ley lineal de Stokes,
-   porque Re_p va de ~1 a ~30); evaporacion, breakup y turbulencia estocastica DECLARADOS Y
-   DESACTIVADOS por defecto con su razon escrita, activables para sensibilidad; y deteccion de
-   impacto en el patch ground con stick.
+LO QUE SIGUE SIN VERIFICARSE, Y SE DECLARA: los .sh NO se han podido ejecutar ni probar desde
+el agente (WSL y bash bloqueados en esa sesion). Estan escritos para funcionar en la terminal
+del investigador; hasta que se ejecuten no estan verificados.
 
-ORDEN ACTUALIZADO (vinculante):
-  Stokes explicito (hecho) -> Lagrangiano disenado (hecho) sin ejecutar -> esperar mediciones
-  -> cerrar T25P GATE 1A -> UN smoke case (CFD-0) -> recien entonces escalar a los 128.
-
-Ningun gate cerrado. Nada medido. CFD no ejecutado.
+CFD-0 es ejecutable HOY desde la terminal del investigador.

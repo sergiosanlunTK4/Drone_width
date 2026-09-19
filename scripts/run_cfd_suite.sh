@@ -23,10 +23,35 @@ PLATFORM="${1:-all}"
 DRY=0
 [[ "${1:-}" == "--dry-run" ]] && { DRY=1; PLATFORM="all"; }
 
-command -v blockMesh >/dev/null 2>&1 || {
-  echo "ERROR: OpenFOAM no esta en el PATH. Ejecuta primero: source \$FOAM_INST_DIR/etc/bashrc"
-  exit 127
+# -----------------------------------------------------------------------------
+# CARGA DEL ENTORNO DE OpenFOAM
+#   En shell NO interactiva el entorno no esta cargado aunque OpenFOAM este instalado.
+#   Instalacion verificada en esta maquina: /usr/lib/openfoam/openfoam2412  (NO en /opt)
+# -----------------------------------------------------------------------------
+cargar_openfoam() {
+  command -v blockMesh >/dev/null 2>&1 && return 0
+  for f in $(ls -d /usr/lib/openfoam/openfoam*/etc/bashrc \
+                  /opt/openfoam*/etc/bashrc \
+                  "$HOME"/OpenFOAM/OpenFOAM-*/etc/bashrc 2>/dev/null); do
+    if source "${f}" >/dev/null 2>&1; then
+      echo "entorno OpenFOAM cargado desde: ${f}"
+      return 0
+    fi
+  done
+  return 1
 }
+
+if ! cargar_openfoam; then
+  echo "=============================================================="
+  echo " SUITE CFD: BLOQUEADA — no se pudo cargar el entorno de OpenFOAM"
+  echo "=============================================================="
+  echo " Comprueba desde tu terminal:"
+  echo "     wsl -d Ubuntu"
+  echo "     openfoam2412              # abre shell de sesion"
+  echo "     ls -d /usr/lib/openfoam/openfoam*"
+  echo "=============================================================="
+  exit 127
+fi
 
 echo "==================================================================="
 echo " SUITE CFD — arquitectura C (equilibrio) -> B (actuator disk)"

@@ -764,4 +764,79 @@ Stokes explícito ✅ → Lagrangiano diseñado ✅ sin ejecutar → esperar med
 
 - **Estado:** `PHASE_01_SPECIFICATIONS`. Nada medido, ningún gate cerrado, CFD no ejecutado.
 
+### Entry 017 | Diagnóstico corregido: OpenFOAM SÍ está instalado — es el acceso del agente a WSL
+- **Date:** 2026-09-14
+- **Disparador:** octava revisión del investigador, que objeta correctamente mi diagnóstico de
+  Entry 016 ("este entorno no tiene OpenFOAM"). **Su objeción es correcta y la mía era errónea.**
+
+**1. Corrección del diagnóstico**
+
+Afirmé: *"no hay `blockMesh`/`checkMesh`/`simpleFoam`/`topoSet`, no hay instalación en rutas
+típicas ⇒ este entorno no tiene OpenFOAM"*. **Conclusión inválida.** La verificación desde la
+terminal del investigador demuestra:
+
+```text
+WSL Ubuntu 2 disponible (wsl -l -v)
+Instalación:  /usr/lib/openfoam/openfoam2412        ← NO en /opt (ese camino no existe)
+Comando:      openfoam2412                           → abre shell de sesión OpenFOAM
+Build:        _b8cf4d35-20260127 (patch=260127), linux64GccDPInt32Opt, mpi=sys-openmpi
+```
+
+**La prueba decisiva:** ese build **coincide exactamente** con el que figura en
+`cfd/cases/T25P_baseline/log.snappyHexMesh` (`Build: _b8cf4d35-20260127 OPENFOAM=2412
+patch=260127`). Es la **misma instalación** que ya generó esa malla. **OpenFOAM funcionaba.**
+
+**Tabla de lo verdadero y lo falso — la distinción que hay que sostener:**
+
+| Afirmación | Veredicto |
+|---|---|
+| "OpenFOAM no está instalado" | ❌ **FALSO** |
+| "El agente no puede alcanzar WSL desde esta sesión" | ✅ cierto |
+| "`wsl -l -v` desde la sesión del agente → `E_ACCESSDENIED`" | ✅ cierto |
+| "`bash` desde la sesión del agente también falla" | ✅ cierto |
+
+**Lección de método:** busqué en rutas típicas de Linux (`/opt/openfoam*`), no encontré nada y
+**concluí ausencia de instalación**. El error fue saltar de "no lo encuentro desde aquí" a
+"no existe". La distinción entre *no accesible* y *no existente* es exactamente el mismo tipo de
+error que este proyecto lleva quince revisiones evitando en el terreno de los datos. Aplicable a
+mí mismo: **no accesible ≠ inexistente.**
+
+**2. Bug real encontrado en las herramientas .sh (por el diagnóstico correcto)**
+
+En **shell no interactiva** el entorno de OpenFOAM **no está cargado** (`foamVersion: command not
+found`), aunque esté instalado. Mis tres `.sh` comprobaban `command -v blockMesh` y abortaban:
+habrían fallado en tu terminal aunque OpenFOAM estuviera perfectamente instalado.
+
+→ Añadida función `cargar_openfoam()` con **autodetección** en `gate_cfd0.sh`,
+`run_cfd_suite.sh` y `verify_cfd_prereqs.sh`, que prueba, en orden:
+`/usr/lib/openfoam/openfoam*/etc/bashrc`, `/opt/openfoam*/etc/bashrc`,
+`$HOME/OpenFOAM/OpenFOAM-*/etc/bashrc`.
+Los mensajes de ayuda ahora citan la ruta **correcta** (`/usr/lib/openfoam/openfoam2412`).
+
+**3. Segundo bug corregido: elección del caso CFD-0**
+
+El selector usaba `head -1` sobre el orden alfabético, que daba un T25P arbitrario (y el comentario
+prometía "el más cercano a operación típica"). Reescrito con **parseo explícito de campos** y
+minimización de la distancia relativa a `V=5 m/s, H=3 m, d=200 µm`. Verificado sobre el sistema de
+ficheros real: selecciona **`T25P_V3.1_H2.8_d190_f0.95_a4`** (score 0,151).
+Implementado **sin depender de Python**, porque `which python3` no apareció en tu verificación y
+puede no estar instalado en el WSL.
+
+**4. Prerequisito nuevo detectado: `python3`**
+
+`postprocess_case.py` y `check_cfd0_evidence.py` lo necesitan. Nuevo
+`scripts/verify_cfd_prereqs.sh` que lo comprueba y falla con instrucción de instalación
+(`sudo apt install -y python3`) en lugar de romper a mitad del smoke test.
+
+**5. Guía operativa** — `geometry/COMO_EJECUTAR_CFD0.md`: secuencia exacta desde PowerShell →
+WSL → `openfoam2412` → proyecto → `verify_cfd_prereqs.sh` → `gate_cfd0.sh`, con la tabla de qué
+significa cada fallo y qué traer de vuelta.
+
+**6. Lo que sigue sin estar verificado, y se declara:** los `.sh` **no se han podido ejecutar ni
+probar desde el agente** (WSL y `bash` bloqueados en esa sesión). Están escritos para funcionar en
+tu terminal; **hasta que los corras no están verificados**. Es la misma honestidad que aplico a los
+datos, aplicada al software.
+
+- **Estado:** `PHASE_01_SPECIFICATIONS`. **CFD-0 es ejecutable hoy desde tu terminal.**
+
 ---
