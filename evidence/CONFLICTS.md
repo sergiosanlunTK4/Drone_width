@@ -77,6 +77,60 @@ investigador **queda sin satisfacer por vía HTTP**. Registrado en
 
 **Cómo se cierra:** conteo físico (A9 en el protocolo). No por interpretación.
 
+### C-01.1 · Evidencia nueva que apunta a 8 rotores (NO cierra el conflicto)
+
+**Aportado por el propietario** (comunicación directa 2026-09-14, clasificación **`O`**):
+
+> T100: **8 motores**. T25P, T55 y T70P: **4 motores**.
+
+**Por qué es relevante y por qué no basta:**
+
+- Si "8 motores" significa 8 unidades motrices para el T100 con 4 brazos coaxiales, corresponde a
+  **8 rotores** (2 por brazo), lo que **respalda la lectura "4 pares"** y contradice la lectura
+  literal "8 pares = 16 hélices".
+- **Pero `O` no es `M`**: es comunicación verbal, sin instrumento, sin incertidumbre ni repetición.
+  Y "motor" podría no ser sinónimo de "disco de rotor" en coaxiales.
+- Si "4 motores" es correcto para T55/T70P/T100 con par coaxial, hay que confirmar explícitamente
+  la relación **1 motor ↔ 2 rotores** (ver C-02).
+
+**Convergencia alcanzada:** imagen oficial (8 hélices) + propietario (8 motores) apuntan ambos a
+**8 rotores**. Falta la **tercera pata**: inspección física con conteo fotografiado. Con las tres,
+el valor promueve a `M` y C-01 se cierra.
+
+**Efecto cuantificado si estuviera mal:** `v_inducida` en hover cambia un factor √2 (−29 % de 8 a
+16 rotores); área de disco de 15,57 → 31,13 m². Por eso es la incógnita **nº 1** en prioridad de
+medición (`geometry/presupuesto_hipotesis.json`).
+
+### C-01.2 · Geometría de atomizadores: X aportada, Y derivada, Z desconocida
+
+**Aportado por el propietario** (`O`): en el T100 las cuatro boquillas traseras están a
+**x = −0,9 / −0,8 / −0,8 / −0,9 m** (de izquierda a derecha), siendo **la 2ª y la 3ª las extras**
+de la configuración de 4.
+
+Regularizado a la nomenclatura del proyecto:
+
+| id | `position_role` | X (m) | Y (m) | clase |
+|---|---|---|---|---|
+| `A1` | `L_out` | −0,900 | −0,917 | X: `O` · Y: `I` (derivada) |
+| `A2` | `L_in` | −0,800 | −0,459 | X: `O` · Y: `I` (derivada) |
+| `A3` | `R_in` | −0,800 | +0,459 | X: `O` · Y: `I` (derivada) |
+| `A4` | `R_out` | −0,900 | +0,917 | X: `O` · Y: `I` (derivada) |
+
+**Hipótesis adoptada para la Y (explícita, por decidir con medición):** la separación declarada en
+la ficha (T100: 1834 mm) corresponde al **par extremo** (A1–A4); el par interior queda cerrado a la
+mitad → ±0,917 m exterior y ±0,459 m interior.
+
+- **Validación física superada:** la boquilla exterior (±0,917 m) cae **dentro** de la barra LS100
+  (±0,965 m), con margen de solo **+48 mm**. Ajuste muy justo, consistente con que DJI especifique
+  1834 mm.
+- **Aviso registrado:** las cuatro boquillas caen **dentro de la proyección horizontal** de un disco
+  de rotor (distancia al eje: 0,248 m las exteriores y 0,707 m las interiores, frente a
+  r_rotor = 0,787 m). **No es una colisión** —van por debajo del plano de rotor— pero **es
+  exactamente la configuración que hace relevante H3**: las gotas se emiten dentro de la estela, no
+  fuera. La distancia al eje del rotor más cercano es parámetro de primer orden para H3.
+
+**Sigue en `D`:** la coordenada **Z** de los atomizadores, y la X de las otras tres plataformas.
+
 ---
 
 ## C-02 · T100 / T55 / T70P — accionamiento del par coaxial **ABIERTO (sin evidencia)**

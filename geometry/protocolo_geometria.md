@@ -47,10 +47,18 @@ plataformas a igualdad de hipótesis de empuje.
 | 1 | Ficha oficial `ag.dji.com/es/<uav>/specs` | **P** | Sí, citando fuente y fecha |
 | 2 | DJI Academy (formación de distribuidor) | **P-A** | Sí, anotando la fuente |
 | 3 | **Evidencia documental visual** (imagen oficial con pie inequívoco) | **S** | Solo para hechos **discretos**: nº de brazos, coaxialidad, nº de palas, posición relativa. **Nunca para dimensiones.** |
-| 4 | Medición propia protocolizada | **M** | Sí — único origen válido para dimensiones de estudio |
-| 5 | Inferencia con razonamiento explícito | **I** | Solo como hipótesis de trabajo declarada |
-| 6 | Estimación de planificación | **E** | Solo para dimensionar el problema |
-| 7 | Desconocido | **D** | **Se deja `null`. No se rellena.** |
+| 4 | **Aportado por el propietario** (comunicación directa) | **O** | **Solo como hipótesis declarada.** Nunca se cita como si fuera de DJI. |
+| 5 | Medición propia protocolizada | **M** | Sí — único origen válido para dimensiones de estudio |
+| 6 | Inferencia con razonamiento explícito | **I** | Solo como hipótesis de trabajo declarada |
+| 7 | Estimación de planificación | **E** | Solo para dimensionar el problema |
+| 8 | Desconocido | **D** | **Se deja `null`.** Se usa como parámetro de sensibilidad, no se rellena. |
+
+> **Por qué existe `O`:** el propietario de las aeronaves es la fuente más cercana al objeto físico,
+> así que su información es mejor que una inferencia. Pero **no es `M`**: no hay instrumento, ni
+> incertidumbre, ni repetición. Confundir `O` con `M` sería el mismo error que confundir `I` con `P`.
+> Y citar un dato `O` como si fuera de DJI es una **cita falsa**, no una idealización.
+> El marco completo —con la tabla de hipótesis para el manuscrito— está en
+> `geometry/presupuesto_hipotesis.md`.
 
 **Regla dura:** de una fotografía **sin escala ni cota inequívoca no se derivan dimensiones**.
 Se registran hechos discretos y cualitativos, con cita del archivo y la diapositiva para que

@@ -22,9 +22,15 @@
 ### Orden de ejecución acordado (2026-09-14, vinculante)
 
 ```
-recaptura T55/T70P/T100 ✅  →  auditoría A9/A10 ✅  →  campaña T25P ⬅ SIGUIENTE
+recaptura T55/T70P/T100 ✅  →  auditoría A9/A10 ✅  →  campaña T25P 🔄 EN CURSO (investigador)
    →  post-mortem metodológico  →  campaña v2  →  generar T55/T70P/T100
 ```
+
+**En paralelo (Entry 015):** el **estudio paramétrico está habilitado** con geometría declarada
+(clases `P`/`P-A`/`S`/`O`/`I`/`E`) y presupuesto de hipótesis explícito
+(`geometry/presupuesto_hipotesis.md`). La medición **no es prerrequisito para empezar**: es una
+mejora de retorno alto y coste bajo que avanza en paralelo, y los valores `O`/`I`/`E` se **promueven**
+a `M` cuando lleguen las filas.
 
 **Por qué este orden:** las hojas de campaña de T55/T70P/T100 **no se preparan todavía**.
 El piloto T25P existe para descubrir qué falta en la plantilla (campos, repeticiones,
@@ -586,5 +592,77 @@ primeras filas reales**, que es cuando se sabrá qué forma tienen de verdad.
 ejecutar el bloque 1 del T25P.
 
 - **Estado:** `PHASE_01_SPECIFICATIONS`. **La metodología queda congelada hasta tener datos.**
+
+### Entry 015 | Datos del propietario (clase `O`) y presupuesto de hipótesis con sensibilidad
+- **Date:** 2026-09-14
+- **Contexto:** el investigador pregunta si se puede seguir con lo declarado en la web, y aporta
+  datos nuevos. Su campaña de medición **está en curso** (prevista para hoy o mañana).
+
+**1. Datos aportados por el propietario — clase nueva `O`**
+
+> T100: **8 motores**; T25P, T55 y T70P: **4 motores**.
+> Atomizadores del T100: x = **−0,9 / −0,8 / −0,8 / −0,9 m** (izq. a der.), siendo **la 2ª y la 3ª
+> las extras** de la configuración de 4.
+
+Se introduce la clase **`O` = aportado por el propietario** en la jerarquía de fuentes, entre `S` y
+`M`. Razón: el propietario es la fuente más cercana al objeto físico, así que **es mejor que una
+inferencia**, pero **no es `M`** —sin instrumento, sin incertidumbre, sin repetición—. Confundir `O`
+con `M` sería el mismo error que confundir `I` con `P`.
+
+**Regla añadida:** un dato `O` **nunca se cita como si fuera de DJI**. Hacerlo no es idealizar:
+es una cita falsa.
+
+**2. Efecto sobre C-01 (T100, 8 vs 16 rotores)**
+
+"8 motores" con 4 brazos coaxiales corresponde a **8 rotores** (2 por brazo) ⇒ **respalda la lectura
+"4 pares"** y contradice la lectura literal "8 pares = 16 hélices". Convergencia por **dos fuentes
+independientes**: imagen oficial (8 hélices) + propietario (8 motores).
+**Falta la tercera pata** (inspección física fotografiada) para promover a `M`. **C-01 no se cierra
+todavía**, ni automáticamente ni por mayoría de fuentes.
+
+**3. Geometría de atomizadores regularizada y validada**
+
+`scripts/derive_atomizer_geometry.py` → nomenclatura `A1..A4` con rol `L_out/L_in/R_in/R_out`.
+Hipótesis explícita para la Y: la separación declarada (T100: 1834 mm) es el **par extremo**, y el
+par interior queda cerrado a la mitad → ±0,917 m y ±0,459 m.
+
+**Validación superada:** la boquilla exterior (±0,917 m) cae **dentro** de la barra LS100 (±0,965 m)
+con margen de solo **+48 mm** — ajuste muy justo, consistente con que DJI especifique 1834 mm.
+
+**Hallazgo útil para H3:** las cuatro boquillas caen **dentro de la proyección horizontal** de un
+disco de rotor (0,248 m del eje las exteriores, 0,707 m las interiores, frente a r_rotor = 0,787 m).
+No es colisión —van por debajo del plano— pero **es exactamente la configuración que hace relevante
+H3**: las gotas se emiten **dentro** de la estela.
+
+**4. Presupuesto de hipótesis — respuesta fundamentada a "¿podemos seguir con la web?"**
+
+`geometry/presupuesto_hipotesis.md` + `scripts/assumption_budget.py`. **Sí se puede**, como
+**estudio paramétrico con idealizaciones declaradas**, cumpliendo tres condiciones:
+**(1)** declararlas en su propia sección y tabla; **(2)** justificarlas; **(3)** **cuantificar su
+impacto** con análisis de sensibilidad. Incluye **borrador del texto para el paper**
+(*Model assumptions and uncertainty budget*) que declara, justifica y acota sin reclamar validación.
+
+**5. Ranking de sensibilidad — y el hallazgo que cambia la estrategia**
+
+| # | Incógnita | Efecto | Coste de resolverla |
+|---|---|---|---|
+| 1 | Nº de rotores del T100 (8 vs 16) | **−29 %** en v_inducida (√2) | **minutos: contar y fotografiar** |
+| 2 | Reparto de empuje superior/inferior | **±20 %** por disco (si 60/40) | RPM por rotor + bancada |
+| 3 | Posición Z de atomizadores | **±6,7 %** en altura de caída en estela | **minutos: cinta métrica** |
+| 4 | Posición XYZ de rotores | **±3,5–4,3 %** en separación entre ejes | **minutos: cinta métrica** |
+| 5 | Separación axial del par | **±3,3 %** en longitud de estela | **minutos: cinta métrica** |
+| 6 | RPM real | no cuantificable | tacómetro en hover |
+
+> **Hallazgo:** **cuatro de las seis incógnitas se resuelven con cinta métrica y conteo**, sin
+> instrumentos especiales ni volar. Solo el reparto de empuje y la RPM exigen equipamiento o vuelo.
+
+Consecuencia: el estudio paramétrico **es viable hoy** y la medición no es un prerrequisito para
+empezar, sino una **mejora de retorno alto y coste bajo**. Los valores `O`/`I`/`E` se **promueven**
+a `M` cuando lleguen las filas; el trabajo no se tira.
+
+**6. Sigue prohibido:** llamar validado a cualquier resultado con esta base; cerrar gates con
+`O`/`I`/`E`; citar valores `O` como de DJI; alimentar la app con geometría supuesta.
+
+- **Estado:** `PHASE_01_SPECIFICATIONS`. Estudio paramétrico **habilitado**; medición **en curso**.
 
 ---

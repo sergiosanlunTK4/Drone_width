@@ -1,0 +1,211 @@
+{
+  "clasificacion": "O (aportado por el propietario, comunicacion directa 2026-09-14)",
+  "no_es": "no es M: sin instrumento, sin incertidumbre, sin repeticion",
+  "plataformas": {
+    "T25P": {
+      "motores_declarados": 4,
+      "coaxial": false,
+      "separacion_declarada_mm": 1420,
+      "interpretacion": "par EXTREMO a la separacion declarada; par interior cerrado (hipotesis I)",
+      "atomizadores": [
+        {
+          "id": "A1",
+          "position_role": "L_out",
+          "descripcion": "izquierda exterior",
+          "x_m": null,
+          "y_m": -0.71,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        },
+        {
+          "id": "A2",
+          "position_role": "L_in",
+          "descripcion": "izquierda interior",
+          "x_m": null,
+          "y_m": -0.355,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        },
+        {
+          "id": "A3",
+          "position_role": "R_in",
+          "descripcion": "derecha interior",
+          "x_m": null,
+          "y_m": 0.355,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        },
+        {
+          "id": "A4",
+          "position_role": "R_out",
+          "descripcion": "derecha exterior",
+          "x_m": null,
+          "y_m": 0.71,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        }
+      ],
+      "errores": [],
+      "avisos": [
+        "A1 cae dentro del disco de barrido de un rotor (distancia al eje 0.275 m < r_rotor 0.635 m)",
+        "A2 cae dentro del disco de barrido de un rotor (distancia al eje 0.630 m < r_rotor 0.635 m)",
+        "A3 cae dentro del disco de barrido de un rotor (distancia al eje 0.630 m < r_rotor 0.635 m)",
+        "A4 cae dentro del disco de barrido de un rotor (distancia al eje 0.275 m < r_rotor 0.635 m)"
+      ]
+    },
+    "T55": {
+      "motores_declarados": 4,
+      "coaxial": true,
+      "separacion_declarada_mm": 1800,
+      "interpretacion": "par EXTREMO a la separacion declarada; par interior cerrado (hipotesis I)",
+      "atomizadores": [
+        {
+          "id": "A1",
+          "position_role": "L_out",
+          "descripcion": "izquierda exterior",
+          "x_m": null,
+          "y_m": -0.9,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        },
+        {
+          "id": "A2",
+          "position_role": "L_in",
+          "descripcion": "izquierda interior",
+          "x_m": null,
+          "y_m": -0.45,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        },
+        {
+          "id": "A3",
+          "position_role": "R_in",
+          "descripcion": "derecha interior",
+          "x_m": null,
+          "y_m": 0.45,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        },
+        {
+          "id": "A4",
+          "position_role": "R_out",
+          "descripcion": "derecha exterior",
+          "x_m": null,
+          "y_m": 0.9,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        }
+      ],
+      "errores": [],
+      "avisos": [
+        "A1 cae dentro del disco de barrido de un rotor (distancia al eje 0.307 m < r_rotor 0.787 m)",
+        "A2 cae dentro del disco de barrido de un rotor (distancia al eje 0.758 m < r_rotor 0.787 m)",
+        "A3 cae dentro del disco de barrido de un rotor (distancia al eje 0.758 m < r_rotor 0.787 m)",
+        "A4 cae dentro del disco de barrido de un rotor (distancia al eje 0.307 m < r_rotor 0.787 m)"
+      ]
+    },
+    "T70P": {
+      "motores_declarados": 4,
+      "coaxial": true,
+      "separacion_declarada_mm": 1874,
+      "interpretacion": "par EXTREMO a la separacion declarada; par interior cerrado (hipotesis I)",
+      "atomizadores": [
+        {
+          "id": "A1",
+          "position_role": "L_out",
+          "descripcion": "izquierda exterior",
+          "x_m": null,
+          "y_m": -0.937,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        },
+        {
+          "id": "A2",
+          "position_role": "L_in",
+          "descripcion": "izquierda interior",
+          "x_m": null,
+          "y_m": -0.4685,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        },
+        {
+          "id": "A3",
+          "position_role": "R_in",
+          "descripcion": "derecha interior",
+          "x_m": null,
+          "y_m": 0.4685,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        },
+        {
+          "id": "A4",
+          "position_role": "R_out",
+          "descripcion": "derecha exterior",
+          "x_m": null,
+          "y_m": 0.937,
+          "z_m": null,
+          "clasificacion": "I (y derivada de P); x = D"
+        }
+      ],
+      "errores": [],
+      "avisos": [
+        "A1 cae dentro del disco de barrido de un rotor (distancia al eje 0.283 m < r_rotor 0.787 m)",
+        "A2 cae dentro del disco de barrido de un rotor (distancia al eje 0.751 m < r_rotor 0.787 m)",
+        "A3 cae dentro del disco de barrido de un rotor (distancia al eje 0.751 m < r_rotor 0.787 m)",
+        "A4 cae dentro del disco de barrido de un rotor (distancia al eje 0.283 m < r_rotor 0.787 m)"
+      ]
+    },
+    "T100": {
+      "motores_declarados": 8,
+      "coaxial": true,
+      "separacion_declarada_mm": 1834,
+      "interpretacion": "par EXTREMO a la separacion declarada; par interior cerrado (hipotesis I)",
+      "atomizadores": [
+        {
+          "id": "A1",
+          "position_role": "L_out",
+          "descripcion": "izquierda exterior",
+          "x_m": -0.9,
+          "y_m": -0.917,
+          "z_m": null,
+          "clasificacion": "O (x) / I (y derivada de P)"
+        },
+        {
+          "id": "A2",
+          "position_role": "L_in",
+          "descripcion": "izquierda interior",
+          "x_m": -0.8,
+          "y_m": -0.4585,
+          "z_m": null,
+          "clasificacion": "O (x) / I (y derivada de P)"
+        },
+        {
+          "id": "A3",
+          "position_role": "R_in",
+          "descripcion": "derecha interior",
+          "x_m": -0.8,
+          "y_m": 0.4585,
+          "z_m": null,
+          "clasificacion": "O (x) / I (y derivada de P)"
+        },
+        {
+          "id": "A4",
+          "position_role": "R_out",
+          "descripcion": "derecha exterior",
+          "x_m": -0.9,
+          "y_m": 0.917,
+          "z_m": null,
+          "clasificacion": "O (x) / I (y derivada de P)"
+        }
+      ],
+      "errores": [],
+      "avisos": [
+        "la boquilla exterior (±0.917 m) queda dentro de la barra (±0.965 m), margen +0.048 m",
+        "A1 cae dentro del disco de barrido de un rotor (distancia al eje 0.248 m < r_rotor 0.787 m)",
+        "A2 cae dentro del disco de barrido de un rotor (distancia al eje 0.707 m < r_rotor 0.787 m)",
+        "A3 cae dentro del disco de barrido de un rotor (distancia al eje 0.707 m < r_rotor 0.787 m)",
+        "A4 cae dentro del disco de barrido de un rotor (distancia al eje 0.248 m < r_rotor 0.787 m)"
+      ]
+    }
+  }
+}

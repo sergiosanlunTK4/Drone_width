@@ -1,48 +1,55 @@
-piloto T25P: convencion de rotores desacoplada y residuo del vector completo
+docs: clase O, geometria de atomizadores derivada y presupuesto de hipotesis con sensibilidad
 
-Se implementan las tres correcciones de la ultima revision y, por indicacion explicita,
-SE DEJA DE REFINAR EL PROTOCOLO hasta tener datos reales: seguir agregando controles
-preventivos sin datos arriesga disenar metodologia alrededor de problemas imaginarios.
+Responde a "podemos seguir con lo declarado en la web?" con numeros, no con una opinion.
 
-1. LA NUMERACION DEJA DE PRETENDERSE "DE DJI"
-   No se fija PARES_OPUESTOS sobre una numeracion DJI no demostrada. Se adopta una
-   convencion GEOMETRICA INTERNA (vista cenital, +X adelante, +Y izquierda, +Z arriba):
-     R1=FL  R2=RL  R3=RR  R4=FR
-   y `position_role` pasa a ser COLUMNA OBLIGATORIA del CSV.
-   Razon: R1..R4 son identificadores; FL/RL/RR/FR contienen la semantica geometrica. Si un
-   manual DJI numera los motores de otra forma, no habra que reinterpretar mediciones
-   antiguas: es la clase de decision que, tomada tarde, obliga a rehacer una campana.
+CLASE NUEVA `O` = aportado por el propietario (comunicacion directa), entre S y M.
+  El propietario es la fuente mas cercana al objeto fisico, asi que es MEJOR que una
+  inferencia, pero NO es M: sin instrumento, sin incertidumbre, sin repeticion. Confundir O
+  con M seria el mismo error que confundir I con P.
+  Regla anadida: un dato O NUNCA se cita como si fuera de DJI. No es idealizar, es citar mal.
 
-2. LA QA DEJA DE ESTAR HARDCODEADA
-   Los pares diametralmente opuestos se DERIVAN de `position_role` (FL<->RR, FR<->RL), no
-   de una lista de identificadores. Se elimina otra fuente de error humano.
+DATOS APORTADOS:
+  - T100: 8 motores. T25P/T55/T70P: 4 motores.
+  - Atomizadores T100: x = -0.9 / -0.8 / -0.8 / -0.9 m (izq a der), con la 2a y 3a como extras.
 
-3. CORRECCION DE FONDO: RESIDUO DEL VECTOR COMPLETO
-   Comprobar solo x1+x3 ~ 0 NO demuestra oposicion. Ahora se comprueba
-     r_i + r_j ~ 2*r_c     (con r_c = 0 si el origen esta en el centro geometrico esperado)
-   y se reportan residuos X, Y, Z, norma 3D y norma XY, sin usarlos para corregir.
-   En la prueba, una pareja con residuo puramente en Z (X=Y=0, Z=+10 mm) habria pasado
-   desapercibida con dos pruebas aisladas en X e Y, y ahora aparece.
+EFECTO SOBRE C-01 (T100 8 vs 16): "8 motores" con 4 brazos coaxiales corresponde a 8 rotores,
+lo que RESPALDA la lectura "4 pares" y contradice "8 pares = 16". Convergencia por dos
+fuentes independientes (imagen oficial 8 helices + propietario 8 motores). Falta la tercera
+pata (inspeccion fisica fotografiada) para promover a M. C-01 NO se cierra todavia.
 
-4. EVIDENCIA FOTOGRAFICA OBLIGATORIA
-   Foto cenital con etiquetas fisicas R1-R4 y flecha +X, asociada al reference_frame.
-   Queda como checklist del bloque 1 y como comprobacion en la QA. Es lo que impide
-   discutir dentro de meses que significaba exactamente "R1".
+GEOMETRIA DE ATOMIZADORES (scripts/derive_atomizer_geometry.py):
+  Nomenclatura A1..A4 con rol L_out/L_in/R_in/R_out. Hipotesis explicita: la separacion
+  declarada (1834 mm en T100) es el par EXTREMO y el interior queda cerrado a la mitad
+  -> +-0.917 m exterior, +-0.459 m interior.
+  VALIDACION SUPERADA: la boquilla exterior cae dentro de la barra LS100 (+-0.965 m) con
+  margen de solo +48 mm: ajuste muy justo, consistente con la cifra de DJI.
+  HALLAZGO PARA H3: las cuatro boquillas caen dentro de la proyeccion horizontal de un disco
+  de rotor (0.248 m del eje las exteriores, 0.707 m las interiores, frente a r_rotor 0.787 m).
+  No es colision -van por debajo del plano- pero es exactamente la configuracion que hace
+  relevante H3: las gotas se emiten DENTRO de la estela.
 
-5. AUTOTEST CORREGIDO — Y UNA LECCION
-   El autotest pasa de 7 a 8 comprobaciones. Al ejecutarlo una fallo: se esperaba la marca
-   "fila M sin uncertainty" y no salia. LA QA ERA CORRECTA; MI CASO DE PRUEBA ESTABA MAL
-   CONSTRUIDO: tenia instrument = "-" (no vacio), asi que solo debia dispararse la marca de
-   instrument. Corregido el caso (ambos campos vacios), las 8 se detectan.
-   El fallo aparecio porque el autotest comparaba marcas concretas, no porque "la QA
-   pareciera funcionar": es el argumento a favor de haber probado la QA antes de usarla.
+PRESUPUESTO DE HIPOTESIS (geometry/presupuesto_hipotesis.md + scripts/assumption_budget.py):
+  Si se puede sostener un estudio asi, pero como ESTUDIO PARAMETRICO CON IDEALIZACIONES
+  DECLARADAS, cumpliendo tres condiciones: (1) declararlas en su propia seccion y tabla,
+  (2) justificarlas, (3) CUANTIFICAR SU IMPACTO con analisis de sensibilidad.
+  Incluye borrador del texto para el paper (Model assumptions and uncertainty budget) que
+  declara, justifica y acota sin reclamar validacion. Un "suponga que" silencioso no se
+  acepta; una idealizacion declarada y acotada, si.
 
-6. LIMITE CONOCIDO, NO CORREGIDO A PROPOSITO
-   La deteccion de "foto cenital registrada" da un falso positivo cuando el CSV tiene filas
-   malformadas o vacias (aparece un reference_frame espurio con valor M). No se corrige
-   ahora: sin datos reales, refinar contra un CSV vacio es disenar para un problema
-   imaginario. Se anota para corregirlo cuando existan las primeras filas reales, que es
-   cuando se sabra que forma tienen de verdad.
+RANKING DE SENSIBILIDAD:
+  1. Nº de rotores T100 (8 vs 16)   -29% en v_inducida     -> MINUTOS: contar y fotografiar
+  2. Reparto de empuje coaxial      +-20% por disco       -> RPM por rotor + bancada
+  3. Posicion Z de atomizadores     +-6.7% altura caida   -> MINUTOS: cinta metrica
+  4. Posicion XYZ de rotores        +-3.5-4.3% separacion -> MINUTOS: cinta metrica
+  5. Separacion axial del par       +-3.3% longitud estela-> MINUTOS: cinta metrica
+  6. RPM real                       no cuantificable      -> tacometro en hover
 
-Nada medido. Ningun gate cerrado. CFD no ejecutado. La metodologia queda congelada hasta
-tener datos: el siguiente paso es ejecutar el bloque 1 del T25P.
+  HALLAZGO: cuatro de las seis incognitas se resuelven con CINTA METRICA Y CONTEO, sin
+  instrumentos especiales ni volar. El estudio parametrico es viable hoy y la medicion no es
+  prerrequisito para empezar: es una mejora de retorno alto y coste bajo que avanza en
+  paralelo. Los valores O/I/E se PROMUEVEN a M; el trabajo no se tira.
+
+Sigue prohibido: llamar validado a cualquier resultado con esta base; cerrar gates con
+O/I/E; citar valores O como de DJI; alimentar la app con geometria supuesta.
+
+Ningun gate cambia de estado. La campana de medicion del investigador esta en curso.

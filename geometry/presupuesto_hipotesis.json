@@ -1,0 +1,291 @@
+{
+  "generado_por": "scripts/assumption_budget.py",
+  "inventario": [
+    {
+      "campo": "Masa con bateria / MTOW",
+      "clase": "P",
+      "fuente": "ficha oficial",
+      "uso": "si, cita"
+    },
+    {
+      "campo": "Diametro de rotor",
+      "clase": "P",
+      "fuente": "ficha oficial (50/62 in)",
+      "uso": "si, cita"
+    },
+    {
+      "campo": "Motor: estator y KV",
+      "clase": "P",
+      "fuente": "ficha oficial",
+      "uso": "si, cita"
+    },
+    {
+      "campo": "Nº de atomizadores y separacion",
+      "clase": "P",
+      "fuente": "ficha oficial",
+      "uso": "si, cita"
+    },
+    {
+      "campo": "Caudales, rango de gota, ancho nominal",
+      "clase": "P",
+      "fuente": "ficha oficial",
+      "uso": "si, cita"
+    },
+    {
+      "campo": "Helice 6223 = 62x23 in, palas = 2",
+      "clase": "P-A + S",
+      "fuente": "Academy + imagen",
+      "uso": "si, anota fuente"
+    },
+    {
+      "campo": "Coaxialidad T70P/T100",
+      "clase": "S",
+      "fuente": "imagen oficial",
+      "uso": "si, como topologia"
+    },
+    {
+      "campo": "Nº de motores (4 / 8)",
+      "clase": "O",
+      "fuente": "propietario, comunicacion directa",
+      "uso": "solo como hipotesis declarada"
+    },
+    {
+      "campo": "X de atomizadores T100",
+      "clase": "O",
+      "fuente": "propietario, comunicacion directa",
+      "uso": "solo como hipotesis declarada"
+    },
+    {
+      "campo": "Separacion axial del par coaxial",
+      "clase": "D",
+      "fuente": "no disponible",
+      "uso": "NO: parametro de sensibilidad"
+    },
+    {
+      "campo": "Reparto de empuje superior/inferior",
+      "clase": "D",
+      "fuente": "no disponible",
+      "uso": "NO: parametro de sensibilidad"
+    },
+    {
+      "campo": "Nº de rotores del T100 (8 o 16)",
+      "clase": "D (conflicto)",
+      "fuente": "ficha dice 8 pares; imagen dice 8 helices",
+      "uso": "NO: parametro de sensibilidad"
+    },
+    {
+      "campo": "Posicion XYZ de rotores",
+      "clase": "D",
+      "fuente": "no disponible",
+      "uso": "NO: parametro de sensibilidad"
+    },
+    {
+      "campo": "Posicion Z de atomizadores",
+      "clase": "D",
+      "fuente": "no disponible",
+      "uso": "NO: parametro de sensibilidad"
+    },
+    {
+      "campo": "RPM real",
+      "clase": "D",
+      "fuente": "no disponible (KV no sirve)",
+      "uso": "NO: define la frontera CFD"
+    },
+    {
+      "campo": "Geometria de pala (cuerda, twist)",
+      "clase": "D",
+      "fuente": "no disponible",
+      "uso": "NO: limita a actuator disk"
+    }
+  ],
+  "sensibilidad": [
+    {
+      "id": "S4-0.7",
+      "incognita": "Reparto de empuje superior/inferior",
+      "magnitud": "empuje del rotor superior (fraccion del par)",
+      "base": 0.5,
+      "alt": 0.7,
+      "efecto_pct": 40.0,
+      "detalle": "si el reparto no es 50/50, el disco de arriba carga mas empuje",
+      "criticidad": "ALTA"
+    },
+    {
+      "id": "S4-0.6",
+      "incognita": "Reparto de empuje superior/inferior",
+      "magnitud": "empuje del rotor superior (fraccion del par)",
+      "base": 0.5,
+      "alt": 0.6,
+      "efecto_pct": 20.0,
+      "detalle": "si el reparto no es 50/50, el disco de arriba carga mas empuje",
+      "criticidad": "ALTA"
+    },
+    {
+      "id": "S3-T25P",
+      "incognita": "Posicion Z de atomizadores",
+      "magnitud": "altura de caida dentro de la estela",
+      "base": -0.2,
+      "alt": -0.4,
+      "efecto_pct": 6.7,
+      "detalle": "±20 cm sobre H=3 m; afecta al tiempo de residencia en la estela",
+      "criticidad": "ALTA"
+    },
+    {
+      "id": "S3-T55",
+      "incognita": "Posicion Z de atomizadores",
+      "magnitud": "altura de caida dentro de la estela",
+      "base": -0.2,
+      "alt": -0.4,
+      "efecto_pct": 6.7,
+      "detalle": "±20 cm sobre H=3 m; afecta al tiempo de residencia en la estela",
+      "criticidad": "ALTA"
+    },
+    {
+      "id": "S3-T70P",
+      "incognita": "Posicion Z de atomizadores",
+      "magnitud": "altura de caida dentro de la estela",
+      "base": -0.2,
+      "alt": -0.4,
+      "efecto_pct": 6.7,
+      "detalle": "±20 cm sobre H=3 m; afecta al tiempo de residencia en la estela",
+      "criticidad": "ALTA"
+    },
+    {
+      "id": "S3-T100",
+      "incognita": "Posicion Z de atomizadores",
+      "magnitud": "altura de caida dentro de la estela",
+      "base": -0.2,
+      "alt": -0.4,
+      "efecto_pct": 6.7,
+      "detalle": "±20 cm sobre H=3 m; afecta al tiempo de residencia en la estela",
+      "criticidad": "ALTA"
+    },
+    {
+      "id": "S5-T25P",
+      "incognita": "Posicion XYZ de rotores",
+      "magnitud": "separacion entre ejes adyacentes (interferencia)",
+      "base": 0.697,
+      "alt": 0.727,
+      "efecto_pct": 4.3,
+      "detalle": "±3 cm sobre 0.697 m derivados del wheelbase",
+      "criticidad": "MEDIA"
+    },
+    {
+      "id": "S5-T100",
+      "incognita": "Posicion XYZ de rotores",
+      "magnitud": "separacion entre ejes adyacentes (interferencia)",
+      "base": 0.824,
+      "alt": 0.854,
+      "efecto_pct": 3.6,
+      "detalle": "±3 cm sobre 0.824 m derivados del wheelbase",
+      "criticidad": "MEDIA"
+    },
+    {
+      "id": "S5-T55",
+      "incognita": "Posicion XYZ de rotores",
+      "magnitud": "separacion entre ejes adyacentes (interferencia)",
+      "base": 0.854,
+      "alt": 0.884,
+      "efecto_pct": 3.5,
+      "detalle": "±3 cm sobre 0.854 m derivados del wheelbase",
+      "criticidad": "MEDIA"
+    },
+    {
+      "id": "S5-T70P",
+      "incognita": "Posicion XYZ de rotores",
+      "magnitud": "separacion entre ejes adyacentes (interferencia)",
+      "base": 0.863,
+      "alt": 0.893,
+      "efecto_pct": 3.5,
+      "detalle": "±3 cm sobre 0.863 m derivados del wheelbase",
+      "criticidad": "MEDIA"
+    },
+    {
+      "id": "S2-T55",
+      "incognita": "Separacion axial del par coaxial",
+      "magnitud": "longitud de estela antes del disco inferior (proxy)",
+      "base": 0.2,
+      "alt": 0.30000000000000004,
+      "efecto_pct": 3.3,
+      "detalle": "±10 cm sobre una altura de aplicacion de 3 m",
+      "criticidad": "MEDIA"
+    },
+    {
+      "id": "S2-T70P",
+      "incognita": "Separacion axial del par coaxial",
+      "magnitud": "longitud de estela antes del disco inferior (proxy)",
+      "base": 0.2,
+      "alt": 0.30000000000000004,
+      "efecto_pct": 3.3,
+      "detalle": "±10 cm sobre una altura de aplicacion de 3 m",
+      "criticidad": "MEDIA"
+    },
+    {
+      "id": "S2-T100",
+      "incognita": "Separacion axial del par coaxial",
+      "magnitud": "longitud de estela antes del disco inferior (proxy)",
+      "base": 0.2,
+      "alt": 0.30000000000000004,
+      "efecto_pct": 3.3,
+      "detalle": "±10 cm sobre una altura de aplicacion de 3 m",
+      "criticidad": "MEDIA"
+    },
+    {
+      "id": "S4-0.5",
+      "incognita": "Reparto de empuje superior/inferior",
+      "magnitud": "empuje del rotor superior (fraccion del par)",
+      "base": 0.5,
+      "alt": 0.5,
+      "efecto_pct": 0.0,
+      "detalle": "si el reparto no es 50/50, el disco de arriba carga mas empuje",
+      "criticidad": "MEDIA"
+    },
+    {
+      "id": "S1",
+      "incognita": "Nº de rotores del T100 (8 vs 16)",
+      "magnitud": "v_inducida en hover",
+      "base": 6.86,
+      "alt": 4.85,
+      "efecto_pct": -29.3,
+      "detalle": "area de disco 15.57 -> 31.13 m2; factor sqrt(2)=1.4142",
+      "criticidad": "ALTA"
+    }
+  ],
+  "prioridad_medicion": [
+    {
+      "orden": "1",
+      "campo": "Nº de rotores del T100",
+      "por_que": "8 vs 16 mueve la fisica un factor sqrt(2) = +41 %",
+      "como": "contar fisicamente, con foto cenital (minutos)"
+    },
+    {
+      "orden": "2",
+      "campo": "Posicion Z de atomizadores",
+      "por_que": "define cuanto tiempo la gota cae dentro de la estela",
+      "como": "cinta metrica (minutos)"
+    },
+    {
+      "orden": "3",
+      "campo": "Reparto de empuje del par coaxial",
+      "por_que": "si no es 50/50, cambia la carga de cada disco",
+      "como": "RPM por rotor + bancada (mas costoso)"
+    },
+    {
+      "orden": "4",
+      "campo": "Posicion XYZ de rotores",
+      "por_que": "estructura espacial de la interferencia",
+      "como": "cinta metrica desde el origen (minutos)"
+    },
+    {
+      "orden": "5",
+      "campo": "Separacion axial del par",
+      "por_que": "longitud de estela antes del disco inferior",
+      "como": "cinta metrica (minutos)"
+    },
+    {
+      "orden": "6",
+      "campo": "RPM real",
+      "por_que": "define si el CFD va por RPM o por empuje prescrito",
+      "como": "tacometro en hover (requiere volar)"
+    }
+  ]
+}
