@@ -24,31 +24,20 @@ DRY=0
 [[ "${1:-}" == "--dry-run" ]] && { DRY=1; PLATFORM="all"; }
 
 # -----------------------------------------------------------------------------
-# CARGA DEL ENTORNO DE OpenFOAM
-#   En shell NO interactiva el entorno no esta cargado aunque OpenFOAM este instalado.
-#   Instalacion verificada en esta maquina: /usr/lib/openfoam/openfoam2412  (NO en /opt)
+# ENTORNO DE OpenFOAM
+#   NO se hace `source .../etc/bashrc` dentro del script: BUG ENCONTRADO
+#   (2026-09-14) ese bashrc CORTA la ejecucion del script en seco.
+#   Via correcta:  python3 scripts/foam_run.py bash scripts/run_cfd_suite.sh all 8
 # -----------------------------------------------------------------------------
-cargar_openfoam() {
-  command -v blockMesh >/dev/null 2>&1 && return 0
-  for f in $(ls -d /usr/lib/openfoam/openfoam*/etc/bashrc \
-                  /opt/openfoam*/etc/bashrc \
-                  "$HOME"/OpenFOAM/OpenFOAM-*/etc/bashrc 2>/dev/null); do
-    if source "${f}" >/dev/null 2>&1; then
-      echo "entorno OpenFOAM cargado desde: ${f}"
-      return 0
-    fi
-  done
-  return 1
-}
-
-if ! cargar_openfoam; then
+if ! command -v blockMesh >/dev/null 2>&1; then
   echo "=============================================================="
-  echo " SUITE CFD: BLOQUEADA — no se pudo cargar el entorno de OpenFOAM"
+  echo " SUITE CFD: BLOQUEADA — entorno OpenFOAM no cargado"
   echo "=============================================================="
-  echo " Comprueba desde tu terminal:"
-  echo "     wsl -d Ubuntu"
-  echo "     openfoam2412              # abre shell de sesion"
-  echo "     ls -d /usr/lib/openfoam/openfoam*"
+  echo " Cargalo primero:"
+  echo "     source /usr/lib/openfoam/openfoam2412/etc/bashrc"
+  echo "     bash scripts/run_cfd_suite.sh"
+  echo " O usa el lanzador (recomendado):"
+  echo "     python3 scripts/foam_run.py bash scripts/run_cfd_suite.sh all 8"
   echo "=============================================================="
   exit 127
 fi

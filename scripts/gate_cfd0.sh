@@ -27,46 +27,25 @@ ITER_TEST="${ITER_TEST:-300}"
 
 # -----------------------------------------------------------------------------
 # CARGA DEL ENTORNO DE OpenFOAM
-#   En una shell NO interactiva el entorno NO esta cargado (foamVersion da
-#   "command not found"), aunque OpenFOAM este instalado. Hay que cargarlo aqui.
-#   Instalacion verificada en esta maquina:
-#       /usr/lib/openfoam/openfoam2412      (NO esta en /opt)
-#   Uso interactivo habitual: el comando `openfoam2412`, que abre shell de sesion.
+#   NO se hace `source .../etc/bashrc` dentro del script: BUG ENCONTRADO
+#   (2026-09-14) ese bashrc esta pensado para shell interactiva y CORTA la ejecucion
+#   del script en seco. Si el entorno no esta cargado, se aborta con instrucciones.
+#   Via correcta:  python3 scripts/foam_run.py bash scripts/gate_cfd0.sh
 # -----------------------------------------------------------------------------
-cargar_openfoam() {
-  if command -v blockMesh >/dev/null 2>&1; then
-    return 0
-  fi
-  local candidatos=(
-    /usr/lib/openfoam/openfoam2412/etc/bashrc
-    /usr/lib/openfoam/openfoam*/etc/bashrc
-    /opt/openfoam*/etc/bashrc
-    "$HOME/OpenFOAM/OpenFOAM-*/etc/bashrc"
-  )
-  for c in "${candidatos[@]}"; do
-    # shellcheck disable=SC2086
-    for f in $(ls -d ${c} 2>/dev/null); do
-      # shellcheck disable=SC1090
-      if source "${f}" >/dev/null 2>&1; then
-        echo "  entorno OpenFOAM cargado desde: ${f}"
-        return 0
-      fi
-    done
-  done
-  return 1
-}
-
 echo "=============================================================="
 echo " GATE CFD-0 — smoke test"
 echo "=============================================================="
 echo "-- 0. entorno OpenFOAM"
-if ! cargar_openfoam; then
-  echo "  [BLOQUEADO] no se pudo cargar el entorno de OpenFOAM."
-  echo "  Comprueba desde tu terminal:"
-  echo "      wsl -d Ubuntu"
-  echo "      openfoam2412          # abre shell de sesion"
-  echo "      which blockMesh"
-  echo "      ls -d /usr/lib/openfoam/openfoam*"
+if ! command -v blockMesh >/dev/null 2>&1; then
+  echo "  [BLOQUEADO] el entorno OpenFOAM no esta cargado en esta shell."
+  echo
+  echo "  Cargalo primero:"
+  echo "      source /usr/lib/openfoam/openfoam2412/etc/bashrc"
+  echo "      bash scripts/gate_cfd0.sh"
+  echo
+  echo "  O bien usa el lanzador (recomendado, no hace source dentro del script):"
+  echo "      python3 scripts/foam_run.py bash scripts/gate_cfd0.sh"
+  echo
   echo "  Los 128 casos siguen siendo CASOS GENERADOS, no CFD validados."
   exit 127
 fi

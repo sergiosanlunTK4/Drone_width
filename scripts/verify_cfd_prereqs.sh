@@ -38,25 +38,35 @@ echo "  bash    : ${BASH_VERSION}"
 echo
 echo "-- 2. Entorno OpenFOAM"
 if command -v blockMesh >/dev/null 2>&1; then
-  ok "blockMesh ya esta en PATH"
+  ok "blockMesh ya esta en PATH (entorno cargado)"
 else
-  aviso "blockMesh NO esta en PATH; intentando cargar el entorno..."
-  CARGADO=0
-  for f in $(ls -d /usr/lib/openfoam/openfoam*/etc/bashrc \
-                  /opt/openfoam*/etc/bashrc \
-                  "$HOME"/OpenFOAM/OpenFOAM-*/etc/bashrc 2>/dev/null); do
-    if source "${f}" >/dev/null 2>&1; then
-      ok "entorno cargado desde: ${f}"
-      CARGADO=1
-      break
-    fi
-  done
-  if [[ ${CARGADO} -eq 0 ]]; then
-    fallo "no se encontro ningun etc/bashrc de OpenFOAM"
-    echo "          Busca la instalacion con:"
-    echo "            ls -d /usr/lib/openfoam/openfoam*  /opt/openfoam*"
-    echo "            find / -maxdepth 5 -name foamVersion 2>/dev/null"
-  fi
+  # ---------------------------------------------------------------------------
+  # OJO: NO se hace `source .../etc/bashrc` aqui.
+  # BUG ENCONTRADO (2026-09-14): hacer source del bashrc de OpenFOAM DENTRO de un
+  # script CORTA la ejecucion en seco, porque ese bashrc esta pensado para una shell
+  # interactiva (imprime banner y termina el proceso). El script moria en silencio
+  # justo aqui.
+  #
+  # Via correcta: cargar el entorno FUERA del script (en el subshell padre) o usar
+  #   python3 scripts/foam_run.py bash scripts/gate_cfd0.sh
+  # Si aqui llegamos sin entorno, se aborta con instrucciones claras.
+  # ---------------------------------------------------------------------------
+  fallo "el entorno OpenFOAM no esta cargado en esta shell"
+  echo
+  echo "          Carga el entorno PRIMERO y vuelve a ejecutar este script:"
+  echo "              source /usr/lib/openfoam/openfoam2412/etc/bashrc"
+  echo "              bash scripts/verify_cfd_prereqs.sh"
+  echo
+  echo "          Alternativa sin cargar nada (recomendada):"
+  echo "              python3 scripts/foam_run.py check"
+  echo "              python3 scripts/foam_run.py bash scripts/gate_cfd0.sh"
+  echo
+  echo "          Diagnostico rapido del entorno:"
+  echo "              ls -d /usr/lib/openfoam/openfoam*"
+  echo "              /usr/bin/openfoam2412 -c 'which blockMesh'"
+  echo
+  echo "======================================================================"
+  exit 127
 fi
 
 echo

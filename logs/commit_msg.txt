@@ -1,53 +1,38 @@
-diagnostico CORREGIDO: OpenFOAM SI esta instalado — falla el acceso del agente a WSL
+fix: 'source bashrc' cortaba los scripts + lanzador foam_run.py sin dependencia de source
 
-El investigador objeta mi diagnostico de Entry 016 ("este entorno no tiene OpenFOAM").
-SU OBJECION ES CORRECTA Y LA MIA ERA ERRONEA.
+EJECUCION REAL EN WSL (primera vez que se prueba el codigo en el entorno destino) y
+aparecieron DOS BUGS.
 
-Verificado desde la terminal del investigador:
-  WSL Ubuntu 2 disponible
-  Instalacion: /usr/lib/openfoam/openfoam2412   <- NO en /opt (ese camino no existe)
-  Comando:     openfoam2412                      -> abre shell de sesion OpenFOAM
-  Build:       _b8cf4d35-20260127 (patch=260127), linux64GccDPInt32Opt
+BUG 1 — `source .../etc/bashrc` DENTRO de un script CORTA la ejecucion en seco.
+  Sintoma: `bash scripts/verify_cfd_prereqs.sh` imprimia
+      -- 2. Entorno OpenFOAM
+      [AVISO] blockMesh NO esta en PATH; intentando cargar el entorno...
+  y MORIA ahi, en silencio, sin seguir con el resto de comprobaciones.
+  Causa: el bashrc de OpenFOAM esta pensado para shell INTERACTIVA (imprime banner y
+  termina el proceso). Los tres .sh lo hacian y se cortaban.
+  -> Corregido: los .sh YA NO hacen source. Si el entorno no esta cargado, ABORTAN con
+     instrucciones claras en vez de morir en silencio.
+  -> Nuevo scripts/foam_run.py: construye el entorno SIN hacer source dentro del script.
+     Estrategia: (1) si blockMesh ya esta en PATH no toca nada; (2) captura el entorno
+     parseando la salida del envoltorio `openfoam2412`; (3) si falla, lo captura en un
+     SUBSHELL (`bash -c 'source ...; env'`), donde el corte no nos afecta porque solo nos
+     importa su salida. Luego ejecuta el comando con ese entorno.
 
-LA PRUEBA DECISIVA: ese build COINCIDE EXACTAMENTE con el de
-cfd/cases/T25P_baseline/log.snappyHexMesh. Es la MISMA instalacion que ya genero esa malla.
-OpenFOAM funcionaba.
+BUG 2 — `wsl -d Ubuntu --` no funciona desde DENTRO de WSL (es comando de PowerShell).
+  Dentro de Ubuntu se usa `bash -lc`.
 
-Lo verdadero y lo falso:
-  "OpenFOAM no esta instalado"                              -> FALSO
-  "el agente no puede alcanzar WSL desde esta sesion"        -> cierto
-  "wsl -l -v desde el agente -> E_ACCESSDENIED"              -> cierto
-  "bash desde el agente tambien falla"                       -> cierto
+LO QUE SI QUEDO VERIFICADO en esa ejecucion (todo lo esencial paso):
+  blockMesh/checkMesh/topoSet/simpleFoam -> /usr/lib/openfoam/openfoam2412/platforms/
+                                            linux64GccDPInt32Opt/bin/
+  python3 -> /usr/bin/python3 (3.14.4)     <- despejada la duda del prerequisito
+  mpirun  -> /usr/bin/mpirun
+  awk/sort/cut/find/ls presentes
+  Y la comprobacion del directorio de trabajo FUNCIONO COMO DEBIA: fallo con mensaje
+  explicito (estaba en /mnt/c/Users/Dimasur, un nivel arriba) en vez de dar resultados
+  silenciosamente erroneos. 6 fallos, todos por el directorio equivocado.
 
-LECCION DE METODO: busque en rutas tipicas de Linux (/opt/openfoam*), no encontre nada y
-concluí ausencia de instalacion. El error fue saltar de "no lo encuentro desde aqui" a
-"no existe". No accesible != inexistente. Es el mismo tipo de error que este proyecto lleva
-quince revisiones evitando en el terreno de los datos, aplicado a mi mismo.
+DOCUMENTACION: geometry/COMO_EJECUTAR_CFD0.md reescrita con las dos opciones (lanzador y
+carga manual), el punto de partida ya verificado, y la tabla de que significa cada fallo.
 
-BUG REAL EN LAS HERRAMIENTAS .sh (encontrado gracias al diagnostico correcto):
-  En shell NO interactiva el entorno de OpenFOAM NO esta cargado (foamVersion: command not
-  found) aunque este instalado. Mis tres .sh comprobaban `command -v blockMesh` y abortaban:
-  habrian fallado en la terminal del investigador con OpenFOAM perfectamente instalado.
-  -> Anadida funcion cargar_openfoam() con autodeteccion en gate_cfd0.sh, run_cfd_suite.sh y
-     verify_cfd_prereqs.sh. Los mensajes de ayuda ahora citan la ruta correcta.
-
-SEGUNDO BUG CORREGIDO: eleccion del caso CFD-0
-  El selector usaba head -1 sobre orden alfabetico (daba un T25P arbitrario), aunque el
-  comentario prometia "el mas cercano a operacion tipica". Reescrito con parseo explicito y
-  minimizacion de distancia relativa a V=5, H=3, d=200. Verificado sobre el FS real:
-  selecciona T25P_V3.1_H2.8_d190_f0.95_a4 (score 0.151). Implementado SIN depender de Python,
-  porque `which python3` no aparecio en la verificacion y puede no estar en el WSL.
-
-PREREQUISITO NUEVO DETECTADO: python3
-  postprocess_case.py y check_cfd0_evidence.py lo necesitan. Nuevo scripts/verify_cfd_prereqs.sh
-  que lo comprueba y falla con instruccion de instalacion en vez de romper a mitad del smoke test.
-
-GUIA OPERATIVA: geometry/COMO_EJECUTAR_CFD0.md — secuencia exacta PowerShell -> WSL ->
-openfoam2412 -> proyecto -> verify_cfd_prereqs.sh -> gate_cfd0.sh, con tabla de que significa
-cada fallo y que traer de vuelta.
-
-LO QUE SIGUE SIN VERIFICARSE, Y SE DECLARA: los .sh NO se han podido ejecutar ni probar desde
-el agente (WSL y bash bloqueados en esa sesion). Estan escritos para funcionar en la terminal
-del investigador; hasta que se ejecuten no estan verificados.
-
-CFD-0 es ejecutable HOY desde la terminal del investigador.
+Los .sh siguen SIN estar verificados de punta a punta: no se han podido ejecutar desde el
+agente (WSL y bash bloqueados en esa sesion).
