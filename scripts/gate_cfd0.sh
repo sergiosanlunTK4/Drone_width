@@ -22,20 +22,27 @@
 # =============================================================================
 set -uo pipefail
 
-CASES_DIR="${CASES_DIR:-cfd/cases}"
+# Directorio de ESTE script. Se usa para invocar los .py con ruta ABSOLUTA, sin depender
+# de cuantos niveles hay que subir desde el caso.
+# (Bug corregido: antes ponia ../../scripts, que desde cfd/cases/<caso>/ resuelve a
+#  cfd/scripts y no existe.)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROYECTO="$(cd "${SCRIPT_DIR}/.." && pwd)"
+CASES_DIR="${CASES_DIR:-${PROYECTO}/cfd/cases}"
 ITER_TEST="${ITER_TEST:-300}"
 
 # -----------------------------------------------------------------------------
-# CARGA DEL ENTORNO DE OpenFOAM
+# ENTORNO DE OpenFOAM
 #   NO se hace `source .../etc/bashrc` dentro del script: BUG ENCONTRADO
 #   (2026-09-14) ese bashrc esta pensado para shell interactiva y CORTA la ejecucion
 #   del script en seco. Si el entorno no esta cargado, se aborta con instrucciones.
 #   Via correcta:  python3 scripts/foam_run.py bash scripts/gate_cfd0.sh
 # -----------------------------------------------------------------------------
 echo "=============================================================="
-echo " GATE CFD-0 — smoke test"
+echo " GATE CFD-0 — smoke test sobre UN caso"
 echo "=============================================================="
 echo "-- 0. entorno OpenFOAM"
+
 if ! command -v blockMesh >/dev/null 2>&1; then
   echo "  [BLOQUEADO] el entorno OpenFOAM no esta cargado en esta shell."
   echo
@@ -49,7 +56,7 @@ if ! command -v blockMesh >/dev/null 2>&1; then
   echo "  Los 128 casos siguen siendo CASOS GENERADOS, no CFD validados."
   exit 127
 fi
-echo "  [OK]    foamVersion = $(foamVersion 2>/dev/null || echo '?')"
+echo "  [OK]    foamVersion = $(foamVersion 2>/dev/null || echo 'durante la sesion (es una funcion de shell, no un ejecutable)')"
 echo "  [OK]    blockMesh   = $(command -v blockMesh)"
 echo "  [OK]    checkMesh   = $(command -v checkMesh)"
 echo "  [OK]    topoSet     = $(command -v topoSet)"
@@ -91,10 +98,8 @@ CASO_PATH="${CASES_DIR}/${CASO}"
 [[ -d "${CASO_PATH}" ]] || { echo "no existe el caso '${CASO_PATH}'"; exit 1; }
 
 echo "=============================================================="
-echo " GATE CFD-0 — smoke test"
 echo " caso: ${CASO}"
-echo "=============================================================="
-cd "${CASO_PATH}"
+echo "=============================================================="cd "${CASO_PATH}"
 
 FALLOS=0
 check() {  # check <descripcion> <comando...>
@@ -160,7 +165,7 @@ else
   echo "  [AVISO] el log no menciona actuationDiskSource: verificar manualmente"
 fi
 # evidencia cuantitativa: el downwash debe existir y ser NEGATIVO (hacia abajo)
-python3 ../../scripts/check_cfd0_evidence.py "${CASO}" .. || FALLOS=$((FALLOS+1))
+python3 "${SCRIPT_DIR}/check_cfd0_evidence.py" "${CASO}" "$(pwd)/.." || FALLOS=$((FALLOS+1))
 
 # --- 6. function objects ---------------------------------------------------------
 echo
@@ -183,10 +188,25 @@ done
 # --- 7. postproceso --------------------------------------------------------------
 echo
 echo "-- 7. postprocess_case.py"
-if python3 ../../scripts/postprocess_case.py "${CASO}" .. >/dev/null 2>&1; then
+if python3 "${SCRIPT_DIR}/postprocess_case.py" "${CASO}" "$(pwd)/.." >/dev/null 2>&1; then
   echo "  [OK]    la fila se escribio en cfd_airflow"
 else
   echo "  [AVISO] no se escribio la fila (normal si el caso no convergio aun)"
+fi
+
+# --- 7b. volcado de logs si algo fallo (para diagnostico) ------------------------
+if [[ ${FALLOS} -gt 0 ]]; then
+  echo
+  echo "=============================================================="
+  echo " DIAGNOSTICO: cola de los logs (copiar y pegar)"
+  echo "=============================================================="
+  for lg in log.topoSet log.simpleFoam; do
+    if [[ -f "${lg}" ]]; then
+      echo
+      echo "----- ${lg} (ultimas 30 lineas) -----"
+      tail -30 "${lg}"
+    fi
+  done
 fi
 
 # --- 8. coste --------------------------------------------------------------------

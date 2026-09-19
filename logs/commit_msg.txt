@@ -1,38 +1,44 @@
-fix: 'source bashrc' cortaba los scripts + lanzador foam_run.py sin dependencia de source
+fix: class IOdictionary -> dictionary (bug SISTEMICO en los 128 casos), rutas de scripts y diagnostico
 
-EJECUCION REAL EN WSL (primera vez que se prueba el codigo en el entorno destino) y
-aparecieron DOS BUGS.
+GATE CFD-0 se ejecuto por primera vez en WSL y ENCONTRO UN BUG REAL. Era exactamente para
+eso: blockMesh y checkMesh pasaron, y el fallo aparecio en el solver.
 
-BUG 1 — `source .../etc/bashrc` DENTRO de un script CORTA la ejecucion en seco.
-  Sintoma: `bash scripts/verify_cfd_prereqs.sh` imprimia
-      -- 2. Entorno OpenFOAM
-      [AVISO] blockMesh NO esta en PATH; intentando cargar el entorno...
-  y MORIA ahi, en silencio, sin seguir con el resto de comprobaciones.
-  Causa: el bashrc de OpenFOAM esta pensado para shell INTERACTIVA (imprime banner y
-  termina el proceso). Los tres .sh lo hacian y se cortaban.
-  -> Corregido: los .sh YA NO hacen source. Si el entorno no esta cargado, ABORTAN con
-     instrucciones claras en vez de morir en silencio.
-  -> Nuevo scripts/foam_run.py: construye el entorno SIN hacer source dentro del script.
-     Estrategia: (1) si blockMesh ya esta en PATH no toca nada; (2) captura el entorno
-     parseando la salida del envoltorio `openfoam2412`; (3) si falla, lo captura en un
-     SUBSHELL (`bash -c 'source ...; env'`), donde el corte no nos afecta porque solo nos
-     importa su salida. Luego ejecuta el comando con ese entorno.
+BUG 1 (SISTEMICO, afectaba a los 128 casos):
+  FOAM FATAL IO ERROR: unexpected class name IOdictionary expected dictionary
+      while reading object transportProperties
+  Mi generador escribia `class IOdictionary` en transportProperties y
+  turbulenceProperties. OpenFOAM 2412 exige `class dictionary`.
+  -> Corregido en scripts/build_case_suite.py y REGENERADOS los 128 casos.
+  -> Verificado: 128/128 con class dictionary y 0 fallos estructurales.
 
-BUG 2 — `wsl -d Ubuntu --` no funciona desde DENTRO de WSL (es comando de PowerShell).
-  Dentro de Ubuntu se usa `bash -lc`.
+  Por que blockMesh no lo detecto: no lee ese fichero. Solo el solver lo hace. Es el
+  argumento de por que hacia falta el smoke test y no bastaba la verificacion de ficheros.
 
-LO QUE SI QUEDO VERIFICADO en esa ejecucion (todo lo esencial paso):
-  blockMesh/checkMesh/topoSet/simpleFoam -> /usr/lib/openfoam/openfoam2412/platforms/
-                                            linux64GccDPInt32Opt/bin/
-  python3 -> /usr/bin/python3 (3.14.4)     <- despejada la duda del prerequisito
-  mpirun  -> /usr/bin/mpirun
-  awk/sort/cut/find/ls presentes
-  Y la comprobacion del directorio de trabajo FUNCIONO COMO DEBIA: fallo con mensaje
-  explicito (estaba en /mnt/c/Users/Dimasur, un nivel arriba) en vez de dar resultados
-  silenciosamente erroneos. 6 fallos, todos por el directorio equivocado.
+BUG 2 (rutas):
+  El gate invocaba `python3 ../../scripts/check_cfd0_evidence.py`, que desde
+  cfd/cases/<caso>/ resuelve a cfd/scripts y NO EXISTE:
+      python3: can't open file '.../cfd/scripts/check_cfd0_evidence.py'
+  -> Corregido: SCRIPT_DIR y PROYECTO calculados con ruta ABSOLUTA al inicio del script.
+     Aplicado en gate_cfd0.sh y run_cfd_suite.sh.
 
-DOCUMENTACION: geometry/COMO_EJECUTAR_CFD0.md reescrita con las dos opciones (lanzador y
-carga manual), el punto de partida ya verificado, y la tabla de que significa cada fallo.
+BUG 3 (menor): banner duplicado en el gate, y script ejecutado dos veces.
 
-Los .sh siguen SIN estar verificados de punta a punta: no se han podido ejecutar desde el
-agente (WSL y bash bloqueados en esa sesion).
+MEJORAS AL GATE:
+  - volcado automatico de la cola de log.topoSet y log.simpleFoam cuando algo falla,
+    para no tener que pedir los logs a mano.
+  - foamVersion: es una FUNCION de shell, no un ejecutable; el chequeo con `command -v`
+    daba un falso "[OK] foamVersion -> foamVersion". Ahora se invoca de verdad.
+
+NUEVO: scripts/verify_case_suite.py — verificacion estructural de los 128 casos contra las
+  invariantes que ya conocemos, para detectar errores de generacion SIN lanzar el solver
+  caso por caso. Comprueba: ficheros requeridos, clase correcta, una cellZone por rotor,
+  un actuationDiskSource por rotor, diskDir hacia abajo, BC con traslacion (no (0 0 0)),
+  sides/top slip (no symmetry), campos de turbulencia, y suelo a -H real.
+
+ESTADO DE CFD-0: 7 criterios fallidos de la primera ejecucion, ya corregidos los que
+dependian del generador y de las rutas. QUEDA PENDIENTE el fallo de topoSet:
+    [FALLO] topoSet   rotores definidos: 4   zonas creadas: 0
+Necesito su log (el gate ahora lo vuelca solo) porque no puedo reproducirlo desde el agente.
+
+LO QUE SI QUEDO CONFIRMADO: blockMesh OK y checkMesh "Mesh OK" con Max skewness = 5e-14.
+La malla base es correcta.

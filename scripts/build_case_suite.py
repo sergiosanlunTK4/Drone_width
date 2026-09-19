@@ -415,8 +415,12 @@ relaxationFactors
 """, encoding="utf-8")
 
     # ---- turbulenceProperties
+    # OJO CON `class`: OpenFOAM 2412 exige `dictionary` para turbulenceProperties y
+    # transportProperties. Escribir `IOdictionary` provoca:
+    #   FOAM FATAL IO ERROR: unexpected class name IOdictionary expected dictionary
+    # Bug detectado por GATE CFD-0 al ejecutar el primer caso real.
     (case_dir / "constant" / "turbulenceProperties").write_text(
-        foam_header("IOdictionary", "turbulenceProperties") + """
+        foam_header("dictionary", "turbulenceProperties") + """
 simulationType  RAS;
 RAS
 {
@@ -427,7 +431,7 @@ RAS
 """, encoding="utf-8")
 
     (case_dir / "constant" / "transportProperties").write_text(
-        foam_header("IOdictionary", "transportProperties") + f"""
+        foam_header("dictionary", "transportProperties") + f"""
 transportModel  Newtonian;
 nu              [0 2 -1 0 0 0 0] {NU};
 """, encoding="utf-8")

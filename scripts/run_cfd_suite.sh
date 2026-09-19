@@ -23,6 +23,9 @@ PLATFORM="${1:-all}"
 DRY=0
 [[ "${1:-}" == "--dry-run" ]] && { DRY=1; PLATFORM="all"; }
 
+# Directorio de ESTE script (ruta absoluta para invocar los .py sin depender de niveles)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # -----------------------------------------------------------------------------
 # ENTORNO DE OpenFOAM
 #   NO se hace `source .../etc/bashrc` dentro del script: BUG ENCONTRADO
@@ -94,7 +97,8 @@ for caso in "${CASOS[@]}"; do
     }
     reconstructPar -latestTime > log.reconstructPar 2>&1
     # 5) extraccion de resultados a la base de datos
-    python3 ../../scripts/postprocess_case.py "${nombre}" ../
+    #    ruta absoluta al script: no depender de cuantos niveles subir desde el caso
+    python3 "${SCRIPT_DIR}/postprocess_case.py" "${nombre}" "$(pwd)/.."
   ) && EJECUTADOS=$((EJECUTADOS+1)) || { FALLOS=$((FALLOS+1)); echo "    FALLO"; }
 done
 

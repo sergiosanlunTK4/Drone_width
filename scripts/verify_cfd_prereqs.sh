@@ -71,12 +71,19 @@ fi
 
 echo
 echo "-- 3. Ejecutables requeridos"
-for exe in blockMesh checkMesh topoSet simpleFoam foamVersion; do
+for exe in blockMesh checkMesh topoSet simpleFoam; do
   p="$(command -v "${exe}" 2>/dev/null || true)"
   if [[ -n "${p}" ]]; then ok "${exe} -> ${p}"; else fallo "${exe} no encontrado"; fi
 done
+# foamVersion es una FUNCION de shell en OpenFOAM 2412, no un ejecutable: `command -v`
+# devuelve el nombre a secas. Se comprueba invocandola.
+if foamVersion >/dev/null 2>&1; then
+  ok "foamVersion -> $(foamVersion 2>&1 | head -1)"
+else
+  aviso "foamVersion no responde (es una funcion de shell; puede no estar cargada)"
+fi
 v="$(foamVersion 2>/dev/null || true)"
-[[ -n "${v}" ]] && echo "          foamVersion = ${v}"
+[[ -n "${v}" ]] && echo "          version = ${v}"
 
 echo
 echo "-- 4. Herramientas auxiliares que usan los scripts"
