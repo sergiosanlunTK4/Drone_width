@@ -1,0 +1,627 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "platform": "DJI Agras T100",
+  "description": "Especificación tridimensional fiel y paramétrica de elementos funcionales del DJI Agras T100 para CFD y transporte/deposición de gotas",
+  "generated_by": "scripts/generate_t100_cfd_model.py",
+  "coordinate_system": {
+    "origin": "Centro geométrico del chasis en el plano medio de los tubos de brazos de carbono",
+    "axes_convention": "Aeronáutica mano derecha (SAE / CFD)",
+    "x_axis": "+X hacia adelante (eje de avance de vuelo)",
+    "y_axis": "+Y hacia estribor / derecha del dron",
+    "z_axis": "+Z vertical hacia arriba (opuesto a gravedad y downwash)",
+    "units": "metros (m), grados sexagesimales (deg), segundos (s), kilogramos (kg)"
+  },
+  "general_dimensions": {
+    "wheelbase_diagonal_mm": 2330.0,
+    "wheelbase_diagonal_m": 2.33,
+    "radius_center_to_axis_m": 1.165,
+    "adjacent_axis_distance_m": 1.6476,
+    "unfolded_envelope_with_props_mm": [
+      3220,
+      3224,
+      975
+    ],
+    "modeled_envelope_with_props_mm": [
+      3222.4,
+      3222.4,
+      975.0
+    ],
+    "total_height_m": 0.975,
+    "ground_contact_z_m": -0.625,
+    "lidar_top_apex_z_m": 0.35
+  },
+  "mass_and_payload": {
+    "empty_weight_with_battery_2nozzles_kg": 73.0,
+    "empty_weight_with_battery_4nozzles_kg": 74.9,
+    "payload_tank_capacity_L": 100.0,
+    "payload_tank_capacity_kg": 100.0,
+    "mtow_spraying_kg": 175.0,
+    "battery_model": "DB2160 (14.7 kg, 41 Ah, 52 V)"
+  },
+  "propulsion_and_rotors": {
+    "total_rotors_count": 8,
+    "coaxial_pairs_count": 4,
+    "rotor_diameter_m": 1.5748,
+    "rotor_diameter_inches": 62.0,
+    "propeller_pitch_inches": 23.0,
+    "blades_per_rotor": 2,
+    "blade_model": "6223 fibra de carbono plegable",
+    "coaxial_axial_gap_m": 0.29,
+    "upper_rotor_plane_z_m": 0.145,
+    "lower_rotor_plane_z_m": -0.145,
+    "actuator_disk_thickness_m": 0.04,
+    "total_disk_area_m2": 15.5823,
+    "max_arm_thrust_kg": 82.0,
+    "max_arm_thrust_N": 804.15,
+    "motor_model": "155P (estator 155x16 mm, 60 KV)",
+    "rotors": [
+      {
+        "rotor_id": "M1_FR_upper",
+        "arm_id": "M1_FR",
+        "position_role": "upper",
+        "center_xyz_m": [
+          0.8238,
+          0.8238,
+          0.145
+        ],
+        "normal_vector": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "thrust_vector_hover": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "rotation_direction": "CCW",
+        "diameter_m": 1.5748,
+        "radius_m": 0.7874,
+        "swept_area_m2": 1.9478,
+        "disk_thickness_m": 0.04,
+        "propeller_model": "6223 (62x23 in)",
+        "blades_count": 2,
+        "mean_chord_m": 0.085,
+        "pitch_inches": 23.0,
+        "nominal_hover_thrust_N": 214.5,
+        "nominal_hover_rpm": 1850.0
+      },
+      {
+        "rotor_id": "M1_FR_lower",
+        "arm_id": "M1_FR",
+        "position_role": "lower",
+        "center_xyz_m": [
+          0.8238,
+          0.8238,
+          -0.145
+        ],
+        "normal_vector": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "thrust_vector_hover": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "rotation_direction": "CW",
+        "diameter_m": 1.5748,
+        "radius_m": 0.7874,
+        "swept_area_m2": 1.9478,
+        "disk_thickness_m": 0.04,
+        "propeller_model": "6223 (62x23 in)",
+        "blades_count": 2,
+        "mean_chord_m": 0.085,
+        "pitch_inches": 23.0,
+        "nominal_hover_thrust_N": 214.5,
+        "nominal_hover_rpm": 1850.0
+      },
+      {
+        "rotor_id": "M2_RR_upper",
+        "arm_id": "M2_RR",
+        "position_role": "upper",
+        "center_xyz_m": [
+          -0.8238,
+          0.8238,
+          0.145
+        ],
+        "normal_vector": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "thrust_vector_hover": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "rotation_direction": "CW",
+        "diameter_m": 1.5748,
+        "radius_m": 0.7874,
+        "swept_area_m2": 1.9478,
+        "disk_thickness_m": 0.04,
+        "propeller_model": "6223 (62x23 in)",
+        "blades_count": 2,
+        "mean_chord_m": 0.085,
+        "pitch_inches": 23.0,
+        "nominal_hover_thrust_N": 214.5,
+        "nominal_hover_rpm": 1850.0
+      },
+      {
+        "rotor_id": "M2_RR_lower",
+        "arm_id": "M2_RR",
+        "position_role": "lower",
+        "center_xyz_m": [
+          -0.8238,
+          0.8238,
+          -0.145
+        ],
+        "normal_vector": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "thrust_vector_hover": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "rotation_direction": "CCW",
+        "diameter_m": 1.5748,
+        "radius_m": 0.7874,
+        "swept_area_m2": 1.9478,
+        "disk_thickness_m": 0.04,
+        "propeller_model": "6223 (62x23 in)",
+        "blades_count": 2,
+        "mean_chord_m": 0.085,
+        "pitch_inches": 23.0,
+        "nominal_hover_thrust_N": 214.5,
+        "nominal_hover_rpm": 1850.0
+      },
+      {
+        "rotor_id": "M3_RL_upper",
+        "arm_id": "M3_RL",
+        "position_role": "upper",
+        "center_xyz_m": [
+          -0.8238,
+          -0.8238,
+          0.145
+        ],
+        "normal_vector": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "thrust_vector_hover": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "rotation_direction": "CCW",
+        "diameter_m": 1.5748,
+        "radius_m": 0.7874,
+        "swept_area_m2": 1.9478,
+        "disk_thickness_m": 0.04,
+        "propeller_model": "6223 (62x23 in)",
+        "blades_count": 2,
+        "mean_chord_m": 0.085,
+        "pitch_inches": 23.0,
+        "nominal_hover_thrust_N": 214.5,
+        "nominal_hover_rpm": 1850.0
+      },
+      {
+        "rotor_id": "M3_RL_lower",
+        "arm_id": "M3_RL",
+        "position_role": "lower",
+        "center_xyz_m": [
+          -0.8238,
+          -0.8238,
+          -0.145
+        ],
+        "normal_vector": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "thrust_vector_hover": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "rotation_direction": "CW",
+        "diameter_m": 1.5748,
+        "radius_m": 0.7874,
+        "swept_area_m2": 1.9478,
+        "disk_thickness_m": 0.04,
+        "propeller_model": "6223 (62x23 in)",
+        "blades_count": 2,
+        "mean_chord_m": 0.085,
+        "pitch_inches": 23.0,
+        "nominal_hover_thrust_N": 214.5,
+        "nominal_hover_rpm": 1850.0
+      },
+      {
+        "rotor_id": "M4_FL_upper",
+        "arm_id": "M4_FL",
+        "position_role": "upper",
+        "center_xyz_m": [
+          0.8238,
+          -0.8238,
+          0.145
+        ],
+        "normal_vector": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "thrust_vector_hover": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "rotation_direction": "CW",
+        "diameter_m": 1.5748,
+        "radius_m": 0.7874,
+        "swept_area_m2": 1.9478,
+        "disk_thickness_m": 0.04,
+        "propeller_model": "6223 (62x23 in)",
+        "blades_count": 2,
+        "mean_chord_m": 0.085,
+        "pitch_inches": 23.0,
+        "nominal_hover_thrust_N": 214.5,
+        "nominal_hover_rpm": 1850.0
+      },
+      {
+        "rotor_id": "M4_FL_lower",
+        "arm_id": "M4_FL",
+        "position_role": "lower",
+        "center_xyz_m": [
+          0.8238,
+          -0.8238,
+          -0.145
+        ],
+        "normal_vector": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "thrust_vector_hover": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "rotation_direction": "CCW",
+        "diameter_m": 1.5748,
+        "radius_m": 0.7874,
+        "swept_area_m2": 1.9478,
+        "disk_thickness_m": 0.04,
+        "propeller_model": "6223 (62x23 in)",
+        "blades_count": 2,
+        "mean_chord_m": 0.085,
+        "pitch_inches": 23.0,
+        "nominal_hover_thrust_N": 214.5,
+        "nominal_hover_rpm": 1850.0
+      }
+    ]
+  },
+  "arms": {
+    "M1_FR": {
+      "angle_deg": 45.0,
+      "axis_center_m": [
+        0.8238,
+        0.8238,
+        0.0
+      ],
+      "arm_tube_start_m": [
+        0.198,
+        0.198,
+        0.0
+      ],
+      "arm_tube_radius_m": 0.03,
+      "arm_tube_length_m": 0.885
+    },
+    "M2_RR": {
+      "angle_deg": 135.0,
+      "axis_center_m": [
+        -0.8238,
+        0.8238,
+        0.0
+      ],
+      "arm_tube_start_m": [
+        -0.198,
+        0.198,
+        0.0
+      ],
+      "arm_tube_radius_m": 0.03,
+      "arm_tube_length_m": 0.885
+    },
+    "M3_RL": {
+      "angle_deg": 225.0,
+      "axis_center_m": [
+        -0.8238,
+        -0.8238,
+        0.0
+      ],
+      "arm_tube_start_m": [
+        -0.198,
+        -0.198,
+        0.0
+      ],
+      "arm_tube_radius_m": 0.03,
+      "arm_tube_length_m": 0.885
+    },
+    "M4_FL": {
+      "angle_deg": 315.0,
+      "axis_center_m": [
+        0.8238,
+        -0.8238,
+        0.0
+      ],
+      "arm_tube_start_m": [
+        0.198,
+        -0.198,
+        0.0
+      ],
+      "arm_tube_radius_m": 0.03,
+      "arm_tube_length_m": 0.885
+    }
+  },
+  "spraying_system": {
+    "boom_model": "LS100 barra trasera",
+    "atomizer_model": "LX07550SX atomizador centrífugo de doble disco",
+    "total_nozzles_count": 4,
+    "outer_nozzle_spacing_m": 1.834,
+    "inner_nozzle_spacing_m": 0.917,
+    "nozzle_z_level_m": -0.448,
+    "max_total_flow_Lmin": 40.0,
+    "standard_2nozzle_flow_Lmin": 30.0,
+    "atomization_type": "centrífuga rotativa",
+    "disc_max_rpm": 14000.0,
+    "droplet_spectrum_um_range": [
+      10.0,
+      500.0
+    ],
+    "nozzles": [
+      {
+        "nozzle_id": "N1_left_outer",
+        "position_role": "outer_left",
+        "description": "Boquilla centrífuga exterior izquierda sobre barra LS100",
+        "center_xyz_m": [
+          -0.875,
+          -0.917,
+          -0.448
+        ],
+        "spray_injection_vector": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "spray_sheet_angle_deg": 180.0,
+        "atomizer_model": "LX07550SX (Doble Disco Centrífugo)",
+        "disc_diameter_mm": 100.0,
+        "disc_rpm_max": 14000.0,
+        "disc_rim_velocity_ms": 73.3,
+        "droplet_spectrum_um": {
+          "d10": 50.0,
+          "d50": 150.0,
+          "d90": 300.0,
+          "span": 1.67,
+          "min": 10.0,
+          "max": 500.0
+        },
+        "nominal_flow_Lmin": 10.0,
+        "nominal_flow_m3s": 0.00016667,
+        "boom_attachment_xyz_m": [
+          -0.875,
+          -0.917,
+          -0.32
+        ],
+        "vertical_drop_from_arm_plane_m": 0.448,
+        "vertical_drop_from_lower_rotor_m": 0.303,
+        "clearance_above_ground_m": 0.177
+      },
+      {
+        "nozzle_id": "N2_left_inner",
+        "position_role": "inner_left",
+        "description": "Boquilla centrífuga interior izquierda sobre barra LS100",
+        "center_xyz_m": [
+          -0.775,
+          -0.4585,
+          -0.448
+        ],
+        "spray_injection_vector": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "spray_sheet_angle_deg": 180.0,
+        "atomizer_model": "LX07550SX (Doble Disco Centrífugo)",
+        "disc_diameter_mm": 100.0,
+        "disc_rpm_max": 14000.0,
+        "disc_rim_velocity_ms": 73.3,
+        "droplet_spectrum_um": {
+          "d10": 50.0,
+          "d50": 150.0,
+          "d90": 300.0,
+          "span": 1.67,
+          "min": 10.0,
+          "max": 500.0
+        },
+        "nominal_flow_Lmin": 10.0,
+        "nominal_flow_m3s": 0.00016667,
+        "boom_attachment_xyz_m": [
+          -0.775,
+          -0.4585,
+          -0.32
+        ],
+        "vertical_drop_from_arm_plane_m": 0.448,
+        "vertical_drop_from_lower_rotor_m": 0.303,
+        "clearance_above_ground_m": 0.177
+      },
+      {
+        "nozzle_id": "N3_right_inner",
+        "position_role": "inner_right",
+        "description": "Boquilla centrífuga interior derecha sobre barra LS100",
+        "center_xyz_m": [
+          -0.775,
+          0.4585,
+          -0.448
+        ],
+        "spray_injection_vector": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "spray_sheet_angle_deg": 180.0,
+        "atomizer_model": "LX07550SX (Doble Disco Centrífugo)",
+        "disc_diameter_mm": 100.0,
+        "disc_rpm_max": 14000.0,
+        "disc_rim_velocity_ms": 73.3,
+        "droplet_spectrum_um": {
+          "d10": 50.0,
+          "d50": 150.0,
+          "d90": 300.0,
+          "span": 1.67,
+          "min": 10.0,
+          "max": 500.0
+        },
+        "nominal_flow_Lmin": 10.0,
+        "nominal_flow_m3s": 0.00016667,
+        "boom_attachment_xyz_m": [
+          -0.775,
+          0.4585,
+          -0.32
+        ],
+        "vertical_drop_from_arm_plane_m": 0.448,
+        "vertical_drop_from_lower_rotor_m": 0.303,
+        "clearance_above_ground_m": 0.177
+      },
+      {
+        "nozzle_id": "N4_right_outer",
+        "position_role": "outer_right",
+        "description": "Boquilla centrífuga exterior derecha sobre barra LS100",
+        "center_xyz_m": [
+          -0.875,
+          0.917,
+          -0.448
+        ],
+        "spray_injection_vector": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "spray_sheet_angle_deg": 180.0,
+        "atomizer_model": "LX07550SX (Doble Disco Centrífugo)",
+        "disc_diameter_mm": 100.0,
+        "disc_rpm_max": 14000.0,
+        "disc_rim_velocity_ms": 73.3,
+        "droplet_spectrum_um": {
+          "d10": 50.0,
+          "d50": 150.0,
+          "d90": 300.0,
+          "span": 1.67,
+          "min": 10.0,
+          "max": 500.0
+        },
+        "nominal_flow_Lmin": 10.0,
+        "nominal_flow_m3s": 0.00016667,
+        "boom_attachment_xyz_m": [
+          -0.875,
+          0.917,
+          -0.32
+        ],
+        "vertical_drop_from_arm_plane_m": 0.448,
+        "vertical_drop_from_lower_rotor_m": 0.303,
+        "clearance_above_ground_m": 0.177
+      }
+    ]
+  },
+  "landing_gear": {
+    "skid_width_m": 1.1,
+    "skid_length_m": 1.15,
+    "skid_bottom_z_m": -0.625,
+    "right_skid_axis": {
+      "p_start_xyz_m": [
+        -0.6,
+        0.55,
+        -0.605
+      ],
+      "p_end_xyz_m": [
+        0.55,
+        0.55,
+        -0.605
+      ]
+    },
+    "left_skid_axis": {
+      "p_start_xyz_m": [
+        -0.6,
+        -0.55,
+        -0.605
+      ],
+      "p_end_xyz_m": [
+        0.55,
+        -0.55,
+        -0.605
+      ]
+    }
+  },
+  "cfd_openfoam_guidelines": {
+    "snappyHexMesh_surfaces": {
+      "airframe": "t100_airframe.stl (pared impermeable no deslizamiento)",
+      "rotor_disks": "t100_rotor_disks.stl (zonas celulares cellZone para actuationDiskSource o MRF)",
+      "spray_nozzles": "t100_spray_nozzles.stl (puntos o parches de inyección Lagrangiana)"
+    },
+    "droplet_deposition_module": {
+      "injector_type": "cone / rotatingDiscInjector (centrifugal sheet atomization)",
+      "injection_coordinates": [
+        [
+          -0.875,
+          -0.917,
+          -0.448
+        ],
+        [
+          -0.775,
+          -0.4585,
+          -0.448
+        ],
+        [
+          -0.775,
+          0.4585,
+          -0.448
+        ],
+        [
+          -0.875,
+          0.917,
+          -0.448
+        ]
+      ],
+      "injection_directions": [
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ]
+      ],
+      "recommended_d50_um": 150.0,
+      "recommended_d10_um": 50.0,
+      "recommended_d90_um": 300.0,
+      "fluid": "agua (rho=997.0 kg/m3, mu=1.002e-3 Pa.s a 20 C, o 28 C según context.md)"
+    }
+  }
+}
