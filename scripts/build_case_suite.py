@@ -37,7 +37,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-G = 9.81
+# Gravedad estandar. DEBE coincidir con `scripts/force_chain.py`, que es la cadena de
+# fuerza autoritativa del proyecto. Estuvo aqui como 9.81 mientras force_chain usaba
+# 9.80665, lo que hacia que `empuje_total_N` (= masa * G) no cerrara con el peso del UAV
+# que calcula la cadena C. La discrepancia era de 0.0347 % (0.177 N en el T25P) y la
+# detecto la comprobacion de coherencia de `scripts/build_prescribed_momentum.py`.
+G = 9.80665
 RHO = 1.1716          # 28 C, nivel del mar
 P_ATM = 101325.0
 NU = 1.5e-5           # m2/s, aire a ~28 C

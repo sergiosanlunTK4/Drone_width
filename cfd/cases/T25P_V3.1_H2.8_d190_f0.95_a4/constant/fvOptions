@@ -12,100 +12,133 @@ FoamFile
     class       dictionary;
     object      fvOptions;
 }
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// Empuje PRESCRITO por disco (arquitectura C -> B de geometry/coaxial_thrust_split.md).
-// `diskDir (0 0 -1)`: en vuelo nivelado el rotor empuja el aire hacia abajo.
-// El reparto superior/inferior en coaxiales es un PARAMETRO barrido, no una suposicion.
-// OJO: `options` es un SUB-DICCIONARIO (llaves), no una lista (parentesis).
+// =====================================================================================
+// FUENTE DE MOMENTO PRESCRITA  -  arquitectura C -> B
+// =====================================================================================
+//
+// NO es actuationDiskSource. Aquel CALCULA el empuje a partir del flujo incidente
+// axial (T = 2 rho A |U_o.n|^2 a(1-a)), de modo que con flujo perpendicular da
+// T ~ 0. Aqui el empuje es una ENTRADA.
+//
+// Formulacion: vectorSemiImplicitSource. En OpenFOAM, `Su` entra en la ecuacion de
+// momento CINEMATICA (fvm::div(phi,U) -> dimensiones [0 2 -2 0 0 0 0]), de modo que
+// `Su` tiene dimensiones [0 -1 -2] = aceleracion por unidad de volumen, NO fuerza por
+// unidad de masa. En un solver incompresible rho NO aparece: la densidad ya esta
+// implicita en las unidades. La cadena es
+//
+//       F [N]  ->  F/V_zone [N/m^3]  ->  Su
+//
+// El codigo de OpenFOAM aplica, por celda, `Su_c * V_c` newtons (fvm::SuSp multiplica
+// por el volumen de celda). Por tanto, con Su CONSTANTE en la zona,
+//
+//       integral_{V_zone} f dV = Su * sum_c V_c = Su * V_zone
+//
+// y para que valga `F` hay que escribir `Su = F / V_zone`.
+//
+// POR QUE `specific` Y NO `absolute`  (candidato a bug #7, medido)
+//   El codigo de v2412 hace, para volumeMode absolute:
+//       VDash_ = V_ ;   Su_interno = Su_diccionario / VDash_
+//   es decir, `absolute` DIVIDE por el volumen de la zona. Eso mete una division por
+//   V_zone en medio de la formulacion y hace que el resultado dependa de que el volumen
+//   declarado coincida EXACTAMENTE con el de la malla. Se midio en un caso controlado
+//   (scripts/calibrate_semiimplicit.py): con el mismo `Su`, `specific` aplica un factor
+//   V_zone mas de fuerza que `absolute`, exactamente el factor 4.0 del volumen del test.
+//
+//   Con `specific`, `VDash_ = 1` y el valor del diccionario es la densidad volumetrica
+//   SIN ninguna renormalizacion. La formulacion deja de depender de la semantica del
+//   modo: menos piezas moviles, mismo resultado fisico.
+//
+// Constante es lo correcto: el reparto por volumen ya lo hace la integracion, porque
+// una celda grande recibe mas fuerza total al multiplicarse por su volumen. Repartir
+// Su_c proporcional a V_c sobreponderia las celdas grandes.
+//
+// Convenio de signos: T_i es la fuerza del rotor SOBRE EL UAV; lo que se inyecta al
+// FLUIDO es la reaccion, -T_i. En hover, (0 0 -T_i).
+//
+// V_zone procede de constant/rotorZoneVolumes, calculado sobre la malla REAL de este
+// caso (scripts/mesh_zone_volumes.py). OpenFOAM imprime su propio valor en el log
+// ('- selected N cell(s) with volume V'); verificacion: verify_prescribed_force.py.
+//
+// VERIFICACION OBLIGATORIA (GATE CFD-0): la fuerza aplicada debe integrar T_i rotor
+// por rotor, y el balance global de momento debe cerrar.
+// =====================================================================================
+
 options
 {
-    // rotor 1 (R1): T = 127.309 N   (masa 51.91 kg, split 0.500)
+    // rotor1: T_i = 127.270000 N (fuerza del rotor sobre el UAV, hacia arriba)
+    //     V_zone = 5.2914062504e-01 m3  ->  Su = F_aire/V_zone = (0.0000000000e+00 0.0000000000e+00 -2.4052207292e+02) N/m3
     rotor1
     {
-        type            actuationDiskSource;
+        type            vectorSemiImplicitSource;
         libs            ("libfvOptions.so");
         selectionMode   cellZone;
         cellZone        rotor1;
-        fields          (U);
+        // `specific`: el valor es la densidad volumetrica y NO se renormaliza.
+        // NO cambiar a `absolute` sin volver a dividir por V_zone (ver cabecera).
+        volumeMode      specific;
 
-        // El empuje actua en la direccion del eje del rotor.
-        // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
-        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
-        // OpenFOAM 2412 exige esta entrada.
-        diskDir         (0 0 -1);
-        upstreamPoint   (0.6965 0.6965 0.5800);
-        diskArea        1.266769;
-        // Coeficientes referidos a Uref = 1 m/s
-        Uref            1.0000;
-        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
-        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
-        writeMultiVal   false;
+        sources
+        {
+            U               ((0.0000000000e+00 0.0000000000e+00 -2.4052207292e+02) 0);
+        }
     }
-    // rotor 2 (R2): T = 127.309 N   (masa 51.91 kg, split 0.500)
+
+    // rotor2: T_i = 127.270000 N (fuerza del rotor sobre el UAV, hacia arriba)
+    //     V_zone = 5.2914062504e-01 m3  ->  Su = F_aire/V_zone = (0.0000000000e+00 0.0000000000e+00 -2.4052207292e+02) N/m3
     rotor2
     {
-        type            actuationDiskSource;
+        type            vectorSemiImplicitSource;
         libs            ("libfvOptions.so");
         selectionMode   cellZone;
         cellZone        rotor2;
-        fields          (U);
+        // `specific`: el valor es la densidad volumetrica y NO se renormaliza.
+        // NO cambiar a `absolute` sin volver a dividir por V_zone (ver cabecera).
+        volumeMode      specific;
 
-        // El empuje actua en la direccion del eje del rotor.
-        // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
-        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
-        // OpenFOAM 2412 exige esta entrada.
-        diskDir         (0 0 -1);
-        upstreamPoint   (-0.6965 0.6965 0.5800);
-        diskArea        1.266769;
-        // Coeficientes referidos a Uref = 1 m/s
-        Uref            1.0000;
-        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
-        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
-        writeMultiVal   false;
+        sources
+        {
+            U               ((0.0000000000e+00 0.0000000000e+00 -2.4052207292e+02) 0);
+        }
     }
-    // rotor 3 (R3): T = 127.309 N   (masa 51.91 kg, split 0.500)
+
+    // rotor3: T_i = 127.270000 N (fuerza del rotor sobre el UAV, hacia arriba)
+    //     V_zone = 5.2914062504e-01 m3  ->  Su = F_aire/V_zone = (0.0000000000e+00 0.0000000000e+00 -2.4052207292e+02) N/m3
     rotor3
     {
-        type            actuationDiskSource;
+        type            vectorSemiImplicitSource;
         libs            ("libfvOptions.so");
         selectionMode   cellZone;
         cellZone        rotor3;
-        fields          (U);
+        // `specific`: el valor es la densidad volumetrica y NO se renormaliza.
+        // NO cambiar a `absolute` sin volver a dividir por V_zone (ver cabecera).
+        volumeMode      specific;
 
-        // El empuje actua en la direccion del eje del rotor.
-        // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
-        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
-        // OpenFOAM 2412 exige esta entrada.
-        diskDir         (0 0 -1);
-        upstreamPoint   (-0.6965 -0.6965 0.5800);
-        diskArea        1.266769;
-        // Coeficientes referidos a Uref = 1 m/s
-        Uref            1.0000;
-        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
-        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
-        writeMultiVal   false;
+        sources
+        {
+            U               ((0.0000000000e+00 0.0000000000e+00 -2.4052207292e+02) 0);
+        }
     }
-    // rotor 4 (R4): T = 127.309 N   (masa 51.91 kg, split 0.500)
+
+    // rotor4: T_i = 127.270000 N (fuerza del rotor sobre el UAV, hacia arriba)
+    //     V_zone = 5.2914062504e-01 m3  ->  Su = F_aire/V_zone = (0.0000000000e+00 0.0000000000e+00 -2.4052207292e+02) N/m3
     rotor4
     {
-        type            actuationDiskSource;
+        type            vectorSemiImplicitSource;
         libs            ("libfvOptions.so");
         selectionMode   cellZone;
         cellZone        rotor4;
-        fields          (U);
+        // `specific`: el valor es la densidad volumetrica y NO se renormaliza.
+        // NO cambiar a `absolute` sin volver a dividir por V_zone (ver cabecera).
+        volumeMode      specific;
 
-        // El empuje actua en la direccion del eje del rotor.
-        // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
-        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
-        // OpenFOAM 2412 exige esta entrada.
-        diskDir         (0 0 -1);
-        upstreamPoint   (0.6965 -0.6965 0.5800);
-        diskArea        1.266769;
-        // Coeficientes referidos a Uref = 1 m/s
-        Uref            1.0000;
-        Ct              0.999;      // T = Ct * 0.5*rho*A*Uref^2
-        Cp              0.51529558;              // potencia extraida, Cp = Ct*(1-a)
-        writeMultiVal   false;
+        sources
+        {
+            U               ((0.0000000000e+00 0.0000000000e+00 -2.4052207292e+02) 0);
+        }
     }
+
 }
+
+// ************************************************************************* //

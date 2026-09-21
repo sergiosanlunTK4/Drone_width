@@ -1,0 +1,78 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+castellatedMesh true;
+snap            true;
+addLayers       true;
+
+geometry
+{
+    // el cuerpo del dron se malla desde geometry/models/<UAV>_control.stl
+    // si el STL no esta, snappyHexMesh no se ejecuta y se corre sobre el blockMesh
+}
+
+castellatedMeshControls
+{
+    maxLocalCells       2000000;
+    maxGlobalCells      8000000;
+    minRefinementCells  10;
+    nCellsBetweenLevels 3;
+    features ();
+    refinementSurfaces {}
+    refinementRegions
+    {
+        // refinamiento del tubo de estela bajo los rotores
+        wake
+        {
+            mode        inside;
+            levels      ((0.0 2));
+            // se define en la plantilla con searchableCylinder por rotor
+        }
+    }
+    resolveFeatureAngle 30;
+    allowFreeStandingZoneFaces false;
+    locationInMesh (5 0 1.5);
+}
+
+snapControls    { nSmoothPatch 3; tolerance 2.0; nSolveIter 100; nRelaxIter 5; }
+addLayersControls
+{
+    relativeSizes true;
+    layers {}
+    expansionRatio          1.2;
+    finalLayerThickness     0.3;
+    minThickness            0.1;
+    nGrow                   0;
+    featureAngle            60;
+    nRelaxIter              5;
+    nSmoothSurfaceNormals   1;
+    nSmoothNormals          3;
+    nSmoothThickness        10;
+    maxFaceThicknessRatio   0.5;
+    maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle      90;
+    nBufferCellsNoExtrude   0;
+    nLayerIter              50;
+}
+meshQualityControls
+{
+    maxNonOrtho 65; maxBoundarySkewness 20; maxInternalSkewness 4;
+    maxConcave 80; minVol 1e-13; minTetQuality 1e-30; minArea -1;
+    minTwist 0.02; minTriangleTwist -1; minDeterminant 0.001;
+    minFaceWeight 0.02; minVolRatio 0.01; nSmoothScale 4; errorReduction 0.75;
+}
+debug 0;
+mergeTolerance 1e-6;

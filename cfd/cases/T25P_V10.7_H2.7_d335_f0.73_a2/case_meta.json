@@ -16,14 +16,15 @@
     "n_rotores_modelados": 4,
     "r_rotor_m": 0.635,
     "area_disco_total_m2": 5.0671,
-    "empuje_total_N": 466.86,
+    "empuje_total_N": 466.7,
     "empuje_por_disco_N": {
-      "R1": 116.71,
-      "R2": 116.71,
-      "R3": 116.71,
-      "R4": 116.71
+      "R1": 116.67,
+      "R2": 116.67,
+      "R3": 116.67,
+      "R4": 116.67
     },
-    "v_inducida_hover_ms": 6.271
+    "v_inducida_hover_ms": 6.27,
+    "nota_derivados": "Recalculado por scripts/fix_case_meta_gravity.py. Se corrigio la incoherencia interna que dejaba G=9.81 en build_case_suite.py frente a G=9.80665 en force_chain.py: empuje_total_N y v_inducida_hover_ms procedian de gravedades distintas. Ahora ambos usan 9.80665 y cierran con el peso de la cadena C."
   },
   "dominio": {
     "x": [

@@ -1,49 +1,100 @@
-fix(modelo): retira W_DJI, corrige V_exit != V_tip y un error de factor 500 en tau_p
+feat(cfd0): fuente de momento prescrita — bug #7 de normalizacion y gate de 5 condiciones
 
-Tres correcciones, dos pedidas por el investigador y una encontrada al verificar.
+El investigador objetivo que la semantica de `vectorSemiImplicitSource` no cuadraba con
+`Su = F/V_zone` + `volumeMode absolute`. La objecion era correcta en el mecanismo y ha
+obligado a rehacer el generador. Se registra todo, incluidos dos errores propios.
 
-1. W_commanded -> W_equiv
-   El nombre "commanded" sugeria que el ancho es una orden del operador. No lo
-   es: es una magnitud contable que cierra el balance de masa. El ancho efectivo
-   W_eff SALE de D(x,y). Renombrado en Metodologia de calculo (2.1, 6.3) y en
-   diseno_experimental (8). El nombre viejo solo sobrevive en las notas que
-   registran el cambio.
+1. BUG #7: `absolute` DIVIDE por el volumen de la zona  (medido, no razonado)
+   Codigo de v2412:
+     cellSetOption::setVol():   V_ = sum_c mesh_.V()[c]      (volumen total seleccionado)
+     SemiImplicitSource::read(): if (vmAbsolute) VDash_ = V_;
+     y luego:  SuValue = iter2.val()->value(tmVal)/VDash_
+   Es decir, con `absolute` la fuente interna es Su_diccionario/V_zone. El agente escribia
+   Su = F/V_zone con `absolute`, lo que dividia por V_zone UNA VEZ DE MAS. El valor correcto
+   con `absolute` habria sido Su = F directamente.
+   MEDIDO en caso controlado (scripts/calibrate_semiimplicit.py): con el mismo `su`, el modo
+   `specific` aplica exactamente un factor V_zone mas de fuerza que `absolute`
+   (cociente 4.0 = volumen del test, en las dos parejas comparadas).
 
-2. V_exit != V_tip  (retirada de W_DJI del modelo cientifico)
-   Se afirmaba que a 10000 rpm "la velocidad de lanzamiento es 52.4 m/s".
-   52.4 m/s es la velocidad PERIFERICA del disco, no la de la gota.
-   Usar V_tip como condicion inicial habria sido sustituir una suposicion vieja
-   por otra nueva con el mismo defecto. Ahora V_tip se conserva SOLO como cota
-   superior y escala caracteristica, y el dato faltante se trata como tal: se
-   declara k = V_exit/V_tip y se barre k en [0.3, 1.0].
-   Retirado el bloque que afirmaba que "la velocidad de lanzamiento domina".
-   Lo que decide el destino de la gota es |V_rel| = |V_exit + V_UAV - u_aire|,
-   y no puede afirmarse cual termino domina sin conocer V_exit.
+2. La formulacion propuesta NO cierra dimensionalmente
+   Se propuso F/rho. Pero en simpleFoam/pimpleFoam la ecuacion de momento es CINEMATICA
+   (fvm::div(phi,U) -> [0 2 -2 0 0 0 0]) y fvOptions usa SuDims = eqn.dimensions()/dimVolume
+   -> [0 -1 -2 0 0 0 0], es decir aceleracion por unidad de volumen. En incompresible rho NO
+   aparece: la densidad ya esta implicita. La cadena correcta es F -> F/V_zone -> Su, sin rho
+   (introducirlo daria un factor 1/rho de mas).
+   Si es correcta la observacion de que la fuerza por celda es Su*V_c: fvm::SuSp multiplica
+   por el volumen (mat.source() -= domain*susp.value()*fld).
 
-3. tau_p estaba mal por un factor ~500  (error propio)
-   Al verificar que script y documento dijeran lo mismo, no coincidian.
-   El script tenia razon: tau_p = rho_d d^2 / (18 mu_aire).
-     d = 100 um -> 2.98e-2 s   (el documento decia 6.0e-5 s)
-     d = 500 um -> 7.44e-1 s   (el documento decia 1.5e-3 s)
-   Y no era solo una cifra: la conclusion que sostenia era falsa en su razon.
-   Se afirmaba que tau_p es "3-5 ordenes menor que el tiempo de vuelo" =>
-   acoplamiento instantaneo. Para d = 500 um, tau_p ~ 0.74 s es del MISMO ORDEN
-   que el vuelo: esa gota llega al suelo SIN alcanzar su velocidad terminal
-   (~55 % en 0.6 s). Lo instantaneo solo vale para d <= 200 um.
-   La conclusion de fondo sobrevive pero por la razon opuesta: cada diametro
-   tiene su propia historia de aceleracion, y por eso hace falta el Lagrangiano.
+3. Correccion aplicada: `volumeMode specific`
+   `specific` no renormaliza (VDash_ = 1), de modo que el valor del diccionario ES la densidad
+   volumetrica F/V_zone y la formulacion deja de depender de que el volumen declarado coincida
+   con el de la malla. verify_prescribed_force.py ahora EXIGE `specific` y falla con `absolute`.
 
-Alcance de la cota, declarado: la comparacion de 6.6 es contra V_tip por ser la
-unica escala disponible. Como V_exit <= V_tip el cociente real es aun mas
-desfavorable, asi que esa conclusion SE REFUERZA al corregir V_exit. tau_p en
-cambio no depende de V_exit (solo de d y mu_aire) y no cambia. Se separo una
-cosa de la otra en lugar de mezclarlas.
+4. GATE CFD-0 pasa a exigir CINCO condiciones explicitas
+   Nuevo scripts/check_cfd0_conditions.py, invocado por gate_cfd0_hover.sh. Antes el gate se
+   conformaba con "aparece downwash", que es necesario pero no suficiente:
+     1. fuerza aplicada por rotor       |Su*V - T_i|/T_i < 0.1 %   -> PASA
+     2. balance global de momento       F_fuente + F_fronteras - flujo convectivo ~ 0
+     3. convergencia de MAGNITUDES      no solo residuos
+     4. simetria fisica                 media(Ux) ~ media(Uy) ~ 0, Uz < 0
+     5. orden de magnitud del downwash  comparado con v_i = sqrt(T/(2 rho A))
+   Estado actual: 1 de 5. CFD-0 SIGUE ABIERTO. Las otras cuatro no son evaluables sin una
+   corrida del solver sobre este caso, y se declaran como tales en lugar de darlas por buenas.
 
-Verificacion: python scripts/lagrangian_injection.py corre completo y muestra
-V_tip rotulada como cota, el barrido k con componentes radial/axial a 15/30/45
-grados, la tabla tau_p corregida y el aviso de que el vector [0,0,-1] sigue
-ABIERTO (un disco centrifugo expulsa radialmente; [0,0,-1] es el eje de giro).
+5. Los -647 N del suelo NO se dan por buenos ni por malos
+   Corrida de 3000 iteraciones (convergida en residuos, terminacion limpia): F_suelo = -647 N
+   frente a T = 509 N. Por balance de momento en estacionario deberia ser ~ -T si el suelo es
+   la unica frontera que puede ejercer fuerza vertical. No cierra. Nota de escala: 647 N sobre
+   el suelo de 20x20 m son ~1.6 Pa de presion media, asi que la comparacion correcta es el
+   BALANCE GLOBAL, no una pared aislada. Esta en la condicion 2 y no se cierra con ella.
 
-Estado: PHASE_01_SPECIFICATIONS. Siguiente: fuente de momento prescrita,
-imponer integral_{V_i} f dV = T_i independiente de U_0 y demostrarlo
-numericamente rotor por rotor en CFD-0.
+6. Errores propios corregidos por el camino, todos detectados al ejecutar
+   - `controlDict`: dos intentos de parchear el bloque `functions` fallaron. El primero
+     insertaba con rfind("}") y dejaba funciones de ejecuciones previas
+     (Entry 'writeFields' not found ...momInlet). El segundo borraba desde `functions` hasta
+     el `}` pero dejaba ese `}`: fichero DESBALANCEADO (Unexpected EOF). Solucion: REGENERAR
+     controlDict entero desde plantilla. Parchear texto con llaves anidadas es fragil.
+   - `escribir_controlDict`: el `FoamFile { }` de la plantilla chocaba con .format()
+     (KeyError). Llaves escapadas.
+   - `build_hover_case.py --no-copy`: hacia falta porque `copytree` sobrescribe el arbol entero,
+     incluido blockMeshDict, y borraba el remallado. El orden correcto (copiar -> remallar ->
+     parchear BC) ahora esta automatizado en scripts/prepare_hover_case.sh y documentado.
+   - Test de calibracion: dos planteamientos descartados y registrados. (a) conducto cerrado
+     con fuerza uniforme: mal planteado, en dominio cerrado el equilibrio exige que la fuerza
+     falte en alguna parte del circuito; un test mal planteado TAMBIEN converge. (b) simpleFoam
+     con consistent yes: resuelve la estacionaria, no acumula dU/dt; se paso a pimpleFoam.
+   - Verificador: el tiempo `0/U` es condicion de contorno, no resultado. Tratarlo como
+     resultado daba un falso negativo ("campo uniforme, el solver no desarrollo estructura").
+
+7. Diagnostico del dominio y de las BC (corridas descartadas, causas registradas)
+   - `inlet`/`outlet` con dos presiones fijas -> el dominio actuo como CANAL: media(Ux) = +13
+     m/s cuando debe ser 0 por simetria. Replanteado: dominio cerrado con slip y UNA sola
+     salida de presion en el techo.
+   - dominio x en [-6,14] con los rotores en +-0.7 m: asimetrico. Remallado a +-10 m simetrico,
+     198400 celdas, checkMesh Mesh OK.
+
+8. Ficheros nuevos
+   scripts/mesh_zone_volumes.py        V_zone real desde la malla (divergencia), cierre exacto
+   scripts/build_prescribed_momentum.py  genera constant/fvOptions
+   scripts/verify_prescribed_force.py    verifica la integral y mide el downwash
+   scripts/check_cfd0_conditions.py      las cinco condiciones de cierre
+   scripts/build_hover_case.py           caso U_inf = 0 (prueba discriminante)
+   scripts/prepare_hover_case.sh         orquestacion en el orden correcto
+   scripts/remesh_hover_symmetric.sh     dominio simetrico
+   scripts/gate_cfd0_hover.sh            gate del caso de hover
+   scripts/calibrate_semiimplicit.py     calibracion de la normalizacion
+   scripts/fix_case_meta_gravity.py      arreglo de la gravedad en los 128 case_meta.json
+   evidence/BUG_07_normalizacion_fvOptions.md
+   evidence/BUG_conceptual_06_actuationDisk.md  (actualizado: CORREGIDO + segundo hallazgo)
+
+9. Incoherencia de gravedad corregida (128 casos)
+   build_case_suite.py usaba G=9.81 y force_chain.py G=9.80665, de modo que case_meta.json no
+   cerraba CONSIGO MISMO: `empuje_total_N` y `v_inducida_hover_ms` procedian de gravedades
+   distintas (0.0347 % de discrepancia). Corregido en el generador y recalculados los 128.
+
+10. Barrido de casos: dos directorios basura excluidos
+    `T25P_baseline` y `T25P_baseline_backup_20260914_091336` tienen malla pero no
+    case_meta.json. Se filtran por case_meta.json; la suite vuelve a ser 128 (32 por plataforma).
+
+Estado: CFD-0 ABIERTO, 1 de 5 condiciones. La corrida de 800 iteraciones queda etiquetada como
+`diagnostic run — no valida para cerrar CFD-0`, por indicacion del investigador.

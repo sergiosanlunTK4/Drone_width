@@ -1,0 +1,88 @@
+[
+  {
+    "caso": "T25P_V3.1_H2.8_d190_f0.95_a4_HOVER_U0",
+    "tolerancia_relativa": 1e-06,
+    "rotores": [
+      {
+        "zona": "rotor1",
+        "Su_N_m3": [
+          0.0,
+          0.0,
+          -406.05892192
+        ],
+        "V_declarado_m3": 0.31342741935,
+        "V_real_m3": 0.31342741935000007,
+        "error_V_rel": 1.7711006696982465e-16,
+        "F_aplicada_N": [
+          0.0,
+          0.0,
+          -127.27000000142876
+        ],
+        "F_magnitud_N": 127.27000000142876
+      },
+      {
+        "zona": "rotor2",
+        "Su_N_m3": [
+          0.0,
+          0.0,
+          -406.05892192
+        ],
+        "V_declarado_m3": 0.31342741935,
+        "V_real_m3": 0.31342741934999996,
+        "error_V_rel": 1.7711006696982472e-16,
+        "F_aplicada_N": [
+          0.0,
+          0.0,
+          -127.27000000142876
+        ],
+        "F_magnitud_N": 127.27000000142876
+      },
+      {
+        "zona": "rotor3",
+        "Su_N_m3": [
+          0.0,
+          0.0,
+          -406.05892192
+        ],
+        "V_declarado_m3": 0.31342741935,
+        "V_real_m3": 0.31342741935,
+        "error_V_rel": 0.0,
+        "F_aplicada_N": [
+          0.0,
+          0.0,
+          -127.27000000142876
+        ],
+        "F_magnitud_N": 127.27000000142876
+      },
+      {
+        "zona": "rotor4",
+        "Su_N_m3": [
+          0.0,
+          0.0,
+          -406.05892192
+        ],
+        "V_declarado_m3": 0.31342741935,
+        "V_real_m3": 0.31342741935,
+        "error_V_rel": 0.0,
+        "F_aplicada_N": [
+          0.0,
+          0.0,
+          -127.27000000142876
+        ],
+        "F_magnitud_N": 127.27000000142876
+      }
+    ],
+    "F_total_aplicada_N": [
+      0.0,
+      0.0,
+      -509.080000005715
+    ],
+    "T_total_prescrito_N": 509.080000005715,
+    "problemas": [],
+    "campo": {
+      "disponible": false,
+      "motivo": "sin campo U de solver (tiempo > 0): el caso aun no se ha ejecutado"
+    },
+    "estado": "PASA"
+  }
+]

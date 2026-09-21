@@ -1,0 +1,57 @@
+{
+  "case_id": "T25P_V3.1_H2.8_d190_f0.95_a4_HOVER_U0",
+  "plataforma": "T25P",
+  "nombre_plataforma": "DJI Agras T25P",
+  "arquitectura_cfd": "C (equilibrio fisico) -> B (actuator disk con empuje prescrito)",
+  "entradas": {
+    "V_inf_ms": 0.0,
+    "H_m": 2.773,
+    "DV05_um": 190.0,
+    "carga_fraccion": 0.9453,
+    "masa_total_kg": 51.91,
+    "atomizadores": 4,
+    "split_coaxial_superior": 0.5
+  },
+  "derivados_analiticos": {
+    "n_rotores_modelados": 4,
+    "r_rotor_m": 0.635,
+    "area_disco_total_m2": 5.0671,
+    "empuje_total_N": 509.06,
+    "empuje_por_disco_N": {
+      "R1": 127.27,
+      "R2": 127.27,
+      "R3": 127.27,
+      "R4": 127.27
+    },
+    "v_inducida_hover_ms": 6.548,
+    "nota_derivados": "Recalculado por scripts/fix_case_meta_gravity.py. Se corrigio la incoherencia interna que dejaba G=9.81 en build_case_suite.py frente a G=9.80665 en force_chain.py: empuje_total_N y v_inducida_hover_ms procedian de gravedades distintas. Ahora ambos usan 9.80665 y cierran con el peso de la cadena C."
+  },
+  "dominio": {
+    "x": [
+      -6.0,
+      14.0
+    ],
+    "y": [
+      -6.0,
+      6.0
+    ],
+    "z": [
+      -2.773,
+      4.0
+    ],
+    "nota": "suelo a -H (altura real)"
+  },
+  "propiedades_fluido": {
+    "rho": 1.1716,
+    "nu": 1.5e-05,
+    "p_atm": 101325.0,
+    "agua_rho": 996.2,
+    "agua_mu": 0.000836,
+    "agua_sigma": 0.0719
+  },
+  "clasificacion_geometria": "P/S/O/I — NO M. Ver geometry/presupuesto_hipotesis.md",
+  "estado": "generado_no_ejecutado",
+  "no_contiene": "ningun resultado de CFD: es la configuracion del caso, no su salida",
+  "proposito": "PRUEBA DISCRIMINANTE DE GATE CFD-0. U_inf = 0 (hover puro). Con la fuente de momento prescrita debe aparecer downwash. actuationDiskSource daba T ~ 0 en esta configuracion (medido: Uz ~ 1e-7 m/s) y por tanto no puede reproducir este caso. Si aqui hay downwash, la fuerza no depende del flujo incidente y C -> B esta implementada.",
+  "derivado_de": "T25P_V3.1_H2.8_d190_f0.95_a4"
+}

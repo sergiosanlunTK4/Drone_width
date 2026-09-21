@@ -3,7 +3,7 @@
 **Proyecto:** aerodinámica, downwash y deposición de pulverización en UAV agrícolas DJI Agras
 (T25P · T55 · T70P · T100)
 **Investigador principal:** Sergio Sánchez Luna
-**Versión:** 2.0 — 2026-09-19
+**Versión:** 2.1 — 2026-09-19
 **Estado:** cuaderno técnico de trabajo, **no** manuscrito. Pendiente de validación experimental.
 
 > **Cambio de nombre:** este documento se llamaba `COMO_SE_CALCULA.md`. Se renombra a
@@ -21,6 +21,19 @@
 >    H8 de "hallazgo" a **hipótesis derivada del modelo de trim**.
 > 8. **Densidad** pasa a ser `ρ = f(P, T, RH)` (§3).
 > 9. Corregido un **bug** en el área proyectada que duplicaba el área (§3.2).
+
+> **Correcciones de la versión 2.1.**
+> 1. **Retirado `W_DJI`** del modelo científico. `W_commanded` pasa a llamarse **`W_equiv`**:
+>    es una magnitud contable que cierra el balance de masa, no una orden del operador (§6.3).
+> 2. **`V_exit ≠ V_tip`.** Se usaba la velocidad periférica del disco como velocidad inicial de
+>    la gota. Es incorrecto: `V_tip` queda **solo** como cota y escala característica (§6.4).
+> 3. **Corregido un error de factor ≈500 en `τ_p`**, que además sostenía una conclusión falsa
+>    en su razón (§6.6).
+> 4. **Corregida una incoherencia de gravedad** entre `build_case_suite.py` (`g = 9.81`) y
+>    `force_chain.py` (`g = 9.80665`), que hacía que `case_meta.json` no cerrara consigo mismo
+>    (§5.6).
+> 5. **Retirado `actuationDiskSource`** y sustituido por una **fuente de momento prescrita**
+>    (§10.2).
 
 ---
 
@@ -500,12 +513,11 @@ se tiene. `k = 1.0` reproduce el error retirado y se incluye sólo como cota.
 > inicial. Si se usara, se sustituiría una suposición vieja por otra nueva, que es exactamente lo
 > que este proyecto evita.
 
-**Alcance de la cota:** el único resultado que usa `V_tip` como referencia es la comparación
-`v_terminal / V_tip` de la §6.6, y es el **peor caso**. Como `V_exit ≤ V_tip`, el cociente real es
-*más desfavorable* todavía: `v_terminal` es aún más pequeño frente a la velocidad de salida. Es
-decir, la conclusión "el atomizador lanza la gota mucho más rápido de lo que ésta puede caer" se
-**refuerza** al corregir el dato. En cambio `τ_p` no es una comparación de velocidades y **no**
-depende de `V_exit`: se calcula con `d` y `μ_aire` y no cambia.
+**Excepción declarada:** el argumento de acoplamiento rápido de la §6.6 (`τ_p` y `v_terminal`)
+sí se compara contra `V_tip`, y es **válido en el peor caso**. Como `V_exit ≤ V_tip`, el cociente
+`v_terminal / V_exit` es *mayor* que el reportado: la conclusión "la gota se acopla al aire en
+milisegundos" se **refuerza** al corregir el dato, no se debilita. Es el único resultado de la
+sección de inyección que no depende de `k`.
 
 #### El vector de inyección `[0,0,−1]` es conceptualmente incorrecto
 
@@ -691,31 +703,80 @@ confirmación parcial, así que **se citan con esa reserva**.
 
 ## 10. Estado y bloqueo
 
+### 10.1 Tabla de gates
+
 | Gate | Qué lo cierra | Estado |
 |---|---|---|
 | **1A (T100)** | geometría medida, sin `D` críticos | ✅ **cerrable** (falta formalizar) |
 | **1A (T25P/T55/T70P)** | medición física | ⬜ pendiente |
 | **1B** | RPM real y reparto de empuje | 🟢 **desbloqueado por telemetría** (§2.1, §4.4): RPM de motor individual + de atomizador + de bombas + caudal |
-| **CFD-0** | un caso ejecutado + **integral de la fuente verificada** | ❌ **bloqueado: bug #6** |
+| **CFD-0** | un caso ejecutado + **integral de la fuente verificada** | 🟡 **en curso** (§10.2) |
 | **CFD-suite** | 128 casos de DOE-A | ⬜ requiere CFD-0 |
 | **Lagrangiano** | deposición D(x,y) | ⬜ requiere CFD-suite |
 | **Validación experimental** | actitud, downwash, deposición | ⚠️ telemetría parcial; actitud por confirmar |
 
-**El bug CFD #6 es real:** OpenFOAM calcula el empuje Froude en función de `|U_o·n|²`; con flujo
-horizontal y disco horizontal, `U_o·n ≈ 0` y `T ≈ 0`. Coincide con el resultado medido
-(`U_z ≈ 10⁻⁷`) aunque `simpleFoam` converja.
+### 10.2 `actuationDiskSource` retirado — fuente de momento prescrita
 
-**No se repara cambiando `Cp`/`Ct`.** Para la arquitectura C→B el CFD debe recibir `T_i` y la
-fuente debe satisfacer:
+**El bug CFD #6 es real:** `actuationDiskSource`, en su método Froude, **calcula** el empuje a
+partir del flujo incidente axial,
 
 ```
-∫_{V_i}  f  dV  =  T_i
+T = 2 rho A |U_o . n|^2 a (1-a)
 ```
 
-sin recalcular el empuje a partir de `U_∞`. OpenFOAM dispone de fuentes explícitas/semi-implícitas
-y de `codedSource`, además de `rotorDiskSource` ([8]).
+de modo que con flujo perpendicular al disco, `U_o.n ~ 0` y por tanto `T ~ 0`. Medido:
+`U_z ~ 1e-7`. Y ése es justo el caso físico del proyecto: en hover o vuelo nivelado el disco
+**genera** el flujo, no lo recibe. En la arquitectura C→B, `T_i` es una **entrada**, no una salida.
 
-> **CFD-0 se mantiene ABIERTO hasta verificar la INTEGRAL DE LA FUENTE**, no solo que aparezca
+**Corrección implementada.** Fuente de momento prescrita sobre `vectorSemiImplicitSource` con
+`volumeMode absolute`. Como `Su` tiene unidades de N/m³ y la fuerza total de una celda es `Su·V_c`,
+tomar
+
+```
+Su_c  =  F_aire / V_zone            (constante en la zona,  F_aire = -T_i)
+```
+
+da, para **cualquier** malla,
+
+```
+integral_{V_zone}  Su dV  =  F_aire/V_zone * sum_c V_c  =  F_aire
+```
+
+> **Error de diseño corregido antes de escribirlo.** La primera formulación fue
+> `Su_c = T·V_c/V_zone²`, razonando "repartir proporcionalmente al volumen". Da
+> `T·Σ(V_c²)/V_zone² ≠ T` salvo que todas las celdas tengan el mismo volumen. **El reparto por
+> volumen ya lo hace la integración**, porque la fuerza total de una celda es `Su·V_c`. Constante
+> es lo correcto, y además lo más simple.
+
+**Verificación en tres partes, y las tres importan:**
+
+| Parte | Qué comprueba | Cómo |
+|---|---|---|
+| **A** | `∫_{V_zone} f dV = T_i` | algebraico: `Su·V_zone`, con `V_zone` **recalculado desde la malla** |
+| **B** | independencia de `U_∞` | el caso de hover: `U_inf = 0` y debe seguir habiendo empuje |
+| **C** | el empuje se materializa | `U_z` bajo cada rotor, muy por encima del ruido (~10⁻⁷) |
+
+La parte **B** es la discriminante, no la A: un diccionario bien formado **no** demuestra que el
+solver aplique la fuerza. Es la misma lección de método que produjo el bug #6 — *un caso que corre
+sin errores no es un caso correcto*.
+
+**Cierre geométrico.** `mesh_zone_volumes.py` calcula el volumen total del dominio y lo compara
+con la caja envolvente: `3109.200000 m³` en ambos, error `+0.000000 %`, y ninguna celda con
+`V <= 0`. El volumen de cada zona de rotor coincide **exactamente** con `π r² h`. El cálculo de
+volúmenes es exacto, no aproximado.
+
+Ficheros: `mesh_zone_volumes.py` (V_zone real) · `build_prescribed_momentum.py` (genera
+`fvOptions`) · `verify_prescribed_force.py` (verifica A y mide C) · `build_hover_case.py` (caso de
+hover) · `gate_cfd0_hover.sh` (secuencia del gate).
+
+> **CFD-0 sigue ABIERTO.** La parte A está verificada y la C medida, pero falta declarar B y C
+> **convergidas**. Se mantiene abierto hasta que lo estén, porque verificar solo la forma de la
+> fuente es exactamente el error que se cometió con las 128 verificaciones estructurales.
+
+---
+
+<!-- Bloque obsoleto retirado por scripts/fix_metodologia_10_2.py. Decia que CFD-0
+     estaba bloqueado por el bug #6. Sustituido por la seccion 10.2. -->
 > downwash.
 
 ---

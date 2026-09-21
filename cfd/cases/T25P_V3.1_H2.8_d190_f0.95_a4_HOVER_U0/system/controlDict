@@ -1,0 +1,168 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     simpleFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         2000;
+deltaT          1;
+writeControl    timeStep;
+writeInterval   100;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    // ------------------------------------------------------------------
+    // VERIFICACION GATE CFD-0  -  generado por scripts/build_hover_case.py
+    // Este controlDict se REGENERA entero en cada ejecucion; no se parchea.
+    // ------------------------------------------------------------------
+
+    // Integral volumetrica de U sobre cada cellZone de rotor.
+    //
+    // Que comprueba y que NO comprueba, dicho sin ambiguedad:
+    //   - SI: que existe flujo atravesando la zona del disco, y su magnitud.
+    //   - NO: no mide la fuerza. La fuerza aplicada se verifica en el lado Python con
+    //     `Su * V_zone`, porque Su no es un campo que OpenFOAM escriba.
+    //     Ver scripts/verify_prescribed_force.py.
+    flujo_rotor1   // T_i prescrito = 127.2700 N
+    {
+        type            volFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeFields     false;
+        regionType      cellZone;
+        name            rotor1;
+        operation       volIntegrate;
+        fields          (U);
+    }
+
+    flujo_rotor2   // T_i prescrito = 127.2700 N
+    {
+        type            volFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeFields     false;
+        regionType      cellZone;
+        name            rotor2;
+        operation       volIntegrate;
+        fields          (U);
+    }
+
+    flujo_rotor3   // T_i prescrito = 127.2700 N
+    {
+        type            volFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeFields     false;
+        regionType      cellZone;
+        name            rotor3;
+        operation       volIntegrate;
+        fields          (U);
+    }
+
+    flujo_rotor4   // T_i prescrito = 127.2700 N
+    {
+        type            volFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeFields     false;
+        regionType      cellZone;
+        name            rotor4;
+        operation       volIntegrate;
+        fields          (U);
+    }
+
+    // Perfil vertical de downwash en el eje de cada rotor.
+    // El suelo esta en z = z_suelo y el dron en z = 0.
+    downwashRotor
+    {
+        type            sets;
+        libs            ("libsampling.so");
+        writeControl    writeTime;
+        interpolationScheme cellPoint;
+        setFormat       raw;
+        fields          (U);
+        sets
+        {
+            eje_rotor1
+            {
+                type        uniform;
+                axis        z;
+                start       (0.696500 0.696500 -2.773000);
+                end         (0.696500 0.696500 0.500000);
+                nPoints     80;
+            }
+            eje_rotor2
+            {
+                type        uniform;
+                axis        z;
+                start       (-0.696500 0.696500 -2.773000);
+                end         (-0.696500 0.696500 0.500000);
+                nPoints     80;
+            }
+            eje_rotor3
+            {
+                type        uniform;
+                axis        z;
+                start       (-0.696500 -0.696500 -2.773000);
+                end         (-0.696500 -0.696500 0.500000);
+                nPoints     80;
+            }
+            eje_rotor4
+            {
+                type        uniform;
+                axis        z;
+                start       (0.696500 -0.696500 -2.773000);
+                end         (0.696500 -0.696500 0.500000);
+                nPoints     80;
+            }
+        }
+    }
+
+    // --- convergencia de magnitudes fisicas (GATE CFD-0) ---
+
+    // Caudal volumetrico NETO en cada parche abierto. Con todos los parches cerrados
+    // debe ser ~0; si no lo es, hay un problema de conservacion.
+    masaInlet  { type surfaceFieldValue; libs ("libfieldFunctionObjects.so");
+                 writeFields false;
+                 regionType patch; name inlet; operation sum;
+                 fields (phi); }
+    masaOutlet { type surfaceFieldValue; libs ("libfieldFunctionObjects.so");
+                 writeFields false;
+                 regionType patch; name outlet; operation sum;
+                 fields (phi); }
+
+    // Presion integrada sobre las fronteras: es el termino que cierra el balance
+    // global de momento. En estado estacionario F_suelo debe valer +T (el chorro
+    // empuja el aire hacia abajo y el suelo reacciona).
+    pSuelo     { type surfaceFieldValue; libs ("libfieldFunctionObjects.so");
+                 writeFields false;
+                 regionType patch; name ground; operation areaIntegrate;
+                 fields (p); }
+    pTecho     { type surfaceFieldValue; libs ("libfieldFunctionObjects.so");
+                 writeFields false;
+                 regionType patch; name top; operation areaIntegrate;
+                 fields (p); }
+
+    // Integral de U sobre las zonas de rotor: si deriva, no hay convergencia de
+    // magnitudes aunque los residuos bajen.
+    uDom       { type volFieldValue; libs ("libfieldFunctionObjects.so");
+                 writeFields false;
+                 regionType all; operation volIntegrate; fields (U); }
+}

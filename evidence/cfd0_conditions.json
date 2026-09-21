@@ -1,0 +1,40 @@
+[
+  {
+    "condicion": "1. fuerza aplicada por rotor",
+    "pasa": true,
+    "detalle": [
+      "rotor1: T=127.2700 N, Su*V=127.270000 N, err=1.12e-16, err(V)=1.77e-16 ok",
+      "rotor2: T=127.2700 N, Su*V=127.270000 N, err=2.23e-16, err(V)=1.77e-16 ok",
+      "rotor3: T=127.2700 N, Su*V=127.270000 N, err=0.00e+00, err(V)=0.00e+00 ok",
+      "rotor4: T=127.2700 N, Su*V=127.270000 N, err=0.00e+00, err(V)=0.00e+00 ok"
+    ]
+  },
+  {
+    "condicion": "3. convergencia de magnitudes fisicas",
+    "pasa": false,
+    "detalle": [
+      "serie de F_suelo demasiado corta (0 puntos): no se puede evaluar convergencia"
+    ]
+  },
+  {
+    "condicion": "4. simetria fisica (hover sin viento)",
+    "pasa": false,
+    "detalle": [
+      "sin campo U de solver: no evaluable"
+    ]
+  },
+  {
+    "condicion": "5. orden de magnitud del downwash",
+    "pasa": false,
+    "detalle": [
+      "sin campo U: no evaluable"
+    ]
+  },
+  {
+    "condicion": "2. balance global de momento",
+    "pasa": false,
+    "detalle": [
+      "sin postProcessing/forces: no evaluable"
+    ]
+  }
+]

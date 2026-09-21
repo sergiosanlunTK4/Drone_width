@@ -1,0 +1,97 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Crea una cellZone cilindrica por rotor (volumen barrido del disco).
+// cylinderToCell -> cellSet ; cellZoneSet -> cellZone.
+actions
+(
+    // rotor 1 (R1): cellSet cilindrico -> cellZone   (grosor 0.3750 m)
+    rotorSet1
+    {
+        name    rotorSet1;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        p1      (0.6965 0.6965 -0.1075);
+        p2      (0.6965 0.6965 0.2675);
+        radius  0.6350;
+    }
+    rotorZone1
+    {
+        name    rotor1;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     rotorSet1;
+    }
+    // rotor 2 (R2): cellSet cilindrico -> cellZone   (grosor 0.3750 m)
+    rotorSet2
+    {
+        name    rotorSet2;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        p1      (-0.6965 0.6965 -0.1075);
+        p2      (-0.6965 0.6965 0.2675);
+        radius  0.6350;
+    }
+    rotorZone2
+    {
+        name    rotor2;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     rotorSet2;
+    }
+    // rotor 3 (R3): cellSet cilindrico -> cellZone   (grosor 0.3750 m)
+    rotorSet3
+    {
+        name    rotorSet3;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        p1      (-0.6965 -0.6965 -0.1075);
+        p2      (-0.6965 -0.6965 0.2675);
+        radius  0.6350;
+    }
+    rotorZone3
+    {
+        name    rotor3;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     rotorSet3;
+    }
+    // rotor 4 (R4): cellSet cilindrico -> cellZone   (grosor 0.3750 m)
+    rotorSet4
+    {
+        name    rotorSet4;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        p1      (0.6965 -0.6965 -0.1075);
+        p2      (0.6965 -0.6965 0.2675);
+        radius  0.6350;
+    }
+    rotorZone4
+    {
+        name    rotor4;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     rotorSet4;
+    }
+);

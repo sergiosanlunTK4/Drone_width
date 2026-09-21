@@ -176,8 +176,13 @@ echo
 echo "-- 4. solver (${ITER_TEST} iteraciones de prueba)"
 sed -i.bak "s/^endTime .*/endTime         ${ITER_TEST};/" system/controlDict
 simpleFoam > log.simpleFoam 2>&1
-if grep -q "FOAM FATAL ERROR\|Floating point exception" log.simpleFoam; then
+# Deteccion ESTRECHA a proposito: el banner de arranque imprime
+#   trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+# y un grep generico de "Floating point exception" marca como abortado un caso que
+# termino bien. Ver la misma correccion en gate_cfd0_hover.sh.
+if grep -qE "^\s*FOAM FATAL" log.simpleFoam || grep -qE "^Floating point exception" log.simpleFoam; then
   echo "  [FALLO] el solver aborto"
+  grep -nE "^\s*FOAM FATAL|^Floating point exception" log.simpleFoam | head -5 | sed 's/^/          /'
   tail -20 log.simpleFoam | sed 's/^/          /'
   FALLOS=$((FALLOS+1))
 else
