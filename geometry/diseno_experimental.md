@@ -194,6 +194,19 @@ Y se eligen **solo cuatro** para el primer DOE. La base grande permite después 
 correlaciones** y diseñar DOE nuevos — que es justo lo que no se puede hacer si se descartan
 columnas al capturar.
 
+### 7.0 Disponibilidad CONFIRMADA (2026-09-19)
+
+| Campo | Disponible | Cierra |
+|---|---|---|
+| **RPM de motor individual** (los 8) | ✅ **sí** | la incógnita del reparto coaxial s_i |
+| **RPM del atomizador centrífugo** | ✅ **sí** | comando vs consecuencia del tamaño de gota (§4.2) |
+| **RPM de las bombas** | ✅ **sí** | relación bomba ↔ caudal |
+| **Caudal real Q** | ✅ **sí** | W_commanded y contraste del DOE (§8) |
+| **Actitud θ, φ** | ❓ por confirmar | suposiciones [1] y [3] |
+
+> **Esto cambia el DOE:** el RPM de motor individual convierte s_i de **parámetro** en
+> **medición**. El barrido 0.5/0.6/0.7 **no se usa** si la telemetría da el reparto real.
+
 ### 7.1 Sincronización
 
 Todo por **timestamp**, para poder cruzar variables. Sin sincronía, la telemetría es una lista de

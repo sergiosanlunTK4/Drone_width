@@ -1,81 +1,53 @@
-anchos: cuatro anchos distintos, cadena de inyeccion lagrangiana y DOE-A/DOE-B
+telemetria confirmada: RPM de motor individual desbloquea GATE 1B y resuelve el reparto coaxial
 
-CORRECCION CONCEPTUAL DEL INVESTIGADOR, la mas profunda de la sesion:
-    ANCHO COMANDADO != ABANICO AERODINAMICO != ANCHO EFECTIVO DE DEPOSICION
-    El abanico NO se impone: SALE de D(x,y).
-    El caudal NO determina el ancho: determina CUANTO liquido se inyecta.
+RESPUESTA DEL INVESTIGADOR a las tres preguntas. La primera es decisiva.
 
-1. RELACION CAUDAL-ANCHO, DERIVADA Y VERIFICADA (scripts/widths.py)
-   En 1 s el dron recorre V m -> cubre V*W m2 = V*W/10000 ha
-   Volumen por minuto = 60 R V W/10000  =>  Q = 0.006 R V W
-   Verificacion con el ejemplo del investigador (R=10, V=10, W=6): Q = 3.6000 L/min. COINCIDE.
-   Inversion: W_commanded = Q/(0.006 R V).
-   Lo que revela a R=10 L/ha y V=10 m/s:
-       Q=16 (T50)      -> 26.7 m
-       Q=30 (T100 2boq)-> 50.0 m
-       Q=40 (T100 4boq)-> 66.7 m
-   Los maximos de bomba implican anchos absurdos A ESA TASA Y VELOCIDAD => la operacion real
-   usa otras combinaciones de (R,V). Es lo que la telemetria revelara.
+TELEMETRIA DISPONIBLE (confirmado):
+  - RPM de motor individual (los 8)      <- DECISIVO
+  - RPM del atomizador centrifugo
+  - RPM de las bombas
+  - Caudal real Q
+  - Actitud theta/phi: POR CONFIRMAR (el investigador lo revisa)
 
-2. CUATRO ANCHOS (nuevo apartado 6 de la Metodologia)
-   W_commanded  = Q_real/(0.006 R V)     lo que el caudal implica
-   W_DJI        = configurado en el controlador (P: 5-13 m, "depende de la escena")
-   W_aero       = abanico fisico de los atomizadores (Lagrangiano SIN plano receptor)
-   W_deposition = ancho efectivo real (de D(x,y))            <- OBJETIVO CIENTIFICO
-   La diferencia entre los tres primeros y el cuarto es uno de los resultados mas valiosos.
+CONSECUENCIAS:
 
-3. CADENA DE INYECCION LAGRANGIANA (scripts/lagrangian_injection.py)
-   Condicion inicial: V_gota,0 = V_UAV + V_atomizador ; relativa al aire: - U(x_atomizador)
-   Movimiento: m_p dV_p/dt = F_D + m_p g, con C_D(Re) de Schiller-Naumann.
-   De caudal a particulas: m_dot = rho_L Q/60000 ; N_j = m_dot f_j / m_gota ; parcelas con
-   peso estadistico (a d50=150 um y 30 L/min salen ~1e6 gotas/s: inviable literal).
+1. GATE 1B PASA DE "CALCULAR" A "MEDIR".
+   El RPM real de cada motor cierra GATE 1B directamente, sin deducirlo del empuje. Eso
+   elimina la rama de RPM del camino critico del CFD principal, que era justo el error
+   circular que se elimino en la version 2.0.
 
-   HALLAZGO RELEVANTE: a 10000 rpm la velocidad del borde del disco es 52.4 m/s, frente a
-   5 m/s del UAV. LA VELOCIDAD DE LANZAMIENTO DOMINA POR UN FACTOR 10.
-   => La condicion inicial de la gota es el ABANICO DEL ATOMIZADOR, no la velocidad del UAV.
-      Es lo contrario de lo que asume un modelo "caudal -> ancho".
+2. EL REPARTO COAXIAL s_i DEJA DE SER PARAMETRO CIEGO (nueva seccion 4.4).
+   Con RPM_sup,i y RPM_inf,i medidas por separado:
+       s_i = T_sup,i / (T_sup,i + T_inf,i)     medido, no supuesto
+   El barrido 0.5/0.6/0.7 NO se usa si hay telemetria.
+   AVISO declarado: las RPM dan la RELACION entre los dos rotores del par, que es la parte
+   que no se podia deducir. Pero el empuje ABSOLUTO sigue necesitando la curva T(RPM).
 
-   INCOHERENCIA DETECTADA en el modelo del propietario: el vector de inyeccion declarado es
-   [0,0,-1] (axial) pero un disco centrifugo expulsa RADIALMENTE en el plano del disco. El
-   [0,0,-1] parece ser el eje de giro, no la direccion de salida. Hay que reconciliarlo.
+3. LO QUE LA TELEMETRIA NO RESUELVE.
+   Si la actitud NO esta disponible, entonces Cd, area frontal y arrastre vertical SIGUEN
+   siendo suposiciones (clase E). Y deducir la actitud invirtiendo sum F = 0 NO valida el
+   modelo: lo asume. Hay que declararlo como limitacion y hacer sensibilidad sobre Cd*A.
 
-   Propiedades por tamano (tau_p, v_terminal) calculadas y tabuladas: tau_p es 3-5 ordenes
-   menor que el tiempo de vuelo, y v_terminal 25-800 veces menor que v_borde. La gota se
-   desacelera rapido hacia su velocidad terminal y despues cae con el aire actuando todo el
-   tiempo. No se puede atajar con una formula.
+4. TRES PREGUNTAS NUEVAS que abre la telemetria, y son de las interesantes:
+   a) Que MANDA el Agras y que RESULTA del comando. Si el operador fija tamano de gota, la
+      RPM del atomizador es CONSECUENCIA. Si fija tasa L/ha, el caudal se calcula solo.
+      Eso determina que variables del DOE son independientes y cuales derivadas.
+   b) Como se reparte el empuje entre rotor superior e inferior DURANTE el vuelo, y si el
+      reparto CAMBIA CON LA VELOCIDAD. Ningun modelo lo predice hoy.
+   c) Si Q_calculado = 0.006 R V W coincide con Q_telemetria. Si coincide, se valida nuestra
+      interpretacion de las variables operacionales. Si NO, el que esta mal es el modelo.
 
-4. DOE REDISEÑADO EN DOS NIVELES (geometry/diseno_experimental.md)
-   DOE-A: V, H, d, m_liq  con atmosfera CONSTANTE
-   DOE-B: T, RH, P, viento  SOLO DESPUES y sobre un subconjunto de DOE-A
-   Razon: multiplicar 128 casos por 3 niveles de ambiente daria miles de corridas antes de
-   saber que variables importan.
+ACTUALIZADO:
+  - Metodologia de calculo.md v2.1:
+      nueva seccion 2.1 con la tabla de telemetria disponible
+      nueva seccion 4.4 "la telemetria resuelve esta incognita"
+      tabla de gates: 1B pasa de amarillo a "desbloqueado por telemetria"
+      seccion 11 reordenada: necesidades 2 y 3 cubiertas por telemetria;
+      nuevas necesidades T_0/RH_0/P_0, rangos de V y H de aplicacion, curva T(RPM),
+      geometria radial de pala, CG y centro de presion, y PERMISO de uso de telemetria
+  - geometry/diseno_experimental.md: nueva seccion 7.0 de disponibilidad confirmada.
 
-   TEMPERATURA RETIRADA como cuarta variable (propuesta del investigador, aceptada):
-   sin evaporacion su efecto es de segundo orden (solo via rho y mu); la ALTURA cambia
-   directamente tiempo en el downwash, expansion de estela, tiempo de vuelo, deriva y area.
-   Orden de prioridad: V, H, d, m > viento > T, RH > P.
-
-   ATMOSFERA BASAL: no es "rho=1.1716 porque son 28 C" (indefendible) sino declarar T_0, RH_0,
-   P_0 y CALCULAR rho_0 = f(P,T,RH). Valores reales por confirmar con el investigador.
-
-   RESTRICCION INCORPORADA: el T70P a tanque lleno (70 L) EXIGE bateria DB2160. Con DB1580
-   (52 kg) el maximo admisible es 30 kg = 43% del tanque. Cualquier caso por encima es
-   fisicamente imposible y se excluye del diseño.
-
-   TRAMPA EVITADA: no barrer simultaneamente tasa, caudal, velocidad y ancho, porque estan
-   ligados por Q = 0.006 R V W (DOE redundante). Y si el controlador modifica la RPM del
-   atomizador para conseguir cierto tamano de gota, entonces gota/RPM/caudal NO son tres
-   variables independientes: la configuracion de gota es un COMANDO, la RPM es su CONSECUENCIA.
-
-5. TELEMETRIA: la base de datos sera GRANDE pero no todas sus columnas seran dimensiones del
-   DOE. "Tener una variable en la base de datos no obliga a barrerla en CFD." Se guardan
-   RPM_R1..R8, RPM_atom, RPM_pump, Q, R, d, theta, phi, wind, todo con timestamp. Se eligen
-   cuatro para el primer DOE. Y si hay telemetria, NO se calcula lo que se puede medir: el RPM
-   real cierra GATE 1B y la actitud real cierra las suposiciones de Cd y area frontal.
-
-Nuevos: scripts/widths.py, scripts/lagrangian_injection.py, geometry/diseno_experimental.md.
-Metodologia de calculo.md: nuevo apartado 6 y referencia [9] (DJI T100 specs).
-
-NOTA DE PROCESO: un script mio de limpieza borro por error la seccion 6 recien insertada
-junto con la antigua; se detecto y se reinserto. El documento queda verificado: 422 lineas,
-11 secciones."""
+PENDIENTE DEL INVESTIGADOR (respuestas a las otras dos preguntas y confirmaciones):
+  - T_0, RH_0, P_0 de la campana
+  - rangos de V y H DE APLICACION (los 1-20 m/s son cotas, no operacion tipica)
+  - si la actitud esta en la telemetria

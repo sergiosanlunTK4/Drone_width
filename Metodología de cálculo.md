@@ -85,6 +85,27 @@ T_sup,i , T_inf,i
 | **Arrastre vertical (planta)** | — | **D** | **no conocido** (§3.2) |
 | **x del centro de presión respecto al CG** | — | **D** | **no conocido** (§4) |
 
+### 2.1 Telemetría del Agras — disponibilidad confirmada (2026-09-19)
+
+| Campo | Disponible | Cierra |
+|---|---|---|
+| **RPM de motor individual** (los 8) | ✅ **sí** | **incógnita del reparto coaxial `s_i`** (§4.4) y `RPM_sup/RPM_inf` |
+| **RPM del atomizador centrífugo** | ✅ **sí** | comando vs consecuencia del tamaño de gota (§6.8) |
+| **RPM de las bombas** | ✅ **sí** | relación bomba ↔ caudal |
+| **Caudal real `Q`** | ✅ **sí** | **`W_commanded` y contraste del DOE** (§6.3) |
+| Actitud `θ`, `φ` | ❓ **por confirmar** | las suposiciones [1] y [3] (§8) |
+| Velocidad, tasa, altura, tamaño de gota configurado | previsiblemente sí | — |
+| Masa/carga | inferible | H5, H8 |
+
+> **Consecuencia metodológica:** la telemetría disponible **cambia dos incógnitas de `D` a
+> medibles** —el reparto coaxial y el RPM— y con ello **GATE 1B puede cerrarse midiendo en lugar
+> de calculando**. Eso elimina la rama de RPM del camino crítico del CFD (§5).
+>
+> **Lo que la telemetría NO da (si la actitud no está):** `Cd`, área frontal y arrastre vertical
+> **siguen siendo suposiciones**, y la actitud tendría que deducirse de `ΣF = 0` invirtiendo el
+> modelo — lo que **no** valida el modelo, sino que lo asume. Si la actitud no se puede medir,
+> hay que declararlo como limitación y hacer análisis de sensibilidad sobre `Cd·A`.
+
 ---
 
 ## 3. Paso 1 — Actitud
@@ -198,7 +219,7 @@ par?"* **ya no aplica** y se ha eliminado del documento.
 T_superior / T_inferior        y        RPM_superior / RPM_inferior
 ```
 
-más la **estrategia de control**. Se trata como **parámetro** con barrido:
+más la **estrategia de control**. En el CFD se trata como **parámetro** con barrido:
 
 | s (superior) | T sup (N) | T inf (N) |
 |---|---|---|
@@ -208,6 +229,32 @@ más la **estrategia de control**. Se trata como **parámetro** con barrido:
 
 **Y no existe un `Ct` único para los dos rotores coaxiales**: la interferencia entre ellos impide
 asumirlo ([3], [4]).
+
+### 4.4 ✅ La telemetría resuelve esta incógnita
+
+Con **RPM de motor individual** (confirmado disponible, §2.1), el reparto deja de ser un parámetro
+ciego:
+
+```
+RPM_sup,i  y  RPM_inf,i   medidas por separado
+        ↓
+s_i  =  T_sup,i / (T_sup,i + T_inf,i)      medido, no supuesto
+```
+
+**Esto convierte `s_i` de `D` (desconocido) a `M` (medido)** y cierra el barrido 0.5/0.6/0.7: ya
+no hay que elegir un valor plausible, se mide.
+
+**Procedimiento:**
+
+1. Vuelo en hover estacionario con masa conocida.
+2. Registrar `RPM_R1…RPM_R8` sincronizadas por timestamp, más masa y condiciones ambientales.
+3. Del par coaxial de cada brazo, obtener `RPM_sup` y `RPM_inf`.
+4. Con la curva `T(RPM)` —de bancada, o de la vía 2 de §5— obtener `T_sup` y `T_inf`.
+5. `s_i` por brazo, y su dispersión entre brazos.
+
+> **Aviso:** el paso 4 sigue necesitando una relación `T(RPM)`. Las RPM medidas **no** dan el
+> empuje por sí solas: dan la **relación entre los dos rotores del par**, que es la parte que no
+> se podía deducir. Es un avance real, pero no elimina la necesidad de la curva `T(RPM)`.
 
 ---
 
@@ -547,10 +594,11 @@ confirmación parcial, así que **se citan con esa reserva**.
 |---|---|---|
 | **1A (T100)** | geometría medida, sin `D` críticos | ✅ **cerrable** (falta formalizar) |
 | **1A (T25P/T55/T70P)** | medición física | ⬜ pendiente |
-| **1B** | RPM real y reparto de empuje | ⚠️ RPM declarado sin fuente; reparto en `D` |
+| **1B** | RPM real y reparto de empuje | 🟢 **desbloqueado por telemetría** (§2.1, §4.4): RPM de motor individual + de atomizador + de bombas + caudal |
 | **CFD-0** | un caso ejecutado + **integral de la fuente verificada** | ❌ **bloqueado: bug #6** |
-| **CFD-suite** | 128 casos | ⬜ requiere CFD-0 |
+| **CFD-suite** | 128 casos de DOE-A | ⬜ requiere CFD-0 |
 | **Lagrangiano** | deposición D(x,y) | ⬜ requiere CFD-suite |
+| **Validación experimental** | actitud, downwash, deposición | ⚠️ telemetría parcial; actitud por confirmar |
 
 **El bug CFD #6 es real:** OpenFOAM calcula el empuje Froude en función de `|U_o·n|²`; con flujo
 horizontal y disco horizontal, `U_o·n ≈ 0` y `T ≈ 0`. Coincide con el resultado medido
@@ -573,16 +621,37 @@ y de `codedSource`, además de `rotorDiskSource` ([8]).
 
 ## 11. Lo que necesito del investigador
 
+**Confirmado disponible (2026-09-19):** RPM de motor individual · RPM del atomizador · RPM de las
+bombas · caudal. Con eso, las necesidades [2] y [3] de la lista anterior **quedan cubiertas por
+telemetría** en lugar de por cálculo.
+
 | # | Necesidad | Para qué | Coste |
 |---|---|---|---|
-| **1** | **Medir la actitud real** a 3/5/8/10/15/20 m/s | Cierra las suposiciones [1] y [3], que hoy tienen un factor 4 de impacto | **Bajo** |
-| **2** | **Fuente del rpm = 1850**, o tacómetro | Cierra [2] | Bajo/Medio |
-| **3** | **`T_sup/T_inf`** o `RPM_sup/RPM_inf` | Cierra [5] | Medio |
-| **4** | **Geometría radial de pala** | Habilita predecir RPM ([7]) | Medio |
-| **5** | **CG** por estado de carga y **centro de presión** | Cierra [4] y habilita H5/H8 | Medio |
+| **1** | **¿La actitud `θ`, `φ` está en la telemetría?** — el investigador lo está revisando | Cierra las suposiciones [1] y [3], que hoy tienen **un factor 4 de impacto**. Si **no** está, hay que declararlo como limitación y hacer sensibilidad sobre `Cd·A` | **Bajo** |
+| **2** | **Curva `T(RPM)`** de bancada, al menos para un rotor | Las RPM medidas dan la **relación** entre rotores, pero no el empuje absoluto (§4.4) | Medio |
+| **3** | **`T_0`, `RH_0`, `P_0` reales** de la campaña | Fija la atmósfera basal con datos, no con estimaciones (`ρ_0 = f(P,T,RH)`) | **Bajo** |
+| **4** | **Rangos de `V` y `H` de aplicación** (no de traslado) | Los 1–20 m/s son cotas. El DOE necesita el rango operativo real | **Bajo** |
+| **5** | **Geometría radial de pala**: cuerda(r), twist(r) | Habilita predecir RPM por BEMT (vía 3, §5) | Medio |
+| **6** | **CG** por estado de carga y **centro de presión** | Cierra [4] y habilita H5/H8 | Medio |
+| **7** | **Permiso de uso de la telemetría** | Sin él no se puede publicar ni archivar (§31) | Trámite |
+
+### 11.1 Las tres nuevas preguntas que abre la telemetría
+
+Con telemetría real aparecen preguntas que antes no se podían plantear, y son **de las
+interesantes**:
+
+1. **¿Qué manda el Agras y qué resulta del comando?** Si el operador fija "tamaño de gota", ¿la
+   RPM del atomizador es **consecuencia**? Si el operador fija "tasa L/ha", ¿el caudal se calcula
+   automáticamente? **Eso determina qué variables del DOE son independientes y cuáles derivadas**
+   (§6.8, §4.2 de `diseno_experimental.md`).
+2. **¿Cómo se reparte el empuje entre rotor superior e inferior durante el vuelo?** Se puede ver
+   si el reparto **cambia con la velocidad** — algo que ningún modelo predice hoy.
+3. **¿Coincide `Q_calculado = 0.006 R V W` con `Q_telemetría`?** Si sí, se valida nuestra
+   interpretación de las variables operacionales. Si no, **el que está mal es el modelo, y hay
+   que averiguar por qué**.
 
 ---
 
-*Versión 2.0. Toda suposición declarada con su clase y su vía de validación. Generado a partir de
-`scripts/force_chain.py`, verificable y reproducible. Ningún valor se atribuye a una fuente que no
-haya sido comprobada.*
+*Versión 2.1 — 2026-09-19. Toda suposición declarada con su clase y su vía de validación.
+Generado a partir de `scripts/force_chain.py`, verificable y reproducible. Ningún valor se
+atribuye a una fuente que no haya sido comprobada.*
