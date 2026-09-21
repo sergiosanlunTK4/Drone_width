@@ -36,6 +36,11 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 
+# --- Temporales de trabajo (renders de PDF, recortes, pruebas visuales)
+#     No son producto de investigacion: son material de trabajo intermedio.
+tmp/
+scratch_*.png
+
 # --- Sistema operativo / macOS
 .DS_Store
 ._*

@@ -1,0 +1,93 @@
+{
+  "fecha_utc": "2026-09-21T01:46:05.228275+00:00",
+  "proposito": "comprobar que las fuentes son reales y accesibles antes de citarlas",
+  "fuentes": [
+    {
+      "id": "openfoam-actuation",
+      "que": "definicion de los coeficientes del disco actuador (Ct, Cp, a)",
+      "url": "https://doc.openfoam.com/2412/tools/processing/numerics/fvoptions/sources/rtm/actuationDisk/",
+      "estado": "NO_ACCESIBLE",
+      "detalle": "HTTP 404"
+    },
+    {
+      "id": "openfoam-api",
+      "que": "implementacion de actuationDiskSource (metodo Froude)",
+      "url": "https://api.openfoam.com/2412/actuationDiskSource_8C_source.html",
+      "status": 200,
+      "bytes": 81588,
+      "sha256": "169cd86d6263b72e104cc366eaf166dc60347c71777c470457cf78de5eb43d2a",
+      "terminos_encontrados": [
+        "Froude",
+        "upstreamPoint"
+      ],
+      "terminos_faltantes": [
+        "thrustCoeff"
+      ],
+      "estado": "ACCESIBLE_PARCIAL"
+    },
+    {
+      "id": "momentum-theory",
+      "que": "teoria de cantidad de movimiento del disco actuador",
+      "url": "https://en.wikipedia.org/wiki/Momentum_theory",
+      "status": 200,
+      "bytes": 78374,
+      "sha256": "498afe95488ceed904e596d41f3c7693c4e68c6a7dc532fbc9eb35d42bce94c6",
+      "terminos_encontrados": [
+        "induced velocity",
+        "actuator disk",
+        "thrust"
+      ],
+      "terminos_faltantes": [],
+      "estado": "VERIFICADA"
+    },
+    {
+      "id": "multirotor-forward",
+      "que": "vuelo en avance de multirrotor: actitud y resistencia",
+      "url": "https://en.wikipedia.org/wiki/Quadcopter",
+      "status": 200,
+      "bytes": 250931,
+      "sha256": "d70866c0f23e6bdafe41dafb90adf8931cc9eb3038a2b3136eb76e1aabc0968a",
+      "terminos_encontrados": [
+        "tilt",
+        "forward",
+        "pitch"
+      ],
+      "terminos_faltantes": [],
+      "estado": "VERIFICADA"
+    },
+    {
+      "id": "bemt",
+      "que": "teoria de elemento de pala (BEMT) para empuje y potencia",
+      "url": "https://en.wikipedia.org/wiki/Blade_element_momentum_theory",
+      "status": 200,
+      "bytes": 318471,
+      "sha256": "a1415a6c85c46d40049d799166ae862dc3a7f699a6599521ba261ee6fd16b327",
+      "terminos_encontrados": [
+        "blade element",
+        "momentum",
+        "thrust"
+      ],
+      "terminos_faltantes": [],
+      "estado": "VERIFICADA"
+    },
+    {
+      "id": "drag-fuselage",
+      "que": "resistencia aerodinamica y coeficiente de arrastre",
+      "url": "https://en.wikipedia.org/wiki/Drag_coefficient",
+      "status": 200,
+      "bytes": 238345,
+      "sha256": "468d1a2cb9291492c17f1c8125645578015693625362057232618cac33382e80",
+      "terminos_encontrados": [
+        "drag coefficient",
+        "frontal area"
+      ],
+      "terminos_faltantes": [],
+      "estado": "VERIFICADA"
+    }
+  ],
+  "resumen": {
+    "NO_ACCESIBLE": 1,
+    "ACCESIBLE_PARCIAL": 1,
+    "VERIFICADA": 4
+  }
+}
