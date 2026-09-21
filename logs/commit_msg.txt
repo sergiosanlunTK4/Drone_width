@@ -1,74 +1,81 @@
-metodología de cálculo v2.0: corrección del error de RPM, momentos, dos Ct y fuentes primarias
+anchos: cuatro anchos distintos, cadena de inyeccion lagrangiana y DOE-A/DOE-B
 
-REVISION DEL INVESTIGADOR. Aceptadas todas las correcciones. Se reescribe el documento y se
-renombra COMO_SE_CALCULA.md -> "Metodología de cálculo.md" (indicación del investigador).
+CORRECCION CONCEPTUAL DEL INVESTIGADOR, la mas profunda de la sesion:
+    ANCHO COMANDADO != ABANICO AERODINAMICO != ANCHO EFECTIVO DE DEPOSICION
+    El abanico NO se impone: SALE de D(x,y).
+    El caudal NO determina el ancho: determina CUANTO liquido se inyecta.
 
-1. ERROR FISICO CENTRAL ELIMINADO (era mio, y era circular).
-   La v1.0 afirmaba: "momentum theory da Ct ~ 0.0061; por tanto el RPM coherente es 2275,
-   no 1850". FALSO. Verificado numericamente y ahora documentado como retirado:
-       Ct_rotor = T/(rho A (Omega R)^2) = 0.00404
-       lambda_i = sqrt(Ct/2)            = 0.044943
-       v_i desde lambda_i * Omega R     = 6.8558 m/s
-       v_i directo = sqrt(T/(2 rho A))  = 6.8558 m/s
-       DIFERENCIA                       = 0.0
-   Son el MISMO resultado: momentum theory deriva el inflow de la definicion de Ct, no
-   proporciona un segundo Ct independiente. Conclusion correcta y ahora escrita:
-       1850 rpm NO esta validado, pero TAMPOCO refutado. SIMPLEMENTE NO SE SABE.
+1. RELACION CAUDAL-ANCHO, DERIVADA Y VERIFICADA (scripts/widths.py)
+   En 1 s el dron recorre V m -> cubre V*W m2 = V*W/10000 ha
+   Volumen por minuto = 60 R V W/10000  =>  Q = 0.006 R V W
+   Verificacion con el ejemplo del investigador (R=10, V=10, W=6): Q = 3.6000 L/min. COINCIDE.
+   Inversion: W_commanded = Q/(0.006 R V).
+   Lo que revela a R=10 L/ha y V=10 m/s:
+       Q=16 (T50)      -> 26.7 m
+       Q=30 (T100 2boq)-> 50.0 m
+       Q=40 (T100 4boq)-> 66.7 m
+   Los maximos de bomba implican anchos absurdos A ESA TASA Y VELOCIDAD => la operacion real
+   usa otras combinaciones de (R,V). Es lo que la telemetria revelara.
 
-2. DOS COEFICIENTES CON EL MISMO NOMBRE, SEPARADOS.
-   Ct_rotor = T/(rho A (Omega R)^2)   -> rotorcraft/BEMT, normalizado con Omega R
-   Ct_OF, Cp_OF                       -> formulacion Froude de actuationDiskSource,
-                                         normalizados con la velocidad incidente U_o
-   NO son el mismo coeficiente. Se documenta y se usa la nomenclatura diferenciada.
+2. CUATRO ANCHOS (nuevo apartado 6 de la Metodologia)
+   W_commanded  = Q_real/(0.006 R V)     lo que el caudal implica
+   W_DJI        = configurado en el controlador (P: 5-13 m, "depende de la escena")
+   W_aero       = abanico fisico de los atomizadores (Lagrangiano SIN plano receptor)
+   W_deposition = ancho efectivo real (de D(x,y))            <- OBJETIVO CIENTIFICO
+   La diferencia entre los tres primeros y el cuarto es uno de los resultados mas valiosos.
 
-3. Cp = 0: CORREGIDO EL SIGNIFICADO.
-   Retirado "fisicamente imposible". Lo correcto: el MODELO actuationDiskSource/Froude exige
-   Cp>0 y Ct>0 y aborta si no; es una restriccion de ese modelo, no una ley universal.
-   Y la razon de fondo es otra: en hover U_inf = 0 y todo coeficiente normalizado con U_inf^3
-   es una descripcion incomoda; en rotorcraft se normaliza con Omega R.
+3. CADENA DE INYECCION LAGRANGIANA (scripts/lagrangian_injection.py)
+   Condicion inicial: V_gota,0 = V_UAV + V_atomizador ; relativa al aire: - U(x_atomizador)
+   Movimiento: m_p dV_p/dt = F_D + m_p g, con C_D(Re) de Schiller-Naumann.
+   De caudal a particulas: m_dot = rho_L Q/60000 ; N_j = m_dot f_j / m_gota ; parcelas con
+   peso estadistico (a d50=150 um y 30 L/min salen ~1e6 gotas/s: inviable literal).
 
-4. EQUILIBRIO DE MOMENTOS AÑADIDO (era un hueco).
-   sum F = 0 Y sum M_CG = 0. El arrastre actua en el CENTRO DE PRESION, que no coincide con
-   el CG, y genera un momento de cabeceo que el reparto de rotores debe compensar.
-   x_cp_cg es DESCONOCIDO (clase D); a +-5 cm el desequilibrio delantero/trasero a 10 m/s es
-   de +-2.6 N por brazo. Con x_cp_cg = 0 se recupera el reparto simetrico.
+   HALLAZGO RELEVANTE: a 10000 rpm la velocidad del borde del disco es 52.4 m/s, frente a
+   5 m/s del UAV. LA VELOCIDAD DE LANZAMIENTO DOMINA POR UN FACTOR 10.
+   => La condicion inicial de la gota es el ABANICO DEL ATOMIZADOR, no la velocidad del UAV.
+      Es lo contrario de lo que asume un modelo "caudal -> ancho".
 
-5. PREGUNTA OBSOLETA ELIMINADA: "comparte motor el par?". La arquitectura se conoce:
-   4 brazos, 8 motores, 8 rotores. Lo desconocido es T_sup/T_inf, RPM_sup/RPM_inf y la
-   estrategia de control.
+   INCOHERENCIA DETECTADA en el modelo del propietario: el vector de inyeccion declarado es
+   [0,0,-1] (axial) pero un disco centrifugo expulsa RADIALMENTE en el plano del disco. El
+   [0,0,-1] parece ser el eje de giro, no la direccion de salida. Hay que reconciliarlo.
 
-6. DESPLAZAMIENTO DE DEPOSICION REBAJADO a "baseline geometrico". NO es desplazamiento de
-   deposicion: las gotas salen con velocidad del atomizador, llevan la velocidad del UAV,
-   reciben downwash, gravedad, arrastre y tienen tiempos de vuelo distintos por diametro.
-   Eso lo responde el Lagrangiano.
+   Propiedades por tamano (tau_p, v_terminal) calculadas y tabuladas: tau_p es 3-5 ordenes
+   menor que el tiempo de vuelo, y v_terminal 25-800 veces menor que v_borde. La gota se
+   desacelera rapido hacia su velocidad terminal y despues cae con el aire actuando todo el
+   tiempo. No se puede atajar con una formula.
 
-7. NOMBRES CORREGIDOS: "actitud maxima teorica" -> "limite estatico por magnitud de empuje";
-   H8 de "hallazgo" a "hipotesis derivada del modelo de trim".
+4. DOE REDISEÑADO EN DOS NIVELES (geometry/diseno_experimental.md)
+   DOE-A: V, H, d, m_liq  con atmosfera CONSTANTE
+   DOE-B: T, RH, P, viento  SOLO DESPUES y sobre un subconjunto de DOE-A
+   Razon: multiplicar 128 casos por 3 niveles de ambiente daria miles de corridas antes de
+   saber que variables importan.
 
-8. DENSIDAD: rho = f(P,T,RH) con Magnus y gas ideal. A 28 C, 70% HR, nivel del mar da 1.1572
-   (el 1.1716 de la v1.0 era aire SECO). Se documenta el efecto.
+   TEMPERATURA RETIRADA como cuarta variable (propuesta del investigador, aceptada):
+   sin evaporacion su efecto es de segundo orden (solo via rho y mu); la ALTURA cambia
+   directamente tiempo en el downwash, expansion de estela, tiempo de vuelo, deriva y area.
+   Orden de prioridad: V, H, d, m > viento > T, RH > P.
 
-9. ACTITUD: el parametro es V_AIRE = V_suelo - V_viento, y la ecuacion es implicita si A y Cd
-   dependen de theta. Se documenta.
+   ATMOSFERA BASAL: no es "rho=1.1716 porque son 28 C" (indefendible) sino declarar T_0, RH_0,
+   P_0 y CALCULAR rho_0 = f(P,T,RH). Valores reales por confirmar con el investigador.
 
-10. BUG DE CODIGO CORREGIDO: A_proj devolvia A0*(1+cos theta) por un "+ area0" de mas:
-    el DOBLE de area. Ademas, el modelo implicito con la planta completa como placa plana da
-    theta = 41 grados a 20 m/s, fisicamente absurdo; se DESACTIVA por defecto y se declara que
-    falta el arrastre vertical (clase D).
+   RESTRICCION INCORPORADA: el T70P a tanque lleno (70 L) EXIGE bateria DB2160. Con DB1580
+   (52 kg) el maximo admisible es 30 kg = 43% del tanque. Cualquier caso por encima es
+   fisicamente imposible y se excluye del diseño.
 
-11. FUENTES PRIMARIAS AÑADIDAS, con utm_source eliminado:
-    [1] MDPI Energies 11(9):2221   [2] MDPI Drones 10(3):212   [3] NASA/TP-2005-213477
-    [4] NASA/TP-20250010468        [5] NASA/CR-2016-219086
-    [6][7] OpenFOAM API            [8] OpenFOAM Doc semiImplicit
-    Se mantiene la nota de honestidad: Cd=0.8, area frontal y rpm=1850 son SUPOSICIONES
-    PROPIAS y NO se atribuyen a ninguna fuente.
+   TRAMPA EVITADA: no barrer simultaneamente tasa, caudal, velocidad y ancho, porque estan
+   ligados por Q = 0.006 R V W (DOE redundante). Y si el controlador modifica la RPM del
+   atomizador para conseguir cierto tamano de gota, entonces gota/RPM/caudal NO son tres
+   variables independientes: la configuracion de gota es un COMANDO, la RPM es su CONSECUENCIA.
 
-12. CONCLUSION CLAVE AÑADIDA: NO se necesita RPM para imponer el empuje en el CFD principal
-    (C->B). El RPM pertenece a GATE 1B y a la validacion de alta fidelidad, y NO debe volver a
-    convertirse en bloqueo del actuator disk principal.
-    Y CFD-0 se mantiene ABIERTO hasta verificar la INTEGRAL DE LA FUENTE, no solo que aparezca
-    downwash.
+5. TELEMETRIA: la base de datos sera GRANDE pero no todas sus columnas seran dimensiones del
+   DOE. "Tener una variable en la base de datos no obliga a barrerla en CFD." Se guardan
+   RPM_R1..R8, RPM_atom, RPM_pump, Q, R, d, theta, phi, wind, todo con timestamp. Se eligen
+   cuatro para el primer DOE. Y si hay telemetria, NO se calcula lo que se puede medir: el RPM
+   real cierra GATE 1B y la actitud real cierra las suposiciones de Cd y area frontal.
 
-Tambien: scripts/force_chain.py reescrito con las tres vias de RPM separadas, trim con momentos,
-densidad f(P,T,RH) y nomenclatura diferenciada de coeficientes.
-archive/README.md actualizado al nuevo nombre.
+Nuevos: scripts/widths.py, scripts/lagrangian_injection.py, geometry/diseno_experimental.md.
+Metodologia de calculo.md: nuevo apartado 6 y referencia [9] (DJI T100 specs).
+
+NOTA DE PROCESO: un script mio de limpieza borro por error la seccion 6 recien insertada
+junto con la antigua; se detecto y se reinserto. El documento queda verificado: 422 lineas,
+11 secciones."""
