@@ -1,5 +1,3 @@
-# PROJECT_MASTER_PLAN_V1.md
-
 > **Documento único de operación** del proyecto *Downwash, transporte de gotas y deposición de UAV agrícolas DJI Agras*.
 > Consolida: `CONTEXT.md` (57 secciones), `RESEARCH_ARCHITECTURE_V1.md` (24 secciones) y el Plan de Investigación v1. Una vez aprobado, es el referente operativo; los otros documentos quedan como detalle técnico de referencia.
 >
@@ -78,16 +76,16 @@ u(x,y,z), v, w, presión, turbulencia; efecto masa; efecto velocidad; efecto alt
 
 ### 4.1 Bloqueo de decisiones — matriz maestra por UAV
 
-| Parámetro | T25P | T55 | T70P | T100 | Fuente | Est. |
-|---|---|---|---|---|---|---|
-| Geometría (L×A×H, wheelbase) | ⬜ | ⬜ | ⬜ | ⬜ | Docs oficiales (P) + medición (M) | P/M |
-| N.º rotores y posición XYZ | ⬜ | ⬜ | ⬜ | ⬜ | Docs (P) + medición (M) | P/M |
-| Diámetro rotor, palas, paso | ⬜ | ⬜ | ⬜ | ⬜ | Medición directa + foto alta velocidad | M |
-| Masas (vacío, MTOW, tanque) | ⬜ | ⬜ | ⬜ | ⬜ | Docs (P) + pesaje (M) | P/M |
-| Motor/KV/RPM/empuje/torque | ⬜ | ⬜ | ⬜ | ⬜ | Docs (P); RPM/empuje: telemetría aut. + tachómetro/cámara + estimación inversa (M/I) | P/M/I |
-| Atomizadores: tipo, n.º, XYZ, orientación | ⬜ | ⬜ | ⬜ | ⬜ | Docs (P) + medición (M) — **crítico** para H3 | P/M |
-| Caudal, presión, VMD/espectro | ⬜ | ⬜ | ⬜ | ⬜ | Docs (P) + bancada + caracterización (M) | P/M |
-| Velocidad y altura de operación | ⬜ | ⬜ | ⬜ | ⬜ | Docs (P) | P |
+| Parámetro                                 | T25P | T55 | T70P | T100 | Fuente                                                                               | Est.  |
+| ----------------------------------------- | ---- | --- | ---- | ---- | ------------------------------------------------------------------------------------ | ----- |
+| Geometría (L×A×H, wheelbase)              | ⬜    | ⬜   | ⬜    | ⬜    | Docs oficiales (P) + medición (M)                                                    | P/M   |
+| N.º rotores y posición XYZ                | ⬜    | ⬜   | ⬜    | ⬜    | Docs (P) + medición (M)                                                              | P/M   |
+| Diámetro rotor, palas, paso               | ⬜    | ⬜   | ⬜    | ⬜    | Medición directa + foto alta velocidad                                               | M     |
+| Masas (vacío, MTOW, tanque)               | ⬜    | ⬜   | ⬜    | ⬜    | Docs (P) + pesaje (M)                                                                | P/M   |
+| Motor/KV/RPM/empuje/torque                | ⬜    | ⬜   | ⬜    | ⬜    | Docs (P); RPM/empuje: telemetría aut. + tachómetro/cámara + estimación inversa (M/I) | P/M/I |
+| Atomizadores: tipo, n.º, XYZ, orientación | ⬜    | ⬜   | ⬜    | ⬜    | Docs (P) + medición (M) — **crítico** para H3                                        | P/M   |
+| Caudal, presión, VMD/espectro             | ⬜    | ⬜   | ⬜    | ⬜    | Docs (P) + bancada + caracterización (M)                                             | P/M   |
+| Velocidad y altura de operación           | ⬜    | ⬜   | ⬜    | ⬜    | Docs (P)                                                                             | P     |
 
 ⬜ = pendiente de completar con los documentos oficiales que el investigador tiene a mano.
 
