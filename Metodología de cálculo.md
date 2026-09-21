@@ -92,7 +92,7 @@ T_sup,i , T_inf,i
 | **RPM de motor individual** (los 8) | ✅ **sí** | **incógnita del reparto coaxial `s_i`** (§4.4) y `RPM_sup/RPM_inf` |
 | **RPM del atomizador centrífugo** | ✅ **sí** | comando vs consecuencia del tamaño de gota (§6.8) |
 | **RPM de las bombas** | ✅ **sí** | relación bomba ↔ caudal |
-| **Caudal real `Q`** | ✅ **sí** | **`W_commanded` y contraste del DOE** (§6.3) |
+| **Caudal real `Q`** | ✅ **sí** | **`W_equiv` y contraste del DOE** (§6.3) |
 | Actitud `θ`, `φ` | ❓ **por confirmar** | las suposiciones [1] y [3] (§8) |
 | Velocidad, tasa, altura, tamaño de gota configurado | previsiblemente sí | — |
 | Masa/carga | inferible | H5, H8 |
@@ -377,48 +377,57 @@ de hover — no una imposibilidad física.
 
 ---
 
-## 6. Del atomizador a la deposición: los cuatro anchos
+## 6. Del atomizador a la deposición: **tres niveles físicos**
 
 ### 6.1 La distinción que ordena todo el problema
 
 ```
-ANCHO COMANDADO  ≠  ABANICO AERODINÁMICO  ≠  ANCHO EFECTIVO DE DEPOSICIÓN
+PLUMA  ≠  DEPOSICIÓN DE UNA PASADA  ≠  ANCHO EFECTIVO
 ```
 
-**El abanico no se impone: sale de `D(x,y)`. Y el caudal no determina el ancho: determina
+**El abanico no se impone: sale de la deposición. Y el caudal no determina el ancho: determina
 CUÁNTO líquido se inyecta.** El campo de aire, el tamaño de gota y la condición inicial
 determinan **DÓNDE** acaba.
 
-### 6.2 Los cuatro anchos
+### 6.2 Los tres niveles
 
-| Ancho | Qué es | Cómo se obtiene | Estado |
+| Nivel | Magnitud | Qué es | Cómo se obtiene |
 |---|---|---|---|
-| **W_commanded** | el que el **caudal** implica | `Q_real/(0.006 R V)` | derivable; requiere telemetría |
-| **W_DJI** | el configurado en el controlador | lectura de pantalla | **P: 5–13 m** (y *"depende de la escena"*) |
-| **W_aero** | abanico físico de los atomizadores | Lagrangiano **sin** plano receptor | pendiente: requiere CFD |
-| **W_deposition** | ancho efectivo real | derivado de **D(x,y)** | **objetivo científico** |
+| **1. PLUMA** | `C_p(x,y,z)` | distribución espacial de gotas **antes de impactar** | salida directa del Lagrangiano |
+| **2. DEPOSICIÓN DE UNA PASADA** | `D(y)` o `D(x,y)` | lo que toca el suelo en **una** pasada | integración de impactos en el plano receptor |
+| **3. ANCHO EFECTIVO** | **`W_eff`** | **el mayor interlineado que mantiene la uniformidad** | **criterio de solape** ↓ |
 
-> **La diferencia entre los tres primeros y el cuarto es, probablemente, uno de los resultados más
-> valiosos de la investigación:** cuantifica cuánto se desvía la práctica operativa de la física
-> real de deposición. Y DJI mismo reconoce que el ancho no es único: declara 5–13 m para el T100
-> y aclara que **depende de la escena real de trabajo** ([9]).
+```
+W_eff = max S  tal que  CV( Σ_k D(y − kS) )  ≤  CV_lim
+```
 
-### 6.3 Relación caudal-ancho (derivada, no citada)
+> **Definición clave:** el ancho efectivo **no es una propiedad de una pasada**, es una propiedad
+> del **solape**. Sin el nivel 2 no se puede definir.
+>
+> Y **el modelo no sabe cuánto dice DJI**: el rango de catálogo **no entra en el modelo**, ni como
+> entrada, ni como objetivo, ni como criterio de validación.
+
+### 6.3 Magnitud contable: `W_equiv` (y por qué **no** se llama "commanded")
+
+Derivada, no citada:
 
 ```
 En 1 s el dron recorre V m  →  cubre V·W m² = V·W/10000 ha
 Volumen por minuto = 60 R V W/10000  [L/min]
 
-    ⇒   Q = 0.006 R V W         [L/min; R en L/ha, V en m/s, W en m]
-    ⇒   W_commanded = Q / (0.006 R V)
+    ⇒   Q = 0.006 R V W          [L/min; R en L/ha, V en m/s, W en m]
+    ⇒   W_equiv = Q / (0.006 R V)
 ```
 
-**Verificación** (R = 10 L/ha, V = 10 m/s, W = 6 m): `Q = 3.6000 L/min` ✓ coincide con el valor
-aportado por el investigador.
+**Verificación** (R = 10 L/ha, V = 10 m/s, W = 6 m): `Q = 3.6000 L/min` ✓
+
+> ⚠ **Nomenclatura corregida.** Se llamaba `W_commanded`. **Ese nombre afirmaba algo que no
+> tenemos**: que el controlador realmente manda ese ancho. Se renombra a **`W_equiv`** — *ancho
+> equivalente implícito por Q, R, V*. Es una **magnitud contable**, no un comando.
 
 **Qué revela la inversión** (a R = 10 L/ha, V = 10 m/s):
 
-| Q (L/min) | Caso | W implícito |
+| Q (L/min) | Caso | `W_equiv` |
 |---|---|---|
 | 3.6 | ejemplo | 6.0 m |
 | 16 | caudal T50 (referencia) | 26.7 m |
@@ -428,20 +437,82 @@ aportado por el investigador.
 Los máximos de bomba implican anchos absurdos **a esa tasa y velocidad** ⇒ la operación real usa
 **otras combinaciones de (R, V)**. Es información que la telemetría revelará.
 
+**Contraste previsto:** `W_equiv` (contable) vs `W_eff` (físico, del Lagrangiano). **La diferencia
+entre ambos es un resultado**, no un error de ninguno de los dos.
+
 ### 6.4 Cadena de inyección (implementada en `scripts/lagrangian_injection.py`)
 
 ```
 rotores  →  U(x,y,z)                                   [CFD: fuente de momento prescrita]
 Q, RPM_atomizador, d, posición/orientación  →  inyección de gotas
-U + gotas  →  trayectorias  →  D(x,y)  →  W_deposition
+U + gotas  →  trayectorias  →  C_p  →  D(y)  →  W_eff
 ```
 
 **Condición inicial, relativa al aire:**
 
 ```
-V_gota,0            =  V_UAV  +  V_atomizador
+V_gota,0            =  V_UAV  +  V_exit
 V_relativa al aire  =  V_gota,0  −  U(x_atomizador)
 ```
+
+#### 🔴 `V_exit` ≠ `V_tip` — corrección importante
+
+En una versión anterior se afirmó que *"a 10 000 rpm la velocidad de lanzamiento es 52.4 m/s"*.
+**Eso no es correcto.** 52.4 m/s es la **velocidad periférica del disco**:
+
+```
+V_tip = ω · r_disco = 2π(10000/60)(0.05) = 52.4 m/s      ← cota / escala característica
+```
+
+Pero la velocidad real de salida de la gota **no** es la del borde del disco:
+
+```
+V_exit ≠ V_tip
+```
+
+La gota puede tener componente tangencial por arrastre con el disco, componente radial de la
+película líquida, **deslizamiento** respecto al disco, ruptura en el borde, y una **distribución**
+de velocidades. Se necesita:
+
+```
+V_exit = f(RPM_atom, Q, d, geometría)      ← falta: medir o modelar
+```
+
+#### Cómo se trata un dato faltante sin inventarlo
+
+`V_exit` no se conoce, así que **no se elige un valor**. Se declara una fracción de
+desprendimiento `k` y se barre:
+
+```
+V_exit = k · V_tip          k ∈ [0.3, 1.0]
+```
+
+| k | V_exit (m/s) @ 10 000 rpm | V_radial / V_axial a 15° | a 30° | a 45° |
+|---|---|---|---|---|
+| 0.30 | 15.71 | 4.07 / 15.17 | 7.85 / 13.60 | 11.11 / 11.11 |
+| 0.60 | 31.42 | 8.13 / 30.35 | 15.71 / 27.21 | 22.21 / 22.21 |
+| 1.00 | 52.36 | 13.55 / 50.58 | 26.18 / 45.34 | 37.02 / 37.02 |
+
+La tabla **no es un resultado**: es la exhibición de cuánto depende el modelo de un dato que no
+se tiene. `k = 1.0` reproduce el error retirado y se incluye sólo como cota.
+
+> **`V_tip` se conserva SOLO como cota superior y escala característica.** No se usa como condición
+> inicial. Si se usara, se sustituiría una suposición vieja por otra nueva, que es exactamente lo
+> que este proyecto evita.
+
+**Alcance de la cota:** el único resultado que usa `V_tip` como referencia es la comparación
+`v_terminal / V_tip` de la §6.6, y es el **peor caso**. Como `V_exit ≤ V_tip`, el cociente real es
+*más desfavorable* todavía: `v_terminal` es aún más pequeño frente a la velocidad de salida. Es
+decir, la conclusión "el atomizador lanza la gota mucho más rápido de lo que ésta puede caer" se
+**refuerza** al corregir el dato. En cambio `τ_p` no es una comparación de velocidades y **no**
+depende de `V_exit`: se calcula con `d` y `μ_aire` y no cambia.
+
+#### El vector de inyección `[0,0,−1]` es conceptualmente incorrecto
+
+Un atomizador centrífugo expulsa el líquido **radialmente en el plano del disco**. El `[0,0,−1]`
+declarado en el modelo es probablemente el **eje del atomizador**, no la dirección de salida. La
+condición inicial debe **distribuirse alrededor del plano radial**, y transformarse después por la
+**actitud del UAV**.
 
 **Ecuación de movimiento por gota:**
 
@@ -450,20 +521,6 @@ m_p · dV_p/dt  =  F_D  +  m_p·g
 F_D            =  ½ ρ C_D(Re_p) A_p |V_aire − V_p| (V_aire − V_p)
 C_D(Re_p)      =  24/Re · (1 + 0.15 Re^0.687)          (Schiller-Naumann, Re < 1000)
 ```
-
-**🔴 Hallazgo relevante:** a 10 000 rpm, la velocidad del borde del disco es
-
-```
-V_borde = ω·R_disco = 2π(10000/60)(0.05) = 52.4 m/s
-```
-
-frente a **5 m/s** del UAV. **La velocidad de lanzamiento domina sobre la del dron por un factor
-10.** La condición inicial de la gota es esencialmente **el abanico del atomizador**, no la
-velocidad del UAV — lo contrario de lo que asume un modelo "caudal → ancho".
-
-**Y una incoherencia detectada en el modelo:** el vector de inyección declarado es `[0, 0, −1]`
-(axial), pero **un disco centrífugo expulsa radialmente en el plano del disco**. El `[0,0,−1]`
-parece ser el **eje de giro**, no la dirección de salida. Hay que reconciliarlo antes de inyectar.
 
 ### 6.5 De caudal a partículas
 
@@ -478,18 +535,30 @@ d50 = 150 µm y 30 L/min salen del orden de 10⁶ gotas/s, inviable de inyectar 
 
 ### 6.6 Propiedades de la gota que determinan *dónde* acaba
 
-| d (µm) | τ_p (s) | v_terminal (m/s) | v_term / v_borde |
+| d (µm) | τ_p (s) | v_terminal (m/s) | v_term / V_tip |
 |---|---|---|---|
-| 50 | 1.5×10⁻⁵ | 0.061 | 0.0012 |
-| 100 | 6.0×10⁻⁵ | 0.243 | 0.0046 |
-| 150 | 1.3×10⁻⁴ | 0.470 | 0.0090 |
-| 200 | 2.4×10⁻⁴ | 0.699 | 0.0133 |
-| 300 | 5.4×10⁻⁴ | 1.164 | 0.0222 |
-| 500 | 1.5×10⁻³ | 2.023 | 0.0386 |
+| 50 | 7.44×10⁻³ | 0.069 | 0.0013 |
+| 100 | 2.98×10⁻² | 0.243 | 0.0046 |
+| 150 | 6.70×10⁻² | 0.465 | 0.0089 |
+| 200 | 1.19×10⁻¹ | 0.701 | 0.0134 |
+| 300 | 2.68×10⁻¹ | 1.169 | 0.0223 |
+| 500 | 7.44×10⁻¹ | 2.032 | 0.0388 |
 
-`τ_p` es 3–5 órdenes de magnitud menor que el tiempo de vuelo (~1 s), y `v_terminal` es 25–800
-veces menor que `v_borde`. **La gota se desacelera rápido hacia su velocidad terminal y después
-cae, con el campo de aire actuando durante toda la caída.** No se puede atajar con una fórmula.
+`τ_p = ρ_d d² / (18 μ_aire)`. Con `d` y `τ_p` en estas unidades, **el acoplamiento NO es
+instantáneo para las gotas grandes**, y decir lo contrario sería un error de un factor 500:
+
+| d (µm) | τ_p (s) | fracción de `v_terminal` alcanzada en 0.6 s |
+|---|---|---|
+| 100 | 0.030 | 100 % (instantáneo a efectos prácticos) |
+| 200 | 0.119 | 99 % |
+| 300 | 0.268 | 89 % |
+| 500 | 0.744 | **55 %** |
+
+Para `d = 500 µm`, `τ_p` es del **mismo orden que el tiempo de vuelo** (~0.6–1 s desde 2.55 m):
+la gota llega al suelo **sin haber alcanzado** su velocidad terminal. Eso *refuerza* la conclusión
+central —no se puede atajar con una fórmula de caída libre ni con una velocidad terminal única—
+pero por la razón opuesta a "se acopla al instante": **cada diámetro tiene su propia historia de
+aceleración**, y por eso hace falta el Lagrangiano.
 
 ### 6.7 Actitud y deposición: baseline geométrico, no predicción
 
@@ -514,23 +583,55 @@ el vaciado. Es una **derivación**, no un resultado.
 
 ## 7. Densidad del aire
 
-Para un estudio que compara cuatro plataformas en condiciones de campo, **no se congela una sola
-ρ**. Se usa:
+### 7.1 Escenario basal representativo: **Veracruz–mañana**
 
-```
-ρ = f(P, T, RH)
+No es `ρ = 1.1716 "porque son 28 °C"` —donde la temperatura se usa como si bastara para definir la
+densidad— sino un **escenario basal declarado** con `T_0`, `RH_0`, `P_0` explícitos, del que se
+**calcula** `ρ_0`.
 
-    P_sat = 610.94 · exp(17.625 T_C / (T_C + 243.04))        (Magnus)
-    P_v   = RH · P_sat
-    P_d   = P − P_v
-    ρ     = P_d/(R_d T) + P_v/(R_v T)      R_d = 287.058, R_v = 461.495
-```
-
-| Condición | ρ (kg/m³) | Efecto en θ a 20 m/s |
+| Parámetro | Valor | Clase |
 |---|---|---|
-| 28 °C, 70 % HR, nivel del mar | **1.1572** | referencia |
-| 28 °C, aire seco, nivel del mar | 1.1716 | el valor de la v1.0 |
-| 28 °C, 70 % HR, 1000 m | ~1.05 | **+12 % en D** → θ mayor |
+| `T_0` | **26.0 °C** | **E** — media de septiembre en Veracruz |
+| `RH_0` | **85 %** | **E** — humedad de septiembre |
+| `P_0` | **101.0 kPa** | **E** — nivel del mar, aeropuerto Gral. Heriberto Jara |
+| **`ρ_0`** | **1.1636 kg/m³** | **derivado** |
+
+```
+P_sat = 610.94 · exp(17.625 T_C/(T_C + 243.04))          (Magnus)
+P_v   = RH · P_sat
+P_d   = P − P_v
+ρ     = P_d/(R_d T) + P_v/(R_v T)      R_d = 287.058, R_v = 461.495
+```
+
+**Desglose:** `P_sat = 3355.2 Pa` · `P_v = 2851.9 Pa` · `P_d = 98148.1 Pa` ·
+`ρ_seco = 1.1429` · `ρ_vapor = 0.0207` → **`ρ_0 = 1.1636 kg/m³`**
+
+### 7.2 Sensibilidad ambiental
+
+| Caso | T (°C) | RH (%) | P (kPa) | ρ | vs basal |
+|---|---|---|---|---|---|
+| **BASAL Veracruz septiembre** | 26.0 | 85 | 101.0 | **1.1636** | — |
+| aire seco a 28 °C (lo anterior) | 28.0 | 0 | 101.3 | 1.1721 | +0.73 % |
+| mañana fresca | 20.0 | 90 | 101.0 | 1.1908 | +2.34 % |
+| mediodía caluroso | 34.0 | 60 | 101.0 | 1.1318 | −2.73 % |
+| temporada de lluvias | 24.0 | 95 | 101.0 | 1.1715 | +0.68 % |
+| altitud 500 m | 26.0 | 85 | 95.5 | 1.1002 | −5.45 % |
+
+> **La variación de `ρ` entre escenarios realistas de una campaña matutina es de unos pocos por
+> ciento.** Eso respalda la decisión de **fijar el ambiente en DOE-A** y barrerlo después en DOE-B:
+> no es la variable que domina.
+
+### 7.3 Mejora pendiente: percentiles de observaciones reales
+
+En vez de elegir un valor *"porque Veracruz es cálido"*, el procedimiento correcto es:
+
+1. Descargar varios años de observaciones **horarias** de la estación **MMVR** (Aeropuerto General
+   Heriberto Jara, Veracruz).
+2. Filtrar solo **horas típicas de aplicación**: 06:00–09:00 local.
+3. Tomar la **mediana** de `T`, `RH`, `P` — y sus P10/P90 para el DOE-B.
+
+Eso convierte el escenario basal en algo **derivado de datos**, no de una impresión.
+**Pendiente:** requiere acceso a los registros de la estación.
 
 ---
 

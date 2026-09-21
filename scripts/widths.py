@@ -1,31 +1,34 @@
 """
-ANCHOS: derivacion de la relacion caudal-ancho y de los CUATRO anchos distintos.
+TRES NIVELES FISICOS: PLUMA -> DEPOSICION DE UNA PASADA -> ANCHO EFECTIVO.
 
-CORRECCION CONCEPTUAL DEL INVESTIGADOR (2026-09-19), que este script implementa:
+CORRECCIONES APLICADAS (revision del investigador, 2026-09-19):
 
-    ANCHO COMANDADO  !=  ABANICO AERODINAMICO  !=  ANCHO EFECTIVO DE DEPOSICION
+  [1] ELIMINADO `W_DJI` del nucleo metodologico. El rango de catalogo (5-13 m) NO participa
+      en la investigacion: el modelo no lo sabe ni lo necesita. Se conserva solo como
+      referencia externa, NO como uno de los anchos del modelo.
 
-De donde salen CUATRO anchos distintos y medibles:
+  [2] RENOMBRADO: `W_commanded` -> `W_equiv` (ancho EQUIVALENTE implicito por Q, R, V).
+      Razon: a menos que sepamos que el controlador realmente manda ese ancho, llamarlo
+      "commanded" afirma algo que NO tenemos. Es una magnitud CONTABLE, no un comando.
 
-    W_commanded  = Q_real / (0.006 R V)     lo que el caudal IMPLICA
-    W_DJI        = interlineado/ancho configurado en el controlador Agras
-    W_aero       = abanico fisico que sale de los atomizadores (Lagrangiano, sin suelo)
-    W_deposition = ancho efectivo derivado de D(x,y)  <- el objetivo cientifico
+          W_equiv = Q / (0.006 R V)
 
-LA RELACION CAUDAL-ANCHO (derivada, no citada):
+  [3] REDEFINIDOS LOS NIVELES. Ya no "cuatro anchos", sino TRES NIVELES FISICOS:
 
-    En 1 s el dron recorre V metros -> cubre V*W m2 = V*W/10000 ha
-    Volumen por segundo = R * V*W/10000   [L/s]
-    Volumen por minuto  = 60 R V W/10000  [L/min]
+          PLUMA                    C_p(x,y,z)      distribucion espacial de gotas ANTES de impactar
+          DEPOSICION DE UNA PASADA D(y) o D(x,y)  lo que toca el suelo en UNA pasada
+          ANCHO EFECTIVO           W_eff           el maximo S con CV(solape) <= CV_lim
 
-        Q = 0.006 R V W            [L/min, con R en L/ha, V en m/s, W en m]
+      Y el ancho efectivo se DEFINE por el criterio de solape:
 
-  e invertida:  W_commanded = Q / (0.006 R V)
+          W_eff = max S  tal que  CV( sum_k D(y - kS) ) <= CV_lim
 
-QUE NO SE PUEDE HACER: convertir caudal en ancho de deposicion. El caudal determina
-CUANTO liquido se deposita. El campo de aire + tamano de gota + condicion inicial
-determinan DONDE acaba. DJI declara 5-13 m para el T100 y aclara que el ancho efectivo
-depende de la escena real de trabajo.
+      NO importa si DJI dice 5, 7 o 13 m. EL MODELO NO SABE ESE NUMERO.
+
+RELACION CAUDAL-ANCHO (derivada, no citada) — da W_equiv, que es contable:
+
+    En 1 s el dron recorre V m -> cubre V*W m2 = V*W/10000 ha
+    Q = 0.006 R V W       [L/min; R en L/ha, V en m/s, W en m]
 
 Uso:
   python scripts/widths.py
@@ -38,168 +41,197 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 # --- T100, datos con su clase -------------------------------------------------------
-DJI_W_EFECTIVO_M = (5.0, 13.0)    # P: ficha oficial, "depende de la escena real"
 Q_2BOQ_LMIN = 30.0                 # P: caudal maximo 2 boquillas
 Q_4BOQ_LMIN = 40.0                 # P: caudal maximo 4 boquillas
-Q_MIN_2BOQ = 16.0                  # referencia T50 para contexto (P-A)
 RHO_L = 997.0                      # kg/m3 agua a 25 C
-D50_UM = 150.0                     # P: recomendado por el modelo del propietario
+D50_UM = 150.0
+CV_LIMITE_PCT = 20.0               # criterio de uniformidad de trabajo
+
+# Referencia EXTERNA, fuera del modelo cientifico (ver correccion [1])
+DJI_RANGO_CATALOGO_M = (5.0, 13.0)
 
 
-def caudal(R: float, V: float, W: float) -> float:
+def Q_de_RVW(R: float, V: float, W: float) -> float:
     """Q = 0.006 R V W   [L/min]"""
     return 0.006 * R * V * W
 
 
-def ancho_implicito(Q: float, R: float, V: float) -> float:
-    """W_commanded = Q / (0.006 R V)   [m]"""
+def W_equiv(Q: float, R: float, V: float) -> float:
+    """W_equiv = Q / (0.006 R V)   [m].  Ancho EQUIVALENTE implicito por Q, R, V.
+
+    NO es un ancho comandado: es una magnitud contable. Solo seria "comandado" si
+    supiéramos que el controlador manda ese ancho, y eso no lo sabemos.
+    """
     den = 0.006 * R * V
     return Q / den if den > 0 else float("nan")
 
 
-def boquillas_necesarias(Q: float, Lmin_por_boquilla: float = 10.0) -> float:
-    """Numero de atomizadores para repartir un caudal (10 L/min nominal por boquilla)."""
-    return Q / Lmin_por_boquilla
+def cv_solape(D_y: list[float], S: float, dy: float) -> float:
+    """CV de la deposicion solapada con interlineado S.
 
-
-def masa_por_bin(Q_total_Lmin: float, d_um: float, n_bins: int = 1) -> dict:
-    """De caudal a PARTICULAS: cuanto liquido y cuantas gotas por bin de diametro.
-
-    Q [L/min] -> masa [kg/s]:   m_dot = rho_L * Q/60000
-    masa de una gota:           m_d = rho_L * pi d^3 / 6
-    numero de gotas por segundo: N_dot = m_dot_bin / m_d
+    Suma de pasadas desplazadas kS sobre el perfil de UNA pasada D(y).
     """
-    Q_m3s = Q_total_Lmin / 60000.0
-    m_dot = RHO_L * Q_m3s
-    d = d_um * 1e-6
-    m_d = RHO_L * math.pi * d ** 3 / 6.0
-    return {"Q_m3s": Q_m3s, "m_dot_kg_s": m_dot, "m_gota_kg": m_d,
-            "gotas_por_s": m_dot / m_d if m_d > 0 else float("nan")}
+    if not D_y or S <= 0:
+        return float("nan")
+    n = len(D_y)
+    y0 = -(n // 2) * dy
+    suma = []
+    for i in range(n):
+        y = y0 + i * dy
+        acc = 0.0
+        # pasadas necesarias para cubrir con margen
+        kmin = int((y - (y0 + n * dy)) / S) - 1
+        kmax = int((y - y0) / S) + 2
+        for k in range(kmin, kmax + 1):
+            yy = y - k * S
+            idx = (yy - y0) / dy
+            j = int(round(idx))
+            if 0 <= j < n:
+                acc += D_y[j]
+        suma.append(acc)
+    media = sum(suma) / len(suma)
+    if media <= 0:
+        return float("nan")
+    var = sum((v - media) ** 2 for v in suma) / len(suma)
+    return math.sqrt(var) / media * 100.0
+
+
+def ancho_efectivo(D_y: list[float], dy: float, cv_lim: float = CV_LIMITE_PCT,
+                   S_max: float = 30.0, paso: float = 0.1) -> dict:
+    """W_eff = max S tal que CV(solape) <= CV_lim.   DEFINICION del objetivo cientifico."""
+    mejor_S, mejor_cv = float("nan"), float("nan")
+    S = paso
+    while S <= S_max:
+        c = cv_solape(D_y, S, dy)
+        if not math.isnan(c) and c <= cv_lim:
+            mejor_S, mejor_cv = S, c
+        S += paso
+    return {"W_eff_m": mejor_S, "CV_en_W_eff_pct": mejor_cv, "CV_limite_pct": cv_lim}
+
+
+def perfil_gaussiano(sigma_y: float, dy: float = 0.05, ancho: float = 20.0) -> list[float]:
+    """Perfil de UNA pasada, gaussiano. SOLO para ejercitar la maquinaria de W_eff.
+
+    >>> ESTE PERFIL ES SINTETICO. No es resultado de nada. Sirve para verificar que el
+        calculo de W_eff funciona; el perfil real viene de D(x,y) del Lagrangiano.
+    """
+    n = int(ancho / dy)
+    y0 = -(n // 2) * dy
+    return [math.exp(-((y0 + i * dy) ** 2) / (2 * sigma_y ** 2)) for i in range(n)]
 
 
 def main() -> int:
     print("=" * 96)
-    print("ANCHOS: del caudal a la deposicion — CUATRO anchos distintos")
+    print("TRES NIVELES FISICOS: PLUMA -> DEPOSICION DE UNA PASADA -> ANCHO EFECTIVO")
     print("=" * 96)
 
     print("\n" + "-" * 96)
-    print("1. DERIVACION DE LA RELACION CAUDAL-ANCHO")
+    print("NIVEL 1 — PLUMA:  C_p(x,y,z)")
     print("-" * 96)
     print("""
-  No se cita: se deriva.
+  Distribucion espacial de gotas ANTES de impactar. Es una salida DIRECTA del modulo
+  Lagrangiano: no requiere ninguna definicion de ancho ni ningun criterio.
 
-    En 1 segundo el dron recorre V metros.
-    Area cubierta por segundo   = V * W          [m2/s]
-    Area cubierta por segundo   = V*W/10000      [ha/s]
-    Volumen por segundo         = R * V*W/10000  [L/s]
-    Volumen por minuto          = 60 R V W/10000 [L/min]
+      C_p(x,y,z) = concentracion de liquido por unidad de volumen, por tamano de gota
 
-        Q = 0.006 R V W        con Q en L/min, R en L/ha, V en m/s, W en m
-        W_commanded = Q / (0.006 R V)
-""")
-    R, V, W = 10.0, 10.0, 6.0
-    print(f"  Comprobacion del ejemplo del investigador (R={R:g} L/ha, V={V:g} m/s, W={W:g} m):")
-    print(f"    Q = 0.006 x {R:g} x {V:g} x {W:g} = {caudal(R,V,W):.4f} L/min")
-    print(f"    el investigador da 3.6 L/min -> "
-          f"{'COINCIDE' if abs(caudal(R,V,W)-3.6) < 1e-9 else 'DIFIERE'}")
-
-    print("\n" + "-" * 96)
-    print("2. QUE REVELA LA RELACION INVERTIDA")
-    print("-" * 96)
-    print(f"\n  A R = {R:g} L/ha y V = {V:g} m/s, el ancho implicito segun el caudal real:")
-    print(f"\n  {'Q (L/min)':>11s} {'caso':32s} {'W_implicito (m)':>16s} {'%':>7s}")
-    escenarios = [
-        (3.6, "del ejemplo del investigador"),
-        (8.0, "uso tipico estimado"),
-        (16.0, "caudal T50 a 2 boquillas (referencia)"),
-        (Q_2BOQ_LMIN, "T100 maximo con 2 boquillas"),
-        (Q_4BOQ_LMIN, "T100 maximo con 4 boquillas"),
-    ]
-    for Q, caso in escenarios:
-        w = ancho_implicito(Q, R, V)
-        marca = ""
-        if not (DJI_W_EFECTIVO_M[0] <= w <= DJI_W_EFECTIVO_M[1]):
-            marca = "  <- FUERA del rango DJI 5-13 m"
-        print(f"  {Q:11.1f} {caso:32s} {w:16.2f} {marca}")
-
-    print(f"""
-  LECTURA: los caudales MAXIMOS del T100 (30 y 40 L/min) implican anchos de 50 y 66 m a
-  R={R:g} L/ha y V={V:g} m/s — absurdos. Eso NO significa que el dato este mal: significa
-  que el maximo de bomba se usa con OTRAS combinaciones de (R, V).
-
-  La relacion invertida sirve para RECONSTRUIR la operacion real a partir de telemetria:
-  con Q y V reales, y la R configurada, se obtiene el ancho que el CONTROLADOR esta asumiendo.
-  Eso es W_commanded, y es DISTINTO de lo que las gotas hacen.
+  Aporta: la forma del abanico, el reparto por diametros, y donde esta realmente el
+  liquido antes de que el suelo lo intercepte.
 """)
 
     print("-" * 96)
-    print("3. DE CAUDAL A PARTICULAS (lo que SI determina el caudal)")
+    print("NIVEL 2 — DEPOSICION DE UNA PASADA:  D(y) o D(x,y)")
     print("-" * 96)
     print("""
-  El caudal NO determina el ancho. Determina CUANTO liquido se inyecta:
+  Lo que toca el suelo en UNA pasada. Sale de integrar los impactos en el plano receptor.
 
-      m_dot = rho_L * Q[L/min]/60000        [kg/s]
-      m_gota = rho_L * pi d^3 / 6           [kg]
-      N_dot = m_dot / m_gota                [gotas/s]
-
-  Y con una DISTRIBUCION de diametros, cada bin j lleva su fraccion de masa:
-
-      N_j = (m_dot * f_j * dt) / (rho_L pi d_j^3 / 6)
-
-  Cada particula Lagrangiana representa MUCHAS gotas mediante su peso estadistico:
-  no hace falta simular millones de gotas.
-""")
-    print(f"  {'d (um)':>8s} {'m_gota (kg)':>14s} {'N/s a 30 L/min':>16s} {'N/s a 40 L/min':>16s}")
-    for d in (50, 100, 150, 200, 300, 500):
-        a = masa_por_bin(Q_2BOQ_LMIN, d)
-        b = masa_por_bin(Q_4BOQ_LMIN, d)
-        print(f"  {d:8d} {a['m_gota_kg']:14.3e} {a['gotas_por_s']:16.3e} {b['gotas_por_s']:16.3e}")
-    print(f"""
-  A d50 = {D50_UM:.0f} um y 30 L/min salen ~{masa_por_bin(Q_2BOQ_LMIN, D50_UM)['gotas_por_s']:.2e} gotas/s.
-  Inyectar eso literalmente es imposible; se usa peso estadistico (parcelas).
+  Sin este nivel no se puede definir el ancho efectivo: el ancho NO es una propiedad de
+  una pasada, es una propiedad del SOLAPE de pasadas.
 """)
 
     print("-" * 96)
-    print("4. LOS CUATRO ANCHOS")
-    print("-" * 96)
-    print(f"""
-  | ancho        | que es                                  | como se obtiene            | estado |
-  |--------------|-----------------------------------------|----------------------------|--------|
-  | W_commanded  | el que el CAUDAL implica                | Q_real / (0.006 R V)       | derivable, requiere telemetria |
-  | W_DJI        | el configurado en el controlador Agras  | lectura de la app/pantalla | P: {DJI_W_EFECTIVO_M[0]:.0f}-{DJI_W_EFECTIVO_M[1]:.0f} m (y "depende de la escena") |
-  | W_aero       | abanico fisico de los atomizadores      | Lagrangiano SIN plano receptor | pendiente: requiere CFD |
-  | W_deposition | ancho efectivo real                     | derivado de D(x,y)         | OBJETIVO CIENTIFICO |
-
-  LA DIFERENCIA ENTRE LOS TRES PRIMEROS Y EL CUARTO es, probablemente, uno de los
-  resultados mas valiosos de la investigacion: cuantifica cuanto se desvia la practica
-  operativa (caudal y configuracion) de la fisica real de deposicion.
-
-  DJI declara {DJI_W_EFECTIVO_M[0]:.0f}-{DJI_W_EFECTIVO_M[1]:.0f} m para el T100 y aclara explicitamente que el ancho efectivo
-  DEPENDE DE LA ESCENA REAL DE TRABAJO (P). Es decir: el propio fabricante reconoce que
-  no es un numero unico. Medirlo es el aporte.
-""")
-
-    print("-" * 96)
-    print("5. TRAMPA DEL DOE QUE HAY QUE EVITAR")
+    print("NIVEL 3 — ANCHO EFECTIVO:  W_eff")
     print("-" * 96)
     print("""
-  NO meter simultaneamente como variables independientes:
+  DEFINICION (la del objetivo cientifico):
 
-      tasa (L/ha), caudal (L/min), velocidad (m/s), ancho (m)
+      W_eff = max S  tal que  CV( sum_k D(y - kS) )  <=  CV_lim
 
-  porque estan ligados por Q = 0.006 R V W. Seria un DOE REDUNDANTE: al fijar tres, el
-  cuarto queda determinado.
+  Es decir: el mayor interlineado que mantiene la uniformidad dentro del criterio.
 
-  Lo mismo con: tamano de gota configurado, RPM del atomizador y caudal. Si el controlador
-  modifica la RPM del disco para conseguir cierto tamano de gota, NO son tres variables
-  independientes.
-
-  => Hay que saber QUE MANDA el Agras y que RESULTA de ese comando. La telemetria real
-     lo revela: la configuracion de gota es un COMANDO, la RPM del atomizador es su
-     CONSECUENCIA.
+  >>> El modelo NO SABE cuanto dice DJI. No entra en la definicion.
 """)
+
+    # --- verificacion de la maquinaria de W_eff con perfiles SINTETICOS -------------
+    print("-" * 96)
+    print("VERIFICACION DE LA MAQUINARIA (perfiles SINTETICOS, no resultados)")
+    print("-" * 96)
+    print("""
+  ADVERTENCIA: los perfiles siguientes son gaussianos INVENTADOS. Se usan unicamente para
+  comprobar que el calculo de CV y de W_eff funciona. NO son resultados de nada.
+""")
+    dy = 0.05
+    print(f"  CV_limite = {CV_LIMITE_PCT:.0f} %")
+    print(f"\n  {'sigma_y (m)':>12s} {'W_eff (m)':>10s} {'CV en W_eff':>12s} {'S+0.1 m':>9s} {'CV':>8s}")
+    for sigma in (0.3, 0.5, 0.8, 1.0, 1.5):
+        D = perfil_gaussiano(sigma, dy)
+        r = ancho_efectivo(D, dy)
+        # comprobar que justo por encima del W_eff el CV se sale
+        if not math.isnan(r["W_eff_m"]):
+            c_next = cv_solape(D, r["W_eff_m"] + 0.1, dy)
+            print(f"  {sigma:12.2f} {r['W_eff_m']:10.1f} {r['CV_en_W_eff_pct']:12.2f} "
+                  f"{r['W_eff_m']+0.1:9.1f} {c_next:8.2f}")
+        else:
+            print(f"  {sigma:12.2f} {'--':>10s} {'--':>12s}")
+    print("""
+  LECTURA: W_eff CRECE con sigma_y, y justo por encima de W_eff el CV se sale del limite.
+  La maquinaria es correcta: define el ancho por el CRITERIO DE UNIFORMIDAD, no por una
+  formula de caudal.
+""")
+
+    # --- W_equiv: lo que SI se puede calcular ahora ---------------------------------
+    print("-" * 96)
+    print("MAGNITUD CONTABLE — W_equiv  (NO es el ancho fisico)")
+    print("-" * 96)
+    print("""
+  Derivacion de la relacion caudal-ancho:
+
+      En 1 s el dron recorre V m -> cubre V*W m2 = V*W/10000 ha
+      Volumen por minuto = 60 R V W/10000  =>  Q = 0.006 R V W
+      Invertida:  W_equiv = Q / (0.006 R V)
+""")
+    R, V = 10.0, 10.0
+    print(f"  Verificacion con el ejemplo del investigador (R={R:g}, V={V:g}, W=6):")
+    print(f"    Q = 0.006 x {R:g} x {V:g} x 6 = {Q_de_RVW(R,V,6):.4f} L/min  "
+          f"({'COINCIDE' if abs(Q_de_RVW(R,V,6)-3.6)<1e-9 else 'DIFIERE'} con 3.6)")
+    print(f"\n  {'Q (L/min)':>11s} {'caso':34s} {'W_equiv (m)':>12s}")
+    for Q, caso in ((3.6, "ejemplo del investigador"), (8.0, "uso tipico estimado"),
+                    (16.0, "caudal T50 (referencia)"),
+                    (Q_2BOQ_LMIN, "T100 maximo 2 boquillas"),
+                    (Q_4BOQ_LMIN, "T100 maximo 4 boquillas")):
+        print(f"  {Q:11.1f} {caso:34s} {W_equiv(Q,R,V):12.2f}")
+    print(f"""
+  Estos W_equiv son CONTABLES, no fisicos. A R={R:g} L/ha y V={V:g} m/s los caudales maximos
+  implican anchos absurdos, lo que revela que la operacion real usa otras combinaciones
+  de (R, V). La telemetria lo dira.
+
+  CONTRASTE PREVISTO: W_equiv (contable)  vs  W_eff (fisico, del Lagrangiano).
+  La diferencia entre ambos es un resultado; no un error de ninguno de los dos.
+""")
+
+    print("-" * 96)
+    print("REFERENCIA EXTERNA — fuera del modelo cientifico")
+    print("-" * 96)
+    print(f"""
+  DJI declara {DJI_RANGO_CATALOGO_M[0]:.0f}-{DJI_RANGO_CATALOGO_M[1]:.0f} m de ancho efectivo para el T100, con la advertencia de que
+  depende de la escena real de trabajo.
+
+  Ese numero NO entra en el modelo: no se usa como entrada, ni como objetivo, ni como
+  criterio de validacion. Se cita como contexto de la practica industrial y nada mas.
+  El modelo obtiene W_eff de D(y) y del criterio de CV, sin saber cuanto dice el folleto.
+""")
+
     print("=" * 96)
-    print("Modelo analitico derivado. No usa resultados de CFD.")
+    print("Modelo analitico. Los perfiles usados para verificar W_eff son SINTETICOS.")
     print("=" * 96)
     return 0
 

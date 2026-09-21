@@ -1,53 +1,49 @@
-telemetria confirmada: RPM de motor individual desbloquea GATE 1B y resuelve el reparto coaxial
+fix(modelo): retira W_DJI, corrige V_exit != V_tip y un error de factor 500 en tau_p
 
-RESPUESTA DEL INVESTIGADOR a las tres preguntas. La primera es decisiva.
+Tres correcciones, dos pedidas por el investigador y una encontrada al verificar.
 
-TELEMETRIA DISPONIBLE (confirmado):
-  - RPM de motor individual (los 8)      <- DECISIVO
-  - RPM del atomizador centrifugo
-  - RPM de las bombas
-  - Caudal real Q
-  - Actitud theta/phi: POR CONFIRMAR (el investigador lo revisa)
+1. W_commanded -> W_equiv
+   El nombre "commanded" sugeria que el ancho es una orden del operador. No lo
+   es: es una magnitud contable que cierra el balance de masa. El ancho efectivo
+   W_eff SALE de D(x,y). Renombrado en Metodologia de calculo (2.1, 6.3) y en
+   diseno_experimental (8). El nombre viejo solo sobrevive en las notas que
+   registran el cambio.
 
-CONSECUENCIAS:
+2. V_exit != V_tip  (retirada de W_DJI del modelo cientifico)
+   Se afirmaba que a 10000 rpm "la velocidad de lanzamiento es 52.4 m/s".
+   52.4 m/s es la velocidad PERIFERICA del disco, no la de la gota.
+   Usar V_tip como condicion inicial habria sido sustituir una suposicion vieja
+   por otra nueva con el mismo defecto. Ahora V_tip se conserva SOLO como cota
+   superior y escala caracteristica, y el dato faltante se trata como tal: se
+   declara k = V_exit/V_tip y se barre k en [0.3, 1.0].
+   Retirado el bloque que afirmaba que "la velocidad de lanzamiento domina".
+   Lo que decide el destino de la gota es |V_rel| = |V_exit + V_UAV - u_aire|,
+   y no puede afirmarse cual termino domina sin conocer V_exit.
 
-1. GATE 1B PASA DE "CALCULAR" A "MEDIR".
-   El RPM real de cada motor cierra GATE 1B directamente, sin deducirlo del empuje. Eso
-   elimina la rama de RPM del camino critico del CFD principal, que era justo el error
-   circular que se elimino en la version 2.0.
+3. tau_p estaba mal por un factor ~500  (error propio)
+   Al verificar que script y documento dijeran lo mismo, no coincidian.
+   El script tenia razon: tau_p = rho_d d^2 / (18 mu_aire).
+     d = 100 um -> 2.98e-2 s   (el documento decia 6.0e-5 s)
+     d = 500 um -> 7.44e-1 s   (el documento decia 1.5e-3 s)
+   Y no era solo una cifra: la conclusion que sostenia era falsa en su razon.
+   Se afirmaba que tau_p es "3-5 ordenes menor que el tiempo de vuelo" =>
+   acoplamiento instantaneo. Para d = 500 um, tau_p ~ 0.74 s es del MISMO ORDEN
+   que el vuelo: esa gota llega al suelo SIN alcanzar su velocidad terminal
+   (~55 % en 0.6 s). Lo instantaneo solo vale para d <= 200 um.
+   La conclusion de fondo sobrevive pero por la razon opuesta: cada diametro
+   tiene su propia historia de aceleracion, y por eso hace falta el Lagrangiano.
 
-2. EL REPARTO COAXIAL s_i DEJA DE SER PARAMETRO CIEGO (nueva seccion 4.4).
-   Con RPM_sup,i y RPM_inf,i medidas por separado:
-       s_i = T_sup,i / (T_sup,i + T_inf,i)     medido, no supuesto
-   El barrido 0.5/0.6/0.7 NO se usa si hay telemetria.
-   AVISO declarado: las RPM dan la RELACION entre los dos rotores del par, que es la parte
-   que no se podia deducir. Pero el empuje ABSOLUTO sigue necesitando la curva T(RPM).
+Alcance de la cota, declarado: la comparacion de 6.6 es contra V_tip por ser la
+unica escala disponible. Como V_exit <= V_tip el cociente real es aun mas
+desfavorable, asi que esa conclusion SE REFUERZA al corregir V_exit. tau_p en
+cambio no depende de V_exit (solo de d y mu_aire) y no cambia. Se separo una
+cosa de la otra en lugar de mezclarlas.
 
-3. LO QUE LA TELEMETRIA NO RESUELVE.
-   Si la actitud NO esta disponible, entonces Cd, area frontal y arrastre vertical SIGUEN
-   siendo suposiciones (clase E). Y deducir la actitud invirtiendo sum F = 0 NO valida el
-   modelo: lo asume. Hay que declararlo como limitacion y hacer sensibilidad sobre Cd*A.
+Verificacion: python scripts/lagrangian_injection.py corre completo y muestra
+V_tip rotulada como cota, el barrido k con componentes radial/axial a 15/30/45
+grados, la tabla tau_p corregida y el aviso de que el vector [0,0,-1] sigue
+ABIERTO (un disco centrifugo expulsa radialmente; [0,0,-1] es el eje de giro).
 
-4. TRES PREGUNTAS NUEVAS que abre la telemetria, y son de las interesantes:
-   a) Que MANDA el Agras y que RESULTA del comando. Si el operador fija tamano de gota, la
-      RPM del atomizador es CONSECUENCIA. Si fija tasa L/ha, el caudal se calcula solo.
-      Eso determina que variables del DOE son independientes y cuales derivadas.
-   b) Como se reparte el empuje entre rotor superior e inferior DURANTE el vuelo, y si el
-      reparto CAMBIA CON LA VELOCIDAD. Ningun modelo lo predice hoy.
-   c) Si Q_calculado = 0.006 R V W coincide con Q_telemetria. Si coincide, se valida nuestra
-      interpretacion de las variables operacionales. Si NO, el que esta mal es el modelo.
-
-ACTUALIZADO:
-  - Metodologia de calculo.md v2.1:
-      nueva seccion 2.1 con la tabla de telemetria disponible
-      nueva seccion 4.4 "la telemetria resuelve esta incognita"
-      tabla de gates: 1B pasa de amarillo a "desbloqueado por telemetria"
-      seccion 11 reordenada: necesidades 2 y 3 cubiertas por telemetria;
-      nuevas necesidades T_0/RH_0/P_0, rangos de V y H de aplicacion, curva T(RPM),
-      geometria radial de pala, CG y centro de presion, y PERMISO de uso de telemetria
-  - geometry/diseno_experimental.md: nueva seccion 7.0 de disponibilidad confirmada.
-
-PENDIENTE DEL INVESTIGADOR (respuestas a las otras dos preguntas y confirmaciones):
-  - T_0, RH_0, P_0 de la campana
-  - rangos de V y H DE APLICACION (los 1-20 m/s son cotas, no operacion tipica)
-  - si la actitud esta en la telemetria
+Estado: PHASE_01_SPECIFICATIONS. Siguiente: fuente de momento prescrita,
+imponer integral_{V_i} f dV = T_i independiente de U_0 y demostrarlo
+numericamente rotor por rotor en CFD-0.

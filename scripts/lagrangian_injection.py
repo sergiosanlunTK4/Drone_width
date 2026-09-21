@@ -70,22 +70,31 @@ D10_UM, D90_UM = 50.0, 300.0
 def velocidad_lanzamiento(rpm: float, d_disco_mm: float = D_ATOMIZADOR_MM) -> dict:
     """Velocidad de lanzamiento del disco centrifugo.
 
-    El liquido se acelera en el disco y sale por el borde. La velocidad del borde es:
+    V_tip = omega * R_disco = 2 pi rpm/60 * (d_disco/2)
 
-        V_borde = omega * R_disco = 2 pi rpm/60 * (d_disco/2)
+    ADVERTENCIA DE USO (correccion de criterio):
+    V_tip es una ESCALA CARACTERISTICA y una COTA SUPERIOR. NO es la velocidad inicial
+    de la gota. Confundirlas es un error de modelo, no una simplificacion aceptable:
 
-    PERO la gota NO sale a la velocidad del borde: se desprende y la componente radial
-    efectiva es MENOR. La fisica real del desprendimiento en disco centrifugo es compleja
-    (film, ligamentos, atomizacion secundaria). Aqui se da la COTA SUPERIOR y se declara
-    el coeficiente de desprendimiento como parametro.
+      - V_tip es la velocidad tangencial del borde del disco. La gota se desprende del
+        film/ligamento a una velocidad MENOR, con componente radial, y sufre atomizacion
+        secundaria por arrastre con el aire en reposo relativo.
+      - La velocidad inicial real de la gota es V_salida = f(rpm_atom, Q, d, geometria del
+        disco y de la corona), y esa funcion NO esta caracterizada para los atomizadores
+        Agras. Es un dato faltante, no un parametro libre a ajustar.
+      - Si se usa V_tip como condicion inicial, se sobreestima sistematicamente el alcance
+        radial inicial del abanico y se subestima el tiempo de acoplamiento de la gota al
+        aire incidente.
 
-    >>> El valor de V_borde es una cota SUPERIOR, no la velocidad real de la gota.
+    Uso permitido de V_tip en este modelo: cota superior de |V_rel|(t=0) y escala de
+    comparacion con la velocidad terminal y con la velocidad del UAV. Nunca como valor de
+    inyeccion. La inyeccion se declara con V_salida explicito y su clase de fuente.
     """
     R = d_disco_mm / 2000.0
     omega = rpm * 2 * math.pi / 60.0
     return {"rpm": rpm, "omega_rad_s": omega, "R_disco_m": R,
-            "V_borde_ms": omega * R,
-            "nota": "cota superior; la velocidad efectiva de salida es menor y es parametro"}
+            "V_tip_ms": omega * R,
+            "nota": "escala caracteristica y cota superior; NO es la velocidad de salida"}
 
 
 def abanico_inicial(semiangulo_deg: float, V_salida: float) -> dict:
@@ -182,21 +191,27 @@ def main() -> int:
     else:
         print("  [FALTA el modelo; usa los valores del README]")
 
-    # --- 2. velocidad de lanzamiento -------------------------------------------------
+    # --- 2. velocidad caracteristica del disco ---------------------------------------
     print("\n" + "-" * 100)
-    print("2. VELOCIDAD DE LANZAMIENTO DEL DISCO CENTRIFUGO")
+    print("2. VELOCIDAD CARACTERISTICA DEL DISCO (V_tip) - COTA, NO CONDICION INICIAL")
     print("-" * 100)
     for rpm in (5000, 8000, 10000, RPM_ATOM_MAX):
         v = velocidad_lanzamiento(rpm)
         print(f"  {rpm:6.0f} rpm -> omega = {v['omega_rad_s']:7.2f} rad/s · "
-              f"V_borde = {v['V_borde_ms']:6.2f} m/s")
+              f"V_tip = {v['V_tip_ms']:6.2f} m/s")
     print(f"""
   {velocidad_lanzamiento(10000)['nota']}
 
-  COMPARACION CRITICA: V_borde ~ 52 m/s a 10000 rpm, mientras la velocidad del UAV es
-  {a.V} m/s. La velocidad de lanzamiento DOMINA sobre la del dron en la fase inicial.
-  => La condicion inicial de la gota es esencialmente el ABANICO DEL ATOMIZADOR, no la
-     velocidad del UAV. Esto es lo contrario de lo que asume un modelo "caudal -> ancho".
+  ADVERTENCIA: V_tip NO es la velocidad inicial de la gota.
+  V_tip ~ 52 m/s a 10000 rpm es una ESCALA CARACTERISTICA y una COTA SUPERIOR del borde
+  del disco. La velocidad de salida real V_salida = f(rpm_atom, Q, d, geometria) es menor
+  y NO esta caracterizada para los atomizadores Agras: es un dato faltante.
+
+  Consecuencia para el modelo: lo que decide el destino de la gota es su velocidad
+  RELATIVA al aire incidente, |V_rel| = |V_salida + V_UAV - u_aire|. Ni V_tip ni V_UAV
+  por separado la determinan, y no puede afirmarse cual "domina" sin conocer V_salida.
+  Un modelo "caudal -> ancho" ignora ambos terminos y por eso no es defendible; sustituir
+  V_salida por V_tip comete el error simetrico.
 """)
 
     # --- 3. condicion inicial relativa al aire ---------------------------------------
@@ -204,20 +219,29 @@ def main() -> int:
     print("3. CONDICION INICIAL (relativa al AIRE, no al suelo)")
     print("-" * 100)
     vl = velocidad_lanzamiento(a.rpm_atom)
-    for semi in (15.0, 30.0, 45.0):
-        ab = abanico_inicial(semi, vl["V_borde_ms"])
-        print(f"  semiangulo {semi:4.0f} deg -> V_radial = {ab['V_radial_ms']:6.2f} m/s · "
-              f"V_axial = {ab['V_axial_ms']:6.2f} m/s")
+    print(f"  V_tip = {vl['V_tip_ms']:.2f} m/s  ->  se barre V_salida = k*V_tip, k = 0.3 .. 1.0")
+    for k in (0.30, 0.60, 1.00):
+        V_sal = k * vl["V_tip_ms"]
+        fila = []
+        for semi in (15.0, 30.0, 45.0):
+            ab = abanico_inicial(semi, V_sal)
+            fila.append(f"{semi:2.0f}deg: Vr={ab['V_radial_ms']:6.2f} Va={ab['V_axial_ms']:6.2f}")
+        print(f"  k={k:4.2f}  V_salida={V_sal:6.2f} m/s | " + " | ".join(fila))
     print(f"""
-      V_gota,0 = V_UAV + V_atomizador
+      V_gota,0 = V_UAV + V_atomizador        (V_atomizador = V_salida, NO V_tip)
       V_relativa_al_aire = V_gota,0 - U(x_atomizador)
 
-  El semiangulo del abanico NO esta medido: es parametro de sensibilidad.
+  V_tip NO es la velocidad de salida: k es la fraccion de desprendimiento del borde y NO
+  esta medida para los discos Agras. La tabla anterior es por eso un BARRIDO DE SENSIBILIDAD
+  sobre un dato faltante, no un resultado.
+
+  El semiangulo del abanico tampoco esta medido: es parametro de sensibilidad.
   El vector de inyeccion declarado en el modelo es [0,0,-1] (axial hacia abajo), pero un
   disco centrifugo expulsa RADIALMENTE en el plano del disco. Hay que reconciliar:
       - si el disco gira en el plano horizontal del dron -> expulsion horizontal y la
         gravedad + downwash la llevan al suelo;
       - el vector [0,0,-1] seria el eje de giro, no la direccion de salida.
+  [ABIERTO] Mientras esto no se cierre, la direccion inicial de la gota es clase D.
 """)
 
     # --- 4. de caudal a particulas ---------------------------------------------------
@@ -243,17 +267,28 @@ def main() -> int:
     print("-" * 100)
     print("5. PROPIEDADES DE LA GOTA POR TAMANO (que determinan DONDE acaba)")
     print("-" * 100)
-    print(f"\n  {'d (um)':>8s} {'tau_p (s)':>11s} {'v_term (m/s)':>13s} {'v_term/v_borde':>15s}")
+    print(f"\n  {'d (um)':>8s} {'tau_p (s)':>11s} {'v_term (m/s)':>13s} {'v_term/V_tip':>13s}")
     for d in (50, 100, 150, 200, 300, 500):
         tau = tiempo_respuesta(d)
         vt = velocidad_terminal(d)
-        print(f"  {d:8d} {tau:11.5f} {vt:13.3f} {vt/vl['V_borde_ms']:15.4f}")
+        print(f"  {d:8d} {tau:11.5f} {vt:13.3f} {vt/vl['V_tip_ms']:13.4f}")
     print(f"""
-  LECTURA: tau_p (tiempo de respuesta) va de 1e-5 a 1e-3 s, MUCHO menor que el tiempo de
-  vuelo (del orden de 1 s). Y v_terminal es 10-30 veces MENOR que v_borde.
-  => La gota se desacelera rapidamente hacia su velocidad terminal y despues cae.
-     El campo de aire (downwash) actua sobre ella durante toda la caida.
-     Eso es exactamente lo que hay que resolver con el Lagrangiano: no se puede atajar.
+  LECTURA (corregida; la version anterior tenia un error de factor ~500 en tau_p):
+    tau_p = rho_d d^2 / (18 mu_aire)  ->  va de 7.4e-3 s (50 um) a 7.4e-1 s (500 um).
+    NO es "despreciable frente al vuelo": para d = 500 um, tau_p ~ 0.74 s es del MISMO ORDEN
+    que el tiempo de vuelo (~0.6-1 s desde 2.55 m). Esa gota llega al suelo sin haber
+    alcanzado su velocidad terminal (alcanza ~55 % en 0.6 s).
+    Para d <= 200 um el acoplamiento si es practicamente instantaneo (tau_p <= 0.12 s).
+
+  CONCLUSION ROBUSTA: el atomizador lanza la gota a una velocidad 26-770 veces mayor que su
+  velocidad terminal de caida. Es decir el destino de la gota lo fija el CAMPO DE AIRE
+  (downwash + viento + arrastre), no la caida libre, y CADA DIAMETRO tiene su propia historia
+  de aceleracion. Por eso hay que resolverlo con el Lagrangiano y no con una formula.
+
+  NOTA sobre el dato faltante: la comparacion es contra V_tip por ser la unica escala de
+  velocidad del atomizador disponible. Como V_exit <= V_tip, el cociente real es todavia
+  MAS desfavorable, asi que esta conclusion se refuerza al corregir V_exit, no se debilita.
+  (tau_p, en cambio, no depende de V_exit: solo de d y mu_aire.)
 """)
 
     print("-" * 100)
@@ -269,10 +304,11 @@ def main() -> int:
 
   PARAMETRO (barrido, no supuesto):
     [~] semiangulo del abanico (15/30/45 grados)
-    [~] coeficiente de desprendimiento (fraccion de V_borde)
+    [~] fraccion de desprendimiento k = V_salida/V_tip (0.3 .. 1.0)
     [~] parametro q de Rosin-Rammler (2.0)
 
   DESCONOCIDO (clase D):
+    [ ] V_salida real de la gota = f(rpm_atom, Q, d, geometria)  <- dato faltante clave
     [ ] RPM real del atomizador en operacion (el 14000 es el MAXIMO)
     [ ] espectro MEDIDO (d10/d50/d90 reales, no el recomendado del modelo)
     [ ] direccion real de salida respecto al disco

@@ -840,3 +840,87 @@ datos, aplicada al software.
 - **Estado:** `PHASE_01_SPECIFICATIONS`. **CFD-0 es ejecutable hoy desde tu terminal.**
 
 ---
+
+### Entry 018 | Retiro de `W_DJI`, `V_exit` ≠ `V_tip`, y un error de factor 500 en `τ_p`
+- **Date:** 2026-09-19
+- **Disparador:** instrucción del investigador: entregar el trabajo de **fuente de momento
+  prescrita** (*prescribed momentum source*) con dos restricciones previas — (1) retirar `W_DJI` del
+  modelo científico y renombrar `W_commanded` → `W_equiv`; (2) **no** usar `V_tip = ωr` como
+  velocidad inicial de la gota, dejarla sólo como cota/escala característica.
+
+**1. `W_equiv` — por qué el nombre importa**
+
+`W_commanded` sugería que el ancho es una *orden* del operador. No lo es: es una **magnitud
+contable** que cierra el balance de masa del pulverizador, y el ancho real `W_eff` **sale** de
+`D(x,y)`, no de la configuración. Renombrado en `Metodología de cálculo.md` (§6.3, §2.1) y en
+`geometry/diseno_experimental.md` (§8). El nombre viejo sobrevive únicamente en las notas que
+registran el cambio, que es lo correcto: el lector tiene que poder rastrear la decisión.
+
+**2. `V_exit` ≠ `V_tip` — se sustituyó una suposición por otra y había que pararlo**
+
+En `Metodología de cálculo.md` §6.4 se afirmaba *"a 10 000 rpm la velocidad de lanzamiento es
+52.4 m/s"*. **52.4 m/s es la velocidad periférica del disco**, no la de la gota:
+
+```text
+V_tip  = ω · r_disco = 2π(10000/60)(0.05) = 52.36 m/s      ← cota / escala característica
+V_exit = f(RPM_atom, Q, d, geometría)                       ← NO caracterizada (clase D)
+```
+
+Usar `V_tip` como condición inicial habría sido repetir el error que el proyecto combate: cambiar
+una suposición vieja por una nueva con el mismo defecto. Ahora `V_tip` se conserva **sólo** como cota
+superior y escala, y el dato faltante se trata como tal: se declara una fracción de desprendimiento
+`k = V_exit/V_tip` y se **barre** `k ∈ [0.3, 1.0]`, exhibiendo cuánto depende el modelo de un dato
+que no se tiene. `k = 1.0` reproduce el error retirado y se incluye como cota, no como caso base.
+
+Aplicado en `Metodología de cálculo.md` §6.4 y en `scripts/lagrangian_injection.py`: la función
+`velocidad_lanzamiento()` devuelve `V_tip_ms` (antes `V_borde_ms`), y el bloque interpretativo que
+afirmaba que *"la velocidad de lanzamiento domina sobre la del dron"* fue **retirado**. Lo que decide
+el destino de la gota es `|V_rel| = |V_exit + V_UAV − u_aire|`, y **no puede afirmarse cuál término
+domina sin conocer `V_exit`**.
+
+**3. Error propio, encontrado al verificar lo anterior: `τ_p` estaba mal por un factor ~500**
+
+Al comprobar que el script y el documento dijeran lo mismo, la tabla §6.6 de `Metodología de
+cálculo.md` no coincidía con la salida real de `scripts/lagrangian_injection.py`. **El script tenía
+razón:**
+
+```text
+τ_p = ρ_d d² / (18 μ_aire)      d = 100 µm  →  1000 · (1e-4)² / (18 · 1.86e-5) = 2.98e-2 s
+```
+
+| d (µm) | τ_p documentado (mal) | τ_p real |
+|---|---|---|
+| 100 | 6.0×10⁻⁵ s | **2.98×10⁻² s** |
+| 500 | 1.5×10⁻³ s | **7.44×10⁻¹ s** |
+
+Y no era sólo una cifra: **la conclusión que sostenía era falsa en su razón**. Se afirmaba que `τ_p`
+es "3–5 órdenes de magnitud menor que el tiempo de vuelo (~1 s)" ⇒ acoplamiento instantáneo. Para
+`d = 500 µm`, `τ_p ≈ 0.74 s` es del **mismo orden** que el tiempo de vuelo: esa gota **llega al suelo
+sin alcanzar su velocidad terminal** (alcanza ~55 % en 0.6 s). El acoplamiento instantáneo sólo vale
+para `d ≲ 200 µm`.
+
+La conclusión de fondo **sobrevive, pero por la razón opuesta**: el destino de la gota lo fija el
+campo de aire porque el atomizador la lanza 26–770 veces más rápido que su velocidad terminal de
+caída, y **cada diámetro tiene su propia historia de aceleración** — por eso hace falta el
+Lagrangiano. Corregida la tabla y la interpretación en §6.6 y en el script, con la corrección
+exhibida en el propio código para que no se reintroduzca.
+
+**4. Alcance de la cota, declarado explícitamente**
+
+La §6.6 se compara contra `V_tip` por ser la única escala de velocidad del atomizador disponible.
+Como `V_exit ≤ V_tip`, el cociente real `v_terminal / V_exit` es **aún más desfavorable**: esa
+conclusión **se refuerza** al corregir `V_exit`. En cambio `τ_p` **no** depende de `V_exit` (sólo de
+`d` y `μ_aire`) y no cambia. Se separó una cosa de la otra en lugar de mezclarlas.
+
+**5. Verificación**
+
+`python scripts/lagrangian_injection.py` corre completo y muestra: `V_tip` rotulada como cota, el
+barrido `k = 0.3/0.6/1.0` con sus componentes radial y axial a 15/30/45°, la tabla `τ_p` corregida y
+el aviso de que el vector `[0,0,−1]` sigue **abierto** (un disco centrífugo expulsa radialmente;
+`[0,0,−1]` es el eje de giro, no la dirección de salida).
+
+- **Estado:** `PHASE_01_SPECIFICATIONS`. Siguiente: **fuente de momento prescrita** — imponer
+  `∫_{V_i} f dV = T_i` independiente de `U₀`, y demostrar numéricamente rotor por rotor en CFD-0 que
+  la fuerza integrada iguala el empuje prescrito.
+
+---

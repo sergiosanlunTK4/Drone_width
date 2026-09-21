@@ -166,7 +166,7 @@ m_líquido ∈ [0, m_tanque]   SUJETO A:   m_seca + m_batería + m_líquido  ≤
 | **T25P** | 1–20 | 1.5–6 | 50–500 | 0–20 | 53 |
 | **T55** | 1–20 | 1.5–6 | 50–500 | 0–50 | 95 / 99 |
 | **T70P** | 1–20 | 1.5–6 | 50–500 | **0–70 (solo DB2160)** | 126 |
-| **T100** | 1–20 | 1.5–6 | 50–500 (2 boq.) · **10–500 (4 boq.)** | 0–100 | 175 |
+| **T100** | **4–12 (\*)** | **1.5–4.0 (\*)** | 50–500 (2 boq.) · **10–500 (4 boq.)** | 0–100 | 175 |
 
 > Los rangos de V y H son los **operativos declarados** por el propietario. Los extremos
 > (1 m/s y 20 m/s) deben tratarse como **cotas**, no como puntos de operación típicos.
@@ -198,14 +198,34 @@ columnas al capturar.
 
 | Campo | Disponible | Cierra |
 |---|---|---|
-| **RPM de motor individual** (los 8) | ✅ **sí** | la incógnita del reparto coaxial s_i |
+| **RPM de motor individual** (los 8) | ✅ **sí** | la incógnita del reparto coaxial `s_i` |
 | **RPM del atomizador centrífugo** | ✅ **sí** | comando vs consecuencia del tamaño de gota (§4.2) |
 | **RPM de las bombas** | ✅ **sí** | relación bomba ↔ caudal |
-| **Caudal real Q** | ✅ **sí** | W_commanded y contraste del DOE (§8) |
-| **Actitud θ, φ** | ❓ por confirmar | suposiciones [1] y [3] |
+| **Caudal real `Q`** | ✅ **sí** | `W_equiv` y contraste del DOE (§8) |
+| **Actitud `θ`, `φ`** | ❓ por confirmar | suposiciones [1] y [3] |
 
-> **Esto cambia el DOE:** el RPM de motor individual convierte s_i de **parámetro** en
+> **Esto cambia el DOE:** el RPM de motor individual convierte `s_i` de **parámetro** en
 > **medición**. El barrido 0.5/0.6/0.7 **no se usa** si la telemetría da el reparto real.
+
+### 7.0.1 ⚠ Clase `TLM` (telemetry-recorded) — nueva
+
+**Que un dato *aparezca en telemetría* NO significa que sea una medición independiente.**
+Antes de promoverlo a `M` hay que saber **qué es cada campo**:
+
+| Campo | Pregunta a resolver |
+|---|---|
+| `RPM_motor` | ¿RPM mecánica real **estimada por el ESC**, o un **comando**? |
+| `RPM_atom` | ¿**feedback real** o **setpoint**? |
+| `RPM_pump` | ¿velocidad real, o **porcentaje/comando convertido**? |
+| `Q` | ¿viene de un **caudalímetro**, o lo **calcula DJI** desde RPM/calibración de bomba? |
+| `θ`, `φ` | ¿**estimación de fusión de sensores** (IMU) o derivada de modelo? |
+
+> **Hasta conocer la procedencia del sensor, todo dato de telemetría es clase `TLM`, no `M`.**
+> Es la misma disciplina que se aplicó a `O` (propietario), `S` (visual) y `E` (estimación):
+> distinguir **de dónde viene** un número antes de usarlo.
+>
+> **Esto no resta valor a la telemetría** — el RPM de motor individual sigue siendo el dato que
+> desbloquea GATE 1B y el reparto coaxial. Simplemente obliga a declarar su procedencia.
 
 ### 7.1 Sincronización
 
@@ -226,24 +246,44 @@ Si están disponibles `RPM_rotor`, `RPM_atom`, `RPM_pump`, `Q`, `θ`, `φ`, **`m
 
 ---
 
-## 8. Los cuatro anchos — el resultado científico más prometedor
+## 8. Tres niveles físicos y la magnitud contable
 
-| Ancho | Qué es | Cómo se obtiene | Estado |
+### 8.1 Los tres niveles (sustituyen a los "cuatro anchos")
+
+```
+PLUMA  ≠  DEPOSICIÓN DE UNA PASADA  ≠  ANCHO EFECTIVO
+```
+
+| Nivel | Magnitud | Qué es | Cómo se obtiene |
 |---|---|---|---|
-| **W_commanded** | el que el **caudal** implica | `Q_real / (0.006 R V)` | derivable; requiere telemetría |
-| **W_DJI** | el configurado en el controlador | lectura de pantalla | **P: 5–13 m** (y *"depende de la escena"*) |
-| **W_aero** | abanico físico de los atomizadores | Lagrangiano **sin** plano receptor | pendiente: requiere CFD |
-| **W_deposition** | ancho efectivo real | derivado de **D(x,y)** | **objetivo científico** |
+| **1. PLUMA** | `C_p(x,y,z)` | distribución espacial de gotas **antes de impactar** | salida directa del Lagrangiano |
+| **2. DEPOSICIÓN DE UNA PASADA** | `D(y)` o `D(x,y)` | lo que toca el suelo en **una** pasada | integración de impactos |
+| **3. ANCHO EFECTIVO** | **`W_eff`** | **el mayor interlineado que mantiene la uniformidad** | criterio de solape ↓ |
 
-> **La diferencia entre los tres primeros y el cuarto es, probablemente, uno de los resultados más
-> valiosos de la investigación:** cuantifica cuánto se desvía la práctica operativa (caudal y
-> configuración) de la física real de deposición.
+```
+W_eff = max S  tal que  CV( Σ_k D(y − kS) )  ≤  CV_lim
+```
 
-Y el propio fabricante reconoce que el ancho no es único: DJI declara **5–13 m para el T100** y
-aclara explícitamente que **depende de la escena real de trabajo** ([1]).
+> **El ancho efectivo no es propiedad de una pasada: es propiedad del SOLAPE.**
+> Y el modelo **no sabe** cuánto dice DJI: el rango de catálogo **no entra** en el modelo, ni como
+> entrada, ni como objetivo, ni como criterio de validación.
 
-**Contraste previsto:** `Q_calculado` vs `Q_telemetría`. Si coinciden razonablemente, se valida
-nuestra interpretación de las variables operacionales.
+### 8.2 Magnitud contable: `W_equiv`
+
+| Magnitud | Qué es | Cómo se obtiene | Naturaleza |
+|---|---|---|---|
+| **`W_equiv`** | ancho **equivalente** implícito por Q, R, V | `Q_telemetría / (0.006 R V)` | **contable**, no física |
+| **`W_eff`** | ancho efectivo real | `D(y)` + criterio de CV | **física**, objetivo científico |
+
+> ⚠ **Nomenclatura:** se llamaba `W_commanded`. **Ese nombre afirmaba algo que no tenemos** —que el
+> controlador manda ese ancho—. Se renombra a **`W_equiv`**. Y **`W_DJI` se retira del núcleo
+> metodológico**: el rango de catálogo (5–13 m) no participa en la investigación.
+
+**El contraste `W_equiv` (contable) vs `W_eff` (físico) es un resultado**, no un error de ninguno.
+
+**Contraste complementario previsto:** `Q_calculado` vs `Q_telemetría`. Si coinciden
+razonablemente, se valida nuestra interpretación de las variables operacionales. **Si no, el que
+está mal es el modelo.**
 
 ---
 
@@ -255,7 +295,7 @@ Derivada, no citada:
 En 1 s el dron recorre V m  →  cubre V·W m² = V·W/10000 ha
 Volumen por minuto = 60 R V W / 10000  [L/min]
     ⇒   Q = 0.006 R V W            (Q en L/min, R en L/ha, V en m/s, W en m)
-    ⇒   W_commanded = Q / (0.006 R V)
+    ⇒   W_equiv = Q / (0.006 R V)
 ```
 
 **Verificación con el ejemplo del investigador** (R = 10 L/ha, V = 10 m/s, W = 6 m):
