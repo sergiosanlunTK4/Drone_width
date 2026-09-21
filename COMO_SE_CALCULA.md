@@ -9,27 +9,22 @@
 
 ## 0. Qué es este documento y por qué existe
 
-Este es el **registro único de cómo se hacen las suposiciones** del proyecto. Existe porque el
-investigador lo pidió explícitamente:
-
-> *"quiero que me des el registro de como se hacen esas suposiciones para que valide"*
-
 **La regla del proyecto es una sola:** ningún número entra al cálculo sin dos cosas —
 **(a) su clase de fuente** y **(b) la forma de validarlo**. Un valor sin esas dos cosas no es un
 dato: es una suposición disfrazada, y el proyecto entero se construyó para evitar eso.
 
 ### Clases de fuente
 
-| Clase | Significado | ¿Sirve para el estudio? |
-|---|---|---|
-| **P** | Público oficial (ficha DJI, capturada con hash) | Sí, citando fuente y fecha |
-| **P-A** | DJI Academy (formación de distribuidor) | Sí, anotando la fuente |
-| **S** | Evidencia visual en documento oficial | Solo hechos discretos, nunca dimensiones |
-| **O** | Aportado por el propietario, comunicación directa | Como hipótesis declarada. **Nunca se cita como de DJI** |
-| **M** | Medición con instrumento | **Único origen válido para dimensiones de estudio** |
-| **I** | Inferencia con razonamiento escrito | Hipótesis de trabajo declarada |
-| **E** | Estimación de planificación | Solo para dimensionar el problema |
-| **D** | Desconocido | Se deja `null`. Es parámetro de sensibilidad, no se rellena |
+| Clase   | Significado                                       | ¿Sirve para el estudio?                                     |
+| ------- | ------------------------------------------------- | ----------------------------------------------------------- |
+| **P**   | Público oficial (ficha DJI, capturada con hash)   | Sí, citando fuente y fecha                                  |
+| **P-A** | DJI Academy (formación de distribuidor)           | Sí, anotando la fuente                                      |
+| **S**   | Evidencia visual en documento oficial             | Solo hechos discretos, nunca dimensiones                    |
+| **O**   | Aportado por el propietario, comunicación directa | Como hipótesis declarada. **Nunca se cita como de DJI**     |
+| **M**   | Medición con instrumento                          | **Único origen válido para dimensiones de estudio**         |
+| **I**   | Inferencia con razonamiento escrito               | Hipótesis de trabajo declarada                              |
+| **E**   | Estimación de planificación                       | Solo para dimensionar el problema                           |
+| **D**   | Desconocido                                       | Se deja `null`. Es parámetro de sensibilidad, no se rellena |
 
 ---
 
@@ -49,23 +44,23 @@ FUERZAS  →  ACTITUD  →  REPARTO POR BRAZO  →  REPARTO POR MOTOR  →  EMPU
 
 ### PASO 0 — Entradas, con su clase
 
-| Variable | Valor | Clase | Fuente |
-|---|---|---|---|
-| Masa MTOW | 175.0 kg | **P** | ficha oficial |
-| Masa sin líquido | 73.0 kg | **O** | propietario (con batería, 2 boquillas) |
-| Carga máxima | 100 kg / 100 L | **P** | ficha oficial |
-| Nº de brazos | 4 | **O** | propietario |
-| Motores por brazo | 2 | **O** | propietario (8 motores / 4 brazos) |
-| Empuje máx. por brazo | **804.15 N (82 kg)** | **P-A** | Academy |
-| Diámetro de rotor | 1.5748 m | **P** | 62 in (hélice 6223) |
-| Paso de hélice | 23 in | **P-A** | Academy: 6223 = 62×23 in |
-| Palas por rotor | 2 | **P-A** | Academy + imagen |
-| Separación axial del par | 0.290 m | **M** | modelo T100 medido |
-| Velocidad | 1 – 20 m/s | **O** | propietario |
-| Cuerda media de pala | 0.085 m | **E** | generador del propietario, **sin fuente** |
-| **RPM en hover** | **1850** | **E** | generador del propietario, **sin fuente ni cálculo** |
-| **Cd efectivo** | **0.8** | **E** | ⚠ **suposición mía** |
-| **Área frontal** | **1.729 m²** | **E** | ⚠ **suposición mía** |
+| Variable                 | Valor                | Clase   | Fuente                                               |
+| ------------------------ | -------------------- | ------- | ---------------------------------------------------- |
+| Masa MTOW                | 175.0 kg             | **P**   | ficha oficial                                        |
+| Masa sin líquido         | 73.0 kg              | **O**   | propietario (con batería, 2 boquillas)               |
+| Carga máxima             | 100 kg / 100 L       | **P**   | ficha oficial                                        |
+| Nº de brazos             | 4                    | **P**   | ficha oficial                                        |
+| Motores por brazo        | 2                    | **P**   | ficha oficial                                        |
+| Empuje máx. por brazo    | **804.15 N (82 kg)** | **P-A** | Academy                                              |
+| Diámetro de rotor        | 1.5748 m             | **P**   | 62 in (hélice 6223)                                  |
+| Paso de hélice           | 23 in                | **P-A** | Academy: 6223 = 62×23 in                             |
+| Palas por rotor          | 2                    | **P-A** | Academy + imagen                                     |
+| Separación axial del par | 0.290 m              | **M**   | modelo T100 medido                                   |
+| Velocidad del dron       | 1 – 20 m/s           | **O**   | propietario                                          |
+| Cuerda media de pala     | 0.085 m              | **E**   | generador del propietario, **sin fuente**            |
+| **RPM en hover**         | ****                 | **E**   | generador del propietario, **sin fuente ni cálculo** |
+| **Cd efectivo**          | ****                 | **E**   | ⚠ **suposición mía**                                 |
+| **Área frontal**         | **1.729 m²**         | **E**   | ⚠ **suposición mía**                                 |
 
 ---
 
@@ -102,13 +97,13 @@ Horizontal  :  T · sin θ  =  D(V)
 
 **🔴 Suposiciones de este paso — las que hay que validar:**
 
-| # | Suposición | Impacto | Cómo validarla |
-|---|---|---|---|
+| #     | Suposición                                               | Impacto                                                          | Cómo validarla                                                                    |
+| ----- | -------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | **1** | **Cd y A_frontal constantes**, con los valores que elegí | **θ a 20 m/s varía entre 4.9° y 18.3° según Cd·A — un factor 4** | **Medir la actitud real** (telemetría Agras o vídeo lateral) a varias velocidades |
-| 2 | Vuelo estacionario, sin maniobra | Bajo en operación normal | — |
-| 3 | Empuje perpendicular al disco | Bajo (disco actuador ideal) | — |
-| **4** | **No se incluye el arrastre de las hélices (H-force)** | **Subestima θ**; no cuantificado | Requiere Cd0 de pala, o medición de actitud |
-| 5 | Cd constante con Re | Pequeño en el rango | — |
+| 2     | Vuelo estacionario, sin maniobra                         | Bajo en operación normal                                         | —                                                                                 |
+| 3     | Empuje perpendicular al disco                            | Bajo (disco actuador ideal)                                      | —                                                                                 |
+| **4** | **No se incluye el arrastre de las hélices (H-force)**   | **Subestima θ**; no cuantificado                                 | Requiere Cd0 de pala, o medición de actitud                                       |
+| 5     | Cd constante con Re                                      | Pequeño en el rango                                              | —                                                                                 |
 
 > **Por qué la suposición [1] es la más grave:** `1.729 m²` lo calculé como `3.224 × 0.975 × 0.55`,
 > con un factor 0.55 que **inventé** para "no es un prisma lleno". Y `Cd = 0.8` es un valor típico

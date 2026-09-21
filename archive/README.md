@@ -4,7 +4,7 @@
 negativos también son válidos"*, y el mismo criterio se aplica a los errores). Un documento
 superado se conserva para poder reconstruir **por qué** se cambió de criterio.
 
-**Documento vivo de referencia:** `COMO_SE_CALCULA.md` en la raíz.
+**Documento vivo de referencia:** `Metodología de cálculo.md` en la raíz.
 
 ---
 

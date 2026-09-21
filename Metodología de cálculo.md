@@ -1,0 +1,484 @@
+# Metodología de cálculo
+
+**Proyecto:** aerodinámica, downwash y deposición de pulverización en UAV agrícolas DJI Agras
+(T25P · T55 · T70P · T100)
+**Investigador principal:** Sergio Sánchez Luna
+**Versión:** 2.0 — 2026-09-19
+**Estado:** cuaderno técnico de trabajo, **no** manuscrito. Pendiente de validación experimental.
+
+> **Cambio de nombre:** este documento se llamaba `COMO_SE_CALCULA.md`. Se renombra a
+> **Metodología de cálculo** por indicación del investigador.
+
+> **Correcciones de la versión 2.0.** La v1.0 contenía **un error físico central** y varias
+> conclusiones adelantadas. Se corrigen y se dejan registradas:
+> 1. **Eliminada** la deducción "1850 → 2275 rpm": era **circular y falsa** (§5.3).
+> 2. **Separados** dos coeficientes distintos que se llamaban igual: `Ct_rotor` y `Ct_OF` (§5.4).
+> 3. **Corregido** el significado de `Cp = 0`: es una restricción de un modelo, no una ley (§5.4).
+> 4. **Añadido** el **equilibrio de momentos** al reparto por brazo (§4).
+> 5. **Eliminada** la pregunta "¿comparte motor el par?": la arquitectura se conoce (§4.3).
+> 6. **Rebajado** el desplazamiento de deposición por actitud a *baseline geométrico* (§6).
+> 7. **Renombrados**: "actitud máxima teórica" → *límite estático por magnitud de empuje*;
+>    H8 de "hallazgo" a **hipótesis derivada del modelo de trim**.
+> 8. **Densidad** pasa a ser `ρ = f(P, T, RH)` (§3).
+> 9. Corregido un **bug** en el área proyectada que duplicaba el área (§3.2).
+
+---
+
+## 0. Regla del proyecto
+
+Ningún número entra al cálculo sin **dos cosas**: su **clase de fuente** y su **vía de validación**.
+Un valor sin ambas no es un dato: es una suposición disfrazada.
+
+| Clase | Significado | ¿Sirve para el estudio? |
+|---|---|---|
+| **P** | Público oficial (ficha DJI, capturada con hash) | Sí, citando fuente y fecha |
+| **P-A** | DJI Academy (formación de distribuidor) | Sí, anotando la fuente |
+| **S** | Evidencia visual en documento oficial | Solo hechos discretos |
+| **O** | Aportado por el propietario | Hipótesis declarada. **Nunca se cita como de DJI** |
+| **M** | Medición con instrumento | **Único origen válido para dimensiones de estudio** |
+| **I** | Inferencia con razonamiento escrito | Hipótesis de trabajo |
+| **E** | Estimación de planificación | Solo para dimensionar el problema |
+| **D** | Desconocido | Se deja `null`. Parámetro de sensibilidad, no se rellena |
+
+---
+
+## 1. La cadena científicamente defendible
+
+```
+m, CG, V_aire, ρ
+   ↓
+Σ F = 0        y        Σ M_CG = 0          ← FUERZAS **Y MOMENTOS**
+   ↓
+θ, T_total, T_brazo_i
+   ↓
+s_i  (reparto coaxial: parámetro o medición)
+   ↓
+T_sup,i , T_inf,i
+   ├──→  CFD principal:   T_i  →  FUENTE DE MOMENTO PRESCRITA
+   └──→  RAMA INDEPENDIENTE para RPM:  T_i → curva medida o BEMT → RPM_i
+```
+
+**Punto clave:** **no se necesita el RPM para imponer el empuje** en el CFD principal
+(arquitectura C→B). El RPM pertenece a **GATE 1B** y a la validación de alta fidelidad, y
+**no debe volver a convertirse en bloqueo del actuator disk principal.**
+
+**Implementado en:** `scripts/force_chain.py` (ejecutable y reproducible).
+
+---
+
+## 2. Entradas, con su clase
+
+| Variable | Valor | Clase | Fuente |
+|---|---|---|---|
+| Masa MTOW | 175.0 kg | **P** | ficha oficial |
+| Masa sin líquido | 73.0 kg | **O** | propietario (con batería, 2 boquillas) |
+| Carga máxima | 100 kg / 100 L | **P** | ficha oficial |
+| Nº de brazos | 4 | **O/M** | propietario + modelo medido |
+| **Motores por brazo** | **2** | **O/M** | **4 brazos, 8 motores, 8 rotores** |
+| Empuje máx. por brazo | 804.15 N (82 kg) | **P-A** | Academy |
+| Diámetro de rotor | 1.5748 m | **P** | 62 in (hélice 6223) |
+| Separación axial del par | 0.290 m | **M** | modelo T100 medido |
+| Velocidad | 1 – 20 m/s | **O** | propietario |
+| Incertidumbre instrumental | ±0.2 · resolución 0.1 | **M** | propietario, flexómetro |
+| **Cd efectivo** | **0.8** | **E** | ⚠ **suposición propia** |
+| **Área frontal** | **1.729 m²** | **E** | ⚠ **suposición propia** |
+| **Arrastre vertical (planta)** | — | **D** | **no conocido** (§3.2) |
+| **x del centro de presión respecto al CG** | — | **D** | **no conocido** (§4) |
+
+---
+
+## 3. Paso 1 — Actitud
+
+### 3.1 Ecuaciones
+
+Modelo **cuasiestacionario** de vuelo horizontal uniforme:
+
+```
+Vertical    :  T · cos θ  =  W
+Horizontal  :  T · sin θ  =  D(V_aire)
+              ─────────────────────
+        ⇒       tan θ  =  D(V_aire) / W
+        ⇒       T  =  √(W² + D²)
+```
+
+Coincide con los modelos publicados de multirrotores en avance ([1], [2]).
+
+**El parámetro es la velocidad relativa al aire**, no la velocidad sobre el suelo:
+
+```
+V⃗_aire  =  V⃗_suelo  −  V⃗_viento
+```
+
+Y en general `D = ½ρV²_aire · Cd(θ) · A_proj(θ)`, con lo que la ecuación es **implícita**:
+
+```
+θ  =  tan⁻¹( D(V_aire, θ) / W )
+```
+
+resoluble por iteración. Literatura reciente de multirrotores modela explícitamente
+contribuciones de área frontal y superior dependientes de la actitud ([2]).
+
+### 3.2 ⚠ El modelo de área proyectada **no es utilizable** con los datos actuales
+
+`A_proj(θ) = A_frontal·cos θ + A_planta·sin θ` **falla** porque trata la **planta completa**
+(3.224 × 3.224 = 10.4 m²) como placa plana con el mismo `Cd`. Resultado a 20 m/s: **θ = 41°**,
+físicamente absurdo para un dron agrícola.
+
+Lo que falta es el **arrastre en dirección vertical** (la "planta" del dron), que es un dato
+**distinto** del arrastre frontal y **no se conoce** (clase D). Tratar la planta como placa plana
+con el mismo `Cd` es una extrapolación sin base.
+
+**Decisión:** se usa el modelo **explícito** con solo el área frontal (A constante). La corrección
+por actitud queda implementada pero **desactivada**, y activarla exige antes **calibrar el
+arrastre vertical** — preferiblemente **midiendo la actitud real**.
+
+### 3.3 Resultados (modelo explícito, MTOW 175 kg, aire seco 28 °C, ρ = 1.1716)
+
+| V_aire (m/s) | D (N) | θ (°) | T total (N) |
+|---|---|---|---|
+| 3 | 7.2 | **0.24** | 1716.2 |
+| 5 | 20.1 | **0.67** | 1716.3 |
+| 8 | 51.4 | **1.71** | 1716.9 |
+| 10 | 80.3 | **2.68** | 1718.0 |
+| 13 | 135.7 | **4.52** | 1721.5 |
+| 15 | 180.6 | **6.01** | 1725.6 |
+| 20 | 321.1 | **10.60** | 1745.9 |
+
+### 3.4 Nomenclatura corregida: **límite estático por magnitud de empuje**
+
+```
+cos θ_lim = W / T_max      →      θ_lim = 57.8°
+```
+
+**No** es "la actitud máxima del dron". Ignora: pérdida de capacidad en avance, potencia
+eléctrica disponible, interferencia coaxial, límites del controlador, batería, estabilidad y
+momentos. Es solo una **cota superior por magnitud de empuje**. Un T100 no queda habilitado para
+volar a 57.8° porque esa desigualdad se cumpla.
+
+---
+
+## 4. Paso 2 — Trim: fuerzas **y momentos**
+
+### 4.1 Por qué no basta dividir entre cuatro
+
+```
+Σ F = 0          y          Σ M_CG = 0
+```
+
+```
+Σ_i ( r_i − r_CG ) × T_i  +  M_aero  =  0
+```
+
+El arrastre actúa en el **centro de presión**, que **no coincide con el CG**. Ese desfase genera
+un **momento de cabeceo** que el reparto de rotores debe compensar. Por tanto:
+
+```
+Fuerzas + momentos  →  actitud  →  T_brazo,i
+```
+
+y **no** simplemente fuerzas → actitud → dividir entre cuatro.
+
+### 4.2 Resultado
+
+Con `x_cp_cg = ±0.05 m` (el desfase centro de presión ↔ CG), el desequilibrio
+delantero/trasero a 10 m/s es de **±2.6 N por brazo**. Con `x_cp_cg = 0` se recupera
+exactamente el reparto simétrico.
+
+`x_cp_cg` **es desconocido** (clase D). **Validación:** posición real del CG a distintos estados
+de carga + estimación del centro de presión.
+
+### 4.3 Reparto coaxial
+
+**Arquitectura conocida: 4 brazos, 8 motores, 8 rotores.** La pregunta *"¿comparte motor el
+par?"* **ya no aplica** y se ha eliminado del documento.
+
+**Lo que sigue desconocido (clase D):**
+
+```
+T_superior / T_inferior        y        RPM_superior / RPM_inferior
+```
+
+más la **estrategia de control**. Se trata como **parámetro** con barrido:
+
+| s (superior) | T sup (N) | T inf (N) |
+|---|---|---|
+| 0.50 | 214.8 | 214.8 |
+| 0.60 | 257.7 | 171.8 |
+| 0.70 | 300.7 | 128.9 |
+
+**Y no existe un `Ct` único para los dos rotores coaxiales**: la interferencia entre ellos impide
+asumirlo ([3], [4]).
+
+---
+
+## 5. Paso 3 — De empuje a RPM: **tres vías separadas**
+
+### 5.1 El error eliminado
+
+> ❌ **Retirado de la versión anterior:**
+> *"Momentum theory da Ct ≈ 0.0061; por tanto el RPM coherente es ≈2275 y no 1850."*
+>
+> **Eso era falso y circular.** Verificación numérica:
+
+```
+Con T = 214.52 N, ρ = 1.1716, A = 1.9478 m², ΩR = 152.544 m/s:
+
+    Ct_rotor      = T / (ρ A (ΩR)²)      = 0.00404
+    λ_i           = √(Ct/2)              = 0.044943
+    v_i desde λ_i = λ_i · ΩR             = 6.8558 m/s
+    v_i directo   = √(T/(2ρA))           = 6.8558 m/s
+    DIFERENCIA                           = 0.0   ← CERO
+```
+
+**Son el mismo resultado.** Momentum theory **deriva** el inflow de la definición de `Ct`; **no
+proporciona un segundo `Ct` independiente** con el que corregir las RPM. NASA usa la misma
+definición `C_T = T/(ρA(ΩR)²)` y calcula el inflow inducido a partir de ella ([4], [5]).
+
+**Conclusión correcta:**
+
+> **1850 rpm NO está validado. Pero tampoco está refutado. Simplemente NO SE SABE.**
+
+Y el propio documento ya decía lo correcto: *"da POTENCIA, no RPM"*. **Esa frase es la que
+sobrevive.**
+
+### 5.2 Las tres vías
+
+#### Vía 1 — Momentum theory
+
+```
+Conoce T  →  v_i = √(T/(2ρA))  →  P_i = T · v_i
+```
+
+**No determina RPM.** Da potencia y velocidad inducida.
+
+A 214.5 N por rotor: `v_i = 6.86 m/s` · `P_ideal = 1471 W` · ×8 rotores = 11.8 kW ideal.
+
+#### Vía 2 — Punto experimental conocido
+
+Si se miden **simultáneamente** `T` y `RPM`:
+
+```
+Ct_rotor = T / (ρ A (Ω R)²)          ← definición rotorcraft, normalizada con ΩR
+```
+
+Sirve para **interpolar en un entorno limitado del punto medido**.
+
+> 🔴 **Prohibido el razonamiento circular:** no se puede usar un RPM supuesto para obtener `Ct` y
+> después usar ese mismo `Ct` para "demostrar" que el RPM supuesto era correcto. Es exactamente
+> el error que se ha eliminado en §5.1.
+
+#### Vía 3 — BEMT / curvas de hélice
+
+Es la **única vía que predice RPM desde empuje**. Requiere **mucho más** que diámetro:
+
+- geometría radial completa: **cuerda(r)**, **twist(r)**, planform;
+- características de sección: **Cl(α, Re, M)** y **Cd(α, Re, M)**;
+- número de Reynolds de la pala, solidez, velocidad de punta;
+- y en **coaxial**: **modelo de interferencia** entre los dos rotores.
+
+NASA señala explícitamente twist, planform, número de palas, solidez, velocidad de punta y
+Reynolds como parámetros que afectan la carga del rotor ([3]).
+
+**Estado actual:** no se dispone de nada de eso → **la predicción de RPM no es posible todavía.
+Solo medirlo.**
+
+### 5.3 Verificación de plausibilidad que **sí** se puede hacer
+
+```
+solidez σ = (2 palas × 0.085 m) / (π × 0.7874 m) = 0.0687
+```
+
+Rango típico de hélice de dron: **0.05–0.15** → **σ está en rango**. La geometría de pala es
+plausible; lo que falta es su **distribución radial**.
+
+### 5.4 ⚠ Dos coeficientes distintos que **no** deben confundirse
+
+| Coeficiente | Definición | Normalizado con | Dónde se usa |
+|---|---|---|---|
+| **`Ct_rotor`** | `T / (ρ A (Ω R)²)` | **ΩR** (velocidad de punta) | rotorcraft, BEMT, **toda la cadena de §3–§5** |
+| **`Ct_OF`, `Cp_OF`** | formulación Froude de `actuationDiskSource` | **U_o** (velocidad incidente) | OpenFOAM `actuationDiskSource` |
+
+La implementación de OpenFOAM calcula ([6]):
+
+```
+T = 2 ρ A |U_o · n|² a (1 − a) ,        a = 1 − Cp_OF / Ct_OF
+```
+
+**Son coeficientes con otra formulación. El proyecto no debe tratarlos como el mismo `Ct`.**
+En el código se nombran `Ct_rotor` y `Ct_OF`/`Cp_OF` respectivamente.
+
+### 5.5 Corrección sobre `Cp = 0`
+
+> ❌ **Retirado:** *"Cp = 0 significa empuje sin consumo de potencia: físicamente imposible."*
+>
+> **Demasiado categórico.** Lo correcto:
+
+**El modelo `actuationDiskSource`/Froude de OpenFOAM exige `Cp > 0` y `Ct > 0`, y aborta si no lo
+son** ([7]). Es una **propiedad/restricción de ese modelo**, no una demostración universal sobre
+un rotor.
+
+Y la razón de fondo es otra: en **hover `U_∞ = 0`**, y cualquier coeficiente de potencia
+normalizado con `U_∞³` se vuelve una descripción **problemática**. En rotorcraft se normaliza con
+`ΩR`:
+
+```
+C_P = P / (ρ A (Ω R)³)          ([8])
+```
+
+**Esa es la razón real** por la que `actuationDiskSource`/Froude es incómodo para nuestro problema
+de hover — no una imposibilidad física.
+
+---
+
+## 6. Actitud y deposición: **baseline geométrico, no predicción**
+
+La intersección de un plano inclinado con el suelo,
+
+```
+Δx = h · tan θ
+```
+
+**puede conservarse como baseline geométrico**, pero **no debe escribirse** como "el abanico se
+desplaza medio metro", ni como "sesgo de deposición del 4–10 %".
+
+**Por qué no:** las gotas
+
+- salen con velocidad relativa del atomizador (disco centrífugo, ~73 m/s tangencial),
+- llevan la velocidad horizontal del UAV,
+- reciben **downwash**,
+- tienen **gravedad**, **arrastre** y posiblemente **viento**,
+- y tienen **tiempos de vuelo distintos según diámetro**.
+
+Eso lo debe responder **el módulo Lagrangiano**, no una relación geométrica.
+
+### H8 — hipótesis derivada del modelo de trim, **no hallazgo**
+
+Del modelo de trim se sigue que, a igual resistencia:
+
+```
+tan θ = D / (m g)      ⇒      m ↓  ⇒  θ ↑
+```
+
+**H8 (hipótesis):** al vaciarse el tanque, la actitud necesaria para la misma velocidad aumenta,
+lo que desplaza el abanico de los atomizadores centrífugos.
+
+**Verificación:** telemetría de `m`, `V_aire` y `θ` durante el vaciado. Es una hipótesis
+potencialmente interesante, pero **es una derivación, no un resultado.**
+
+---
+
+## 7. Densidad del aire
+
+Para un estudio que compara cuatro plataformas en condiciones de campo, **no se congela una sola
+ρ**. Se usa:
+
+```
+ρ = f(P, T, RH)
+
+    P_sat = 610.94 · exp(17.625 T_C / (T_C + 243.04))        (Magnus)
+    P_v   = RH · P_sat
+    P_d   = P − P_v
+    ρ     = P_d/(R_d T) + P_v/(R_v T)      R_d = 287.058, R_v = 461.495
+```
+
+| Condición | ρ (kg/m³) | Efecto en θ a 20 m/s |
+|---|---|---|
+| 28 °C, 70 % HR, nivel del mar | **1.1572** | referencia |
+| 28 °C, aire seco, nivel del mar | 1.1716 | el valor de la v1.0 |
+| 28 °C, 70 % HR, 1000 m | ~1.05 | **+12 % en D** → θ mayor |
+
+---
+
+## 8. Resumen de suposiciones
+
+| # | Suposición | Clase | Impacto | Cómo validarla |
+|---|---|---|---|---|
+| **1** | `Cd = 0.8`, `A_frontal = 1.729 m²` | **E (propia)** | **θ varía ×4 a 20 m/s** | **Medir la actitud real** |
+| **2** | `rpm = 1850` | **E (sin fuente)** | No refutado, no validado | Fuente del dato, o tacómetro en hover |
+| **3** | Arrastre vertical (planta) | **D** | Bloquea el modelo implícito de θ | Calibrar, o medir actitud |
+| **4** | `x_cp_cg = 0` | **D** | ±2.6 N por brazo a 10 m/s | Medir CG y centro de presión |
+| **5** | Reparto coaxial `s = 0.5` | **D (incógnita)** | ±20 % por rotor con s = 0.6 | Medir `T_sup/T_inf` o `RPM_sup/RPM_inf` |
+| **6** | Sin arrastre de hélices (H-force) | omisión | **Subestima θ** | Cd0 de pala, o medir actitud |
+| **7** | Sin geometría radial de pala | **D** | **Impide predecir RPM** | Medir cuerda(r), twist(r), Cl/Cd de sección |
+
+**No requiere validación:** el equilibrio de fuerzas y momentos es física elemental; la teoría de
+cantidad de movimiento es estándar; y la geometría del T100 está **medida** (clase M, ±0.2,
+resolución 0.1).
+
+---
+
+## 9. Fuentes
+
+**Verificadas con descarga** (`scripts/verify_sources.py` → `evidence/fuentes_verificadas.json`):
+4 de 6 con contenido confirmado. Los enlaces de documentación de OpenFOAM dieron 404 o
+confirmación parcial, así que **se citan con esa reserva**.
+
+### Literatura primaria — para el manuscrito
+
+| Ref | Fuente |
+|---|---|
+| **[1]** | *Practical Endurance Estimation for Minimizing Energy Consumption of Multirotor UAVs*, Energies 11(9):2221. https://www.mdpi.com/1996-1073/11/9/2221 |
+| **[2]** | *Design of an Autonomous Airborne Recovery System: A Fixed-Wing UAV–Quadrotor Platform Using Improved NMPC and Vision-Based Control*, Drones 10(3):212. https://www.mdpi.com/2504-446X/10/3/212 |
+| **[3]** | Johnson, W. *Rotorcraft Aeromechanics*. NASA/TP–2005–213477. https://rotorcraft.arc.nasa.gov/Publications/files/Johnson_TP-2005-213477.pdf |
+| **[4]** | Johnson, W. NASA/TP–20250010468. https://ntrs.nasa.gov/api/citations/20250010468/downloads/Johnson%20TP-202510468.pdf |
+| **[5]** | Koning, W. et al. NASA/CR–2016–219086. https://rotorcraft.arc.nasa.gov/Publications/files/Koning%20CR-2016-219086_FINAL.pdf |
+
+### Documentación de software
+
+| Ref | Fuente |
+|---|---|
+| **[6]** | OpenFOAM API — `actuationDiskSource` Class Reference. https://api.openfoam.com/2506/classFoam_1_1fv_1_1actuationDiskSource.html |
+| **[7]** | OpenFOAM API — `actuationDiskSourceTemplates.C`. https://api.openfoam.com/2312/actuationDiskSourceTemplates_8C_source.html |
+| **[8]** | OpenFOAM Documentation — *Semi implicit source*. https://doc.openfoam.com/2306/tools/processing/numerics/fvoptions/sources/rtm/semiImplicit/ |
+
+> **Nota de honestidad sobre las fuentes:** el valor de `Cd = 0.8` y el de área frontal **son
+> suposiciones propias**. **No se atribuyen a ninguna fuente.** Citarlos como literatura sería
+> una cita falsa. Igual criterio con `rpm = 1850`.
+
+---
+
+## 10. Estado y bloqueo
+
+| Gate | Qué lo cierra | Estado |
+|---|---|---|
+| **1A (T100)** | geometría medida, sin `D` críticos | ✅ **cerrable** (falta formalizar) |
+| **1A (T25P/T55/T70P)** | medición física | ⬜ pendiente |
+| **1B** | RPM real y reparto de empuje | ⚠️ RPM declarado sin fuente; reparto en `D` |
+| **CFD-0** | un caso ejecutado + **integral de la fuente verificada** | ❌ **bloqueado: bug #6** |
+| **CFD-suite** | 128 casos | ⬜ requiere CFD-0 |
+| **Lagrangiano** | deposición D(x,y) | ⬜ requiere CFD-suite |
+
+**El bug CFD #6 es real:** OpenFOAM calcula el empuje Froude en función de `|U_o·n|²`; con flujo
+horizontal y disco horizontal, `U_o·n ≈ 0` y `T ≈ 0`. Coincide con el resultado medido
+(`U_z ≈ 10⁻⁷`) aunque `simpleFoam` converja.
+
+**No se repara cambiando `Cp`/`Ct`.** Para la arquitectura C→B el CFD debe recibir `T_i` y la
+fuente debe satisfacer:
+
+```
+∫_{V_i}  f  dV  =  T_i
+```
+
+sin recalcular el empuje a partir de `U_∞`. OpenFOAM dispone de fuentes explícitas/semi-implícitas
+y de `codedSource`, además de `rotorDiskSource` ([8]).
+
+> **CFD-0 se mantiene ABIERTO hasta verificar la INTEGRAL DE LA FUENTE**, no solo que aparezca
+> downwash.
+
+---
+
+## 11. Lo que necesito del investigador
+
+| # | Necesidad | Para qué | Coste |
+|---|---|---|---|
+| **1** | **Medir la actitud real** a 3/5/8/10/15/20 m/s | Cierra las suposiciones [1] y [3], que hoy tienen un factor 4 de impacto | **Bajo** |
+| **2** | **Fuente del rpm = 1850**, o tacómetro | Cierra [2] | Bajo/Medio |
+| **3** | **`T_sup/T_inf`** o `RPM_sup/RPM_inf` | Cierra [5] | Medio |
+| **4** | **Geometría radial de pala** | Habilita predecir RPM ([7]) | Medio |
+| **5** | **CG** por estado de carga y **centro de presión** | Cierra [4] y habilita H5/H8 | Medio |
+
+---
+
+*Versión 2.0. Toda suposición declarada con su clase y su vía de validación. Generado a partir de
+`scripts/force_chain.py`, verificable y reproducible. Ningún valor se atribuye a una fuente que no
+haya sido comprobada.*
