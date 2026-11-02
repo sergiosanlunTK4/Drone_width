@@ -1,0 +1,159 @@
+{
+    "platform": "DJI Agras T100",
+    "configuration": "Octocopter Coaxial X-configuration (8 rotors)",
+    "wheelbase_mm": 3800,
+    "rotors": [
+        {
+            "id": "R1_FL_Upper",
+            "role": "Front-Left Upper",
+            "position_xyz_m": [
+                2.68700576850888,
+                2.68700576850888,
+                0.15
+            ],
+            "diameter_m": 1.65,
+            "direction": "CCW",
+            "max_rpm": 2200
+        },
+        {
+            "id": "R2_FL_Lower",
+            "role": "Front-Left Lower",
+            "position_xyz_m": [
+                2.68700576850888,
+                2.68700576850888,
+                -0.15
+            ],
+            "diameter_m": 1.65,
+            "direction": "CW",
+            "max_rpm": 2200
+        },
+        {
+            "id": "R3_FR_Upper",
+            "role": "Front-Right Upper",
+            "position_xyz_m": [
+                2.68700576850888,
+                -2.68700576850888,
+                0.15
+            ],
+            "diameter_m": 1.65,
+            "direction": "CW",
+            "max_rpm": 2200
+        },
+        {
+            "id": "R4_FR_Lower",
+            "role": "Front-Right Lower",
+            "position_xyz_m": [
+                2.68700576850888,
+                -2.68700576850888,
+                -0.15
+            ],
+            "diameter_m": 1.65,
+            "direction": "CCW",
+            "max_rpm": 2200
+        },
+        {
+            "id": "R5_RL_Upper",
+            "role": "Rear-Left Upper",
+            "position_xyz_m": [
+                -2.68700576850888,
+                2.68700576850888,
+                0.15
+            ],
+            "diameter_m": 1.65,
+            "direction": "CW",
+            "max_rpm": 2200
+        },
+        {
+            "id": "R6_RL_Lower",
+            "role": "Rear-Left Lower",
+            "position_xyz_m": [
+                -2.68700576850888,
+                2.68700576850888,
+                -0.15
+            ],
+            "diameter_m": 1.65,
+            "direction": "CCW",
+            "max_rpm": 2200
+        },
+        {
+            "id": "R7_RR_Upper",
+            "role": "Rear-Right Upper",
+            "position_xyz_m": [
+                -2.68700576850888,
+                -2.68700576850888,
+                0.15
+            ],
+            "diameter_m": 1.65,
+            "direction": "CCW",
+            "max_rpm": 2200
+        },
+        {
+            "id": "R8_RR_Lower",
+            "role": "Rear-Right Lower",
+            "position_xyz_m": [
+                -2.68700576850888,
+                -2.68700576850888,
+                -0.15
+            ],
+            "diameter_m": 1.65,
+            "direction": "CW",
+            "max_rpm": 2200
+        }
+    ],
+    "atomizers": {
+        "quad_configuration": [
+            {
+                "id": "N1_FrontLeft",
+                "position_xyz_m": [
+                    0.6,
+                    0.5,
+                    -0.3
+                ],
+                "orientation_deg": [
+                    0.0,
+                    0.0,
+                    -90.0
+                ]
+            },
+            {
+                "id": "N2_FrontRight",
+                "position_xyz_m": [
+                    0.6,
+                    -0.5,
+                    -0.3
+                ],
+                "orientation_deg": [
+                    0.0,
+                    0.0,
+                    -90.0
+                ]
+            },
+            {
+                "id": "N3_RearLeft",
+                "position_xyz_m": [
+                    -0.6,
+                    0.5,
+                    -0.3
+                ],
+                "orientation_deg": [
+                    0.0,
+                    0.0,
+                    -90.0
+                ]
+            },
+            {
+                "id": "N4_RearRight",
+                "position_xyz_m": [
+                    -0.6,
+                    -0.5,
+                    -0.3
+                ],
+                "orientation_deg": [
+                    0.0,
+                    0.0,
+                    -90.0
+                ]
+            }
+        ]
+    }
+}

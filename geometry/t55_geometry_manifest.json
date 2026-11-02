@@ -1,0 +1,139 @@
+{
+    "platform": "DJI Agras T55",
+    "configuration": "Quadcopter X-configuration (4 rotors)",
+    "wheelbase_mm": 2800,
+    "rotors": [
+        {
+            "id": "R1_FL",
+            "role": "Front-Left",
+            "position_xyz_m": [
+                1.9798989873223327,
+                1.9798989873223327,
+                0.1
+            ],
+            "diameter_m": 1.45,
+            "direction": "CCW",
+            "max_rpm": 2900
+        },
+        {
+            "id": "R2_FR",
+            "role": "Front-Right",
+            "position_xyz_m": [
+                1.9798989873223327,
+                -1.9798989873223327,
+                0.1
+            ],
+            "diameter_m": 1.45,
+            "direction": "CW",
+            "max_rpm": 2900
+        },
+        {
+            "id": "R3_RL",
+            "role": "Rear-Left",
+            "position_xyz_m": [
+                -1.9798989873223327,
+                1.9798989873223327,
+                0.1
+            ],
+            "diameter_m": 1.45,
+            "direction": "CW",
+            "max_rpm": 2900
+        },
+        {
+            "id": "R4_RR",
+            "role": "Rear-Right",
+            "position_xyz_m": [
+                -1.9798989873223327,
+                -1.9798989873223327,
+                0.1
+            ],
+            "diameter_m": 1.45,
+            "direction": "CCW",
+            "max_rpm": 2900
+        }
+    ],
+    "atomizers": {
+        "standard_dual": [
+            {
+                "id": "N1_FrontLeft",
+                "position_xyz_m": [
+                    0.4,
+                    0.3,
+                    -0.25
+                ],
+                "orientation_deg": [
+                    0.0,
+                    0.0,
+                    -90.0
+                ]
+            },
+            {
+                "id": "N2_FrontRight",
+                "position_xyz_m": [
+                    0.4,
+                    -0.3,
+                    -0.25
+                ],
+                "orientation_deg": [
+                    0.0,
+                    0.0,
+                    -90.0
+                ]
+            }
+        ],
+        "optional_quad": [
+            {
+                "id": "N1_FrontLeft",
+                "position_xyz_m": [
+                    0.4,
+                    0.3,
+                    -0.25
+                ],
+                "orientation_deg": [
+                    0.0,
+                    0.0,
+                    -90.0
+                ]
+            },
+            {
+                "id": "N2_FrontRight",
+                "position_xyz_m": [
+                    0.4,
+                    -0.3,
+                    -0.25
+                ],
+                "orientation_deg": [
+                    0.0,
+                    0.0,
+                    -90.0
+                ]
+            },
+            {
+                "id": "N3_RearLeft",
+                "position_xyz_m": [
+                    -0.4,
+                    0.3,
+                    -0.25
+                ],
+                "orientation_deg": [
+                    0.0,
+                    0.0,
+                    -90.0
+                ]
+            },
+            {
+                "id": "N4_RearRight",
+                "position_xyz_m": [
+                    -0.4,
+                    -0.3,
+                    -0.25
+                ],
+                "orientation_deg": [
+                    0.0,
+                    0.0,
+                    -90.0
+                ]
+            }
+        ]
+    }
+}
