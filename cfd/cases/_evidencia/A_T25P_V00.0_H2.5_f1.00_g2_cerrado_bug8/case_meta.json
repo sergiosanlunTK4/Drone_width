@@ -1,0 +1,271 @@
+{
+  "air_id": "A_T25P_V00.0_H2.5_f1.00_g2",
+  "case_id": "A_T25P_V00.0_H2.5_f1.00_g2",
+  "plataforma": "T25P",
+  "nombre_plataforma": "DJI Agras T25P",
+  "geometria_version": "2.0",
+  "fuente_geometria": "geometry/models/T25P_CFD/t25p_cfd_coordinates.json",
+  "arquitectura_cfd": "C (equilibrio) -> B (fuente de momento prescrita vectorSemiImplicitSource)",
+  "entradas": {
+    "V_inf_ms": 0.0,
+    "H_m": 2.5,
+    "carga_fraccion": 1.0,
+    "masa_total_kg": 53.0,
+    "split_coaxial_superior": null,
+    "theta_actitud_deg": 0.0,
+    "malla": "gruesa",
+    "hover_bc": "cerrado",
+    "cuerpos_atom_opcionales": 0
+  },
+  "derivados_analiticos": {
+    "n_rotores_modelados": 4,
+    "peso_N": 519.75245,
+    "empuje_total_N": 520.135836,
+    "suma_F_aire_N": [
+      0.056435,
+      0.0,
+      -519.75245
+    ],
+    "empuje_por_disco_N": {
+      "rotor1": 130.033959,
+      "rotor2": 130.033959,
+      "rotor3": 130.033959,
+      "rotor4": 130.033959
+    },
+    "fuerza_sobre_aire_N": {
+      "rotor1": [
+        3.29337,
+        -3.751219,
+        -129.93811
+      ],
+      "rotor2": [
+        3.29337,
+        3.751219,
+        -129.93811
+      ],
+      "rotor3": [
+        -3.265152,
+        3.775666,
+        -129.938115
+      ],
+      "rotor4": [
+        -3.265152,
+        -3.775666,
+        -129.938115
+      ]
+    },
+    "v_inducida_hover_ms": 6.6162,
+    "nota": "analitico (momentum theory solo orden de magnitud); NO es CFD"
+  },
+  "zonas_rotor": {
+    "rotor1": {
+      "rotor_id": "M1_FR",
+      "nivel": "simple",
+      "giro_desde_arriba": "CCW",
+      "centro_m": [
+        0.68,
+        -0.712,
+        0.1299
+      ],
+      "normal": [
+        -0.025327,
+        0.028848,
+        0.9992629
+      ],
+      "radio_m": 0.635,
+      "espesor_zona_m": 0.09375,
+      "V_teorico_m3": 0.1187596,
+      "T_N": 130.033959,
+      "F_aire_N": [
+        3.29337,
+        -3.751219,
+        -129.93811
+      ]
+    },
+    "rotor2": {
+      "rotor_id": "M2_FL",
+      "nivel": "simple",
+      "giro_desde_arriba": "CW",
+      "centro_m": [
+        0.68,
+        0.712,
+        0.1299
+      ],
+      "normal": [
+        -0.025327,
+        -0.028848,
+        0.9992629
+      ],
+      "radio_m": 0.635,
+      "espesor_zona_m": 0.09375,
+      "V_teorico_m3": 0.1187596,
+      "T_N": 130.033959,
+      "F_aire_N": [
+        3.29337,
+        3.751219,
+        -129.93811
+      ]
+    },
+    "rotor3": {
+      "rotor_id": "M3_RL",
+      "nivel": "simple",
+      "giro_desde_arriba": "CCW",
+      "centro_m": [
+        -0.68,
+        0.716,
+        0.1299
+      ],
+      "normal": [
+        0.02511,
+        -0.029036,
+        0.9992629
+      ],
+      "radio_m": 0.635,
+      "espesor_zona_m": 0.09375,
+      "V_teorico_m3": 0.1187596,
+      "T_N": 130.033959,
+      "F_aire_N": [
+        -3.265152,
+        3.775666,
+        -129.938115
+      ]
+    },
+    "rotor4": {
+      "rotor_id": "M4_RR",
+      "nivel": "simple",
+      "giro_desde_arriba": "CW",
+      "centro_m": [
+        -0.68,
+        -0.716,
+        0.1299
+      ],
+      "normal": [
+        0.02511,
+        0.029036,
+        0.9992629
+      ],
+      "radio_m": 0.635,
+      "espesor_zona_m": 0.09375,
+      "V_teorico_m3": 0.1187596,
+      "T_N": 130.033959,
+      "F_aire_N": [
+        -3.265152,
+        -3.775666,
+        -129.938115
+      ]
+    }
+  },
+  "boquillas": [
+    {
+      "nozzle_id": "N1_RL",
+      "configuracion": "estandar",
+      "centro_m": [
+        -0.68,
+        0.71,
+        -0.275
+      ],
+      "eje": [
+        0.02511,
+        -0.029036,
+        0.9992629
+      ],
+      "radio_disco_m": 0.03,
+      "clasificacion": "P+S"
+    },
+    {
+      "nozzle_id": "N2_RR",
+      "configuracion": "estandar",
+      "centro_m": [
+        -0.68,
+        -0.71,
+        -0.275
+      ],
+      "eje": [
+        0.02511,
+        0.029036,
+        0.9992629
+      ],
+      "radio_disco_m": 0.03,
+      "clasificacion": "P+S"
+    },
+    {
+      "nozzle_id": "N3_FL",
+      "configuracion": "opcional",
+      "centro_m": [
+        0.68,
+        0.706,
+        -0.275
+      ],
+      "eje": [
+        -0.025327,
+        -0.028848,
+        0.9992629
+      ],
+      "radio_disco_m": 0.03,
+      "clasificacion": "O (delante, propietario) + I (offset)"
+    },
+    {
+      "nozzle_id": "N4_FR",
+      "configuracion": "opcional",
+      "centro_m": [
+        0.68,
+        -0.706,
+        -0.275
+      ],
+      "eje": [
+        -0.025327,
+        0.028848,
+        0.9992629
+      ],
+      "radio_disco_m": 0.03,
+      "clasificacion": "O (delante, propietario) + I (offset)"
+    }
+  ],
+  "dominio": {
+    "x": [
+      -10.0,
+      10.0
+    ],
+    "y": [
+      -10.0,
+      10.0
+    ],
+    "z": [
+      -3.065,
+      5.0
+    ],
+    "z_suelo_modelo": -0.565,
+    "nota": "z_suelo = ground_plane_z_m - H (H desde el contacto de los patines, I)"
+  },
+  "malla": {
+    "nivel": "gruesa",
+    "dx_base_m": 0.25,
+    "dx_disco_m": 0.0625,
+    "n_bloque": [
+      80,
+      80,
+      32
+    ],
+    "facetas_airframe": 135008
+  },
+  "turbulencia_entrada": {
+    "modelo": "kOmegaSST",
+    "Tu": 0.05,
+    "L_m": 0.1,
+    "U_ref_ms": 6.6162,
+    "clase": "I"
+  },
+  "propiedades_fluido": {
+    "rho": 1.1716,
+    "nu": 1.5e-05,
+    "g": 9.80665
+  },
+  "supuestos_declarados": [
+    "H medido desde el contacto de los patines (I)",
+    "pivote del cabeceo en el origen del modelo; CG real D",
+    "reparto de empuje igual por brazo (sin trim de momentos; force_chain.py)",
+    "fuente uniforme en el disco; rotorDiskSource (elemento de pala) pendiente de CFD-0"
+  ],
+  "estado": "generado_no_ejecutado",
+  "no_contiene": "ningun resultado de CFD: este archivo describe el caso, no su salida"
+}

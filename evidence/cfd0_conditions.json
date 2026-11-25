@@ -3,38 +3,52 @@
     "condicion": "1. fuerza aplicada por rotor",
     "pasa": true,
     "detalle": [
-      "rotor1: T=127.2700 N, Su*V=127.270000 N, err=1.12e-16, err(V)=1.77e-16 ok",
-      "rotor2: T=127.2700 N, Su*V=127.270000 N, err=2.23e-16, err(V)=1.77e-16 ok",
-      "rotor3: T=127.2700 N, Su*V=127.270000 N, err=0.00e+00, err(V)=0.00e+00 ok",
-      "rotor4: T=127.2700 N, Su*V=127.270000 N, err=0.00e+00, err(V)=0.00e+00 ok"
-    ]
+      "rotor1: |F_prescrita| = 130.0340 N, |rho Su V_solver| = 130.0193 N, err = 1.13e-04, err(V decl/malla) = 3.61e-11 ok (tol 0.001)",
+      "rotor2: |F_prescrita| = 130.0340 N, |rho Su V_solver| = 130.0222 N, err = 9.07e-05, err(V decl/malla) = 7.40e-12 ok (tol 0.001)",
+      "rotor3: |F_prescrita| = 130.0340 N, |rho Su V_solver| = 130.0299 N, err = 3.10e-05, err(V decl/malla) = 3.94e-11 ok (tol 0.001)",
+      "rotor4: |F_prescrita| = 130.0340 N, |rho Su V_solver| = 130.0330 N, err = 7.61e-06, err(V decl/malla) = 5.15e-12 ok (tol 0.001)"
+    ],
+    "caso": "cfd/cases/A_T25P_V00.0_H2.5_f1.00_g2"
   },
   {
     "condicion": "3. convergencia de magnitudes fisicas",
-    "pasa": false,
+    "pasa": true,
     "detalle": [
-      "serie de F_suelo demasiado corta (0 puntos): no se puede evaluar convergencia"
-    ]
+      "F_suelo: 150 muestras; ultimas 60 con dispersion 1.30 % y tendencia +0.19 %",
+      "F_suelo final = -529.675 N"
+    ],
+    "caso": "cfd/cases/A_T25P_V00.0_H2.5_f1.00_g2"
   },
   {
     "condicion": "4. simetria fisica (hover sin viento)",
-    "pasa": false,
+    "pasa": true,
     "detalle": [
-      "sin campo U de solver: no evaluable"
-    ]
+      "media(Ux) = -0.0129 m/s, media(Uy) = -0.0087 m/s, max|Uz| = 15.1445 m/s",
+      "|media(Ux)|/max|Uz| = 0.0009  (umbral 0.05) ok",
+      "|media(Uy)|/max|Uz| = 0.0006  ok"
+    ],
+    "caso": "cfd/cases/A_T25P_V00.0_H2.5_f1.00_g2"
   },
   {
     "condicion": "5. orden de magnitud del downwash",
-    "pasa": false,
+    "pasa": true,
     "detalle": [
-      "sin campo U: no evaluable"
-    ]
+      "v_i (teoria de momento) = 6.616 m/s",
+      "Uz medio en las zonas        = -8.466 m/s",
+      "cociente = 1.280  (admisible 0.2 - 5.0) ok",
+      "no se exige coincidencia exacta: hay 4 rotores, suelo, dominio finito y una fuente volumetrica simplificada"
+    ],
+    "caso": "cfd/cases/A_T25P_V00.0_H2.5_f1.00_g2"
   },
   {
     "condicion": "2. balance global de momento",
-    "pasa": false,
+    "pasa": true,
     "detalle": [
-      "sin postProcessing/forces: no evaluable"
-    ]
+      "F_suelo z = -529.675 N · F_fuselaje z = -9.274 N · F_contorno z = +2.742 N",
+      "flujo de momento z saliente M_out = +19.582 N (t=3000: inlet -0.55, outlet +0.13, sides -1.00, top +21.01)",
+      "T prescrito (case_meta) = 519.752 N",
+      "(-sum F_paredes - M_out) / T = +0.9940   (esperado ~ +1.0, 0.9-1.1)"
+    ],
+    "caso": "cfd/cases/A_T25P_V00.0_H2.5_f1.00_g2"
   }
 ]

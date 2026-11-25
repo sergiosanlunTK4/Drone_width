@@ -56,7 +56,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 CASES = ROOT / "cfd" / "cases"
 EVIDENCE = ROOT / "evidence"
-CASO_NOMINAL = "T25P_V3.1_H2.8_d190_f0.95_a4"
+CASO_NOMINAL = "A_T25P_V00.0_H2.5_f1.00_g2"   # CFD-0 v2 (antes T25P_V3.1_H2.8_d190_f0.95_a4, v1 obsoleto)
 
 from mesh_zone_volumes import leer_zonas  # noqa: E402
 
@@ -143,6 +143,11 @@ def volumen_real_zonas(caso: Path) -> dict:
 def comprobar_caso(caso: Path, tol: float) -> dict:
     """Parte A: la fuerza aplicada integra T_i. Algebraico, sobre el diccionario y la malla."""
     fv = leer_fvOptions(caso / "constant" / "fvOptions")
+    meta_p = caso / "case_meta.json"
+    rho = (json.loads(meta_p.read_text(encoding="utf-8")).get("propiedades_fluido", {}).get("rho")
+           if meta_p.exists() else None)
+    if rho is None:
+        raise ValueError(f"{caso.name}: sin propiedades_fluido.rho en case_meta.json")
     vol_declarado = leer_volumenes(caso)
     vol_real = volumen_real_zonas(caso)
 
@@ -160,12 +165,14 @@ def comprobar_caso(caso: Path, tol: float) -> dict:
         # integrada NO sera T_i, y el error seria silencioso. Se comprueba explicitamente.
         err_V = abs(Vd - Vr) / Vr if Vr else float("inf")
 
-        # fuerza aplicada = Su * V_zone  (volumeMode absolute -> Su en N/m^3)
-        aplicada = tuple(c * Vd for c in su)
+        # fuerza FISICA aplicada = rho * Su * V_zone: la ecuacion de simpleFoam es cinematica
+        # (bug #8, Entry 022: antes se omitia rho y el error de 17 % no se veia)
+        aplicada = tuple(rho * c * Vd for c in su)
 
         rotores.append({
             "zona": zona,
-            "Su_N_m3": list(su),
+            "Su_m_s2": list(su),
+            "rho": rho,
             "V_declarado_m3": Vd,
             "V_real_m3": Vr,
             "error_V_rel": err_V,
@@ -372,10 +379,10 @@ def main() -> int:
         if r["estado"] == "ERROR":
             print(f"    {r['detalle']}")
             continue
-        print(f"    {'zona':<12}{'Su_z (N/m3)':>16}{'V_zone (m3)':>16}"
+        print(f"    {'zona':<12}{'Su_z (m/s2)':>16}{'V_zone (m3)':>16}"
               f"{'F_aplicada_z (N)':>20}{'error V':>12}")
         for ro in r["rotores"]:
-            print(f"    {ro['zona']:<12}{ro['Su_N_m3'][2]:>16.6e}"
+            print(f"    {ro['zona']:<12}{ro['Su_m_s2'][2]:>16.6e}"
                   f"{ro['V_declarado_m3']:>16.10e}"
                   f"{ro['F_aplicada_N'][2]:>20.6f}{ro['error_V_rel']:>12.2e}")
         print(f"    suma vectorial aplicada = ({r['F_total_aplicada_N'][0]:+.6f} "
@@ -406,7 +413,7 @@ def main() -> int:
                 print(f"    [FALLA] {p}")
         else:
             print("    [ok] Su constante + volumeMode specific + V declarado = V real")
-            print("         => integral_{V_zone} f dV = Su * V_zone = T_i")
+            print("         => integral_{V_zone} rho f dV = rho Su V_zone = T_i")
 
     EVIDENCE.mkdir(exist_ok=True)
     destino = EVIDENCE / "cfd0_force_integral.json"

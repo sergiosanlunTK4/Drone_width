@@ -1,206 +1,139 @@
 """
-ESPECIFICACION DE CASOS + DOE por plataforma + GENERACION DE CASOS OpenFOAM.
+GENERADOR DE CASOS OpenFOAM — GEOMETRIA v2 (nivel A: campo de aire).
 
-ARQUITECTURA CFD (decidida en Entry 010/011; ver geometry/coaxial_thrust_split.md):
-  C  ->  suma de empujes + peso = 0     restriccion fisica global
-  C  ->  reparto de empuje por disco    a partir de masa, CG y actitud
-  B  ->  actuator disk que materializa ese empuje en cada disco
-  A  ->  RPM prescrita solo en casos selectos (no implementado aqui)
+Version 2 (2026-11-22). La version 1 (planta "regular X", T55/T70P coaxiales, `diskDir (0 0 -1)`,
+cajas de control) esta en `archive/scripts_geometria_v1/build_case_suite_v1.py` y sus 131 casos en
+`cfd/cases/_obsoletos_geometria_v1/`. NO se mezclan.
 
-  Se implementa con `fvOptions/actuationDiskSource` (OpenFOAM 2412) sobre una cellZone
-  cilindrica por rotor. El reparto de empuje superior/inferior es un PARAMETRO, no una
-  suposicion: se barre 0.5 / 0.6 / 0.7.
+QUE CAMBIA RESPECTO DE v1 (cada punto con su evidencia):
+  1. Rotores: centros, normales inclinadas, areas y sentido de giro salen de
+     `geometry/models/<P>_CFD/<p>_cfd_coordinates.json` via `scripts/agras_model/cfd_geometry.py`.
+     T25P/T55/T70P = 4 rotores simples; T100 = 8 (4 pares coaxiales).
+  2. Fuerza sobre el aire de cada rotor: F_i = -T_i * n_i (vectorial, inclinada), no (0,0,-T).
+     La magnitud se escala para que sum(F_z) = -m g exactamente (con el cant, n_z = 0.99926:
+     un 0.07 % del empuje es lateral/longitudinal y se cancela por simetria).
+  3. Suelo: z_suelo = ground_plane_z_m - H. H se mide desde el CONTACTO DE LOS PATINES
+     (INSTRUCCIONES_CFD §6 paso 1; clase I: el radar de DJI mide desde el cuerpo, no se sabe
+     el punto exacto -> la diferencia, ~0.1 m, se declara).
+  4. Pared no-slip: `<p>_airframe.stl` con snappyHexMesh (v1 usaba cajas de control).
+  5. SENTIDO DEL FLUJO (error de v1 encontrado al migrar): v1 ponia el inlet en x_min con
+     U = (+V 0 0), es decir aire hacia +X = dron volando hacia -X (marcha atras en la terna v2,
+     +X adelante). Ahora, en ejes del dron: inlet en x_max, U = (-V 0 0), y el SUELO SE MUEVE
+     a (-V 0 0) (INSTRUCCIONES §5.5: no inventar una capa limite en un suelo fijo).
+  6. Actitud: si theta != 0, se gira el modelo entero (STL, rotores, boquillas) un angulo de
+     cabeceo theta (morro abajo) alrededor del origen. El CG es clase D: se declara.
+  7. `actuationDiskSource` retirado (bug #6). La fuente prescrita la escribe
+     `build_prescribed_momentum.py` DESPUES de mallar, con el volumen real de cada zona.
+     `Allrun` se niega a resolver si `constant/fvOptions` no contiene esa fuente.
 
-DOE POR PLATAFORMA, no comun: cada UAV tiene su envolvente. Los limites salen de:
-  - velocidad de aplicacion: 2-13 m/s (DJI Academy compara 3/5/7/10/13 m/s; context.md)
-  - altura sobre cultivo: 1.5-6 m (rango operativo Agras; Academy T40/T50 da 3-4 m)
-  - DV0.5: 100-500 um (ficha oficial 50-500; se recorta para evitar gota ultrafina)
-  - carga de tanque: 0-1 con RESTRICCION de bateria por plataforma
-  - atomizadores: 2 o 4 (configuracion, no variable continua)
-
-REGLA DE HONESTIDAD DE ESTE SCRIPT:
-  Genera CASOS, no resultados. No hay ningun campo de resultado de CFD aqui.
-  Todo lo que se calcula (empuje por disco, area de disco, v inducida) es fisica
-  ANALITICA derivada de masa y geometria, y se etiqueta como tal.
+REGLA: genera CASOS, no resultados. Nada de este archivo es salida de CFD.
 
 Uso:
-  python scripts/build_case_suite.py --out data/processed --cfd cfd/cases
+  python scripts/build_case_suite.py --air-id <air_id>            # un caso desde la BD
+  python scripts/build_case_suite.py --plataforma T25P --V 0 --H 2.5 --f 1.0 [--malla gruesa]
+  python scripts/build_case_suite.py --pendientes [--max N]       # todos los air_cases pendientes
 """
 from __future__ import annotations
 
 import argparse
-import csv
 import json
 import math
-import random
+import shutil
+import sqlite3
+import struct
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts" / "agras_model"))
+sys.path.insert(0, str(ROOT / "scripts"))
 
-# Gravedad estandar. DEBE coincidir con `scripts/force_chain.py`, que es la cadena de
-# fuerza autoritativa del proyecto. Estuvo aqui como 9.81 mientras force_chain usaba
-# 9.80665, lo que hacia que `empuje_total_N` (= masa * G) no cerrara con el peso del UAV
-# que calcula la cadena C. La discrepancia era de 0.0347 % (0.177 N en el T25P) y la
-# detecto la comprobacion de coherencia de `scripts/build_prescribed_momentum.py`.
+import cfd_geometry as cg  # noqa: E402
+
+DB = ROOT / "data" / "processed" / "dronewith.sqlite"
+CASES = ROOT / "cfd" / "cases"
+GEOMETRIA_VERSION = "2.0"
+
+# Gravedad estandar. DEBE coincidir con `scripts/force_chain.py` (Entry 016).
 G = 9.80665
-RHO = 1.1716          # 28 C, nivel del mar
-P_ATM = 101325.0
+RHO = 1.1716          # 28 C, nivel del mar (E; deberia ser f(P,T,HR), ver force_chain [F])
 NU = 1.5e-5           # m2/s, aire a ~28 C
-MU_W = 0.000836       # Pa.s, agua a 28 C
-RHO_W = 996.2         # kg/m3, agua a 28 C
-SIGMA_W = 0.0719      # N/m, agua a 28 C
+P_ATM = 101325.0
+RHO_W = 996.2
+MU_W = 0.000836
+SIGMA_W = 0.0719
 
-# --------------------------------------------------------------------------------------
-# PLATAFORMAS — datos con su clase de fuente (P/Academy/S/O/I)
-# --------------------------------------------------------------------------------------
-PLAT = {
-    "T25P": dict(
-        nombre="DJI Agras T25P",
-        rotor_d=1.270, n_brazos=4, coaxial=False,
-        m_bat=33.0, tanque=20.0, mtow=53.0,
-        bateria="DB800",
-        wheelbase=1.970, span=(2.650, 2.700),
-        atom_std=2, atom_opt=4, atom_sep=1420, atom_x=None,
-        v_range=(2.0, 13.0), h_range=(1.5, 6.0), d_range=(100.0, 500.0),
-        carga_max_por_bateria=True,
-        bomba_2=16.0, bomba_4=24.0,
-    ),
-    "T55": dict(
-        nombre="DJI Agras T55",
-        rotor_d=1.575, n_brazos=4, coaxial=True,
-        m_bat=45.0, tanque=50.0, mtow=95.0,
-        bateria="DB1050",
-        wheelbase=2.415, span=(3.190, 3.570),
-        atom_std=2, atom_opt=4, atom_sep=1800, atom_x=None,
-        v_range=(2.0, 13.0), h_range=(1.5, 6.0), d_range=(100.0, 500.0),
-        carga_max_por_bateria=True,
-        bomba_2=None, bomba_4=None,   # D: no capturado
-    ),
-    "T70P": dict(
-        nombre="DJI Agras T70P",
-        rotor_d=1.574, n_brazos=4, coaxial=True,
-        m_bat=56.0, tanque=70.0, mtow=126.0,
-        bateria="DB2160",
-        wheelbase=2.440, span=(3.200, 3.520),
-        atom_std=2, atom_opt=4, atom_sep=1874, atom_x=None,
-        v_range=(2.0, 13.0), h_range=(1.5, 6.0), d_range=(100.0, 500.0),
-        # RESTRICCION: a 70 L solo con DB2160. Con DB1580 (52 kg) el MTOW (102) no cierra.
-        carga_max_por_bateria=True,
-        bomba_2=30.0, bomba_4=40.0,
-    ),
-    "T100": dict(
-        nombre="DJI Agras T100",
-        rotor_d=1.574, n_brazos=4, coaxial=True,
-        m_bat=75.0, tanque=100.0, mtow=175.0,
-        bateria="DB2160",
-        wheelbase=2.330, span=(3.220, 3.224),
-        atom_std=2, atom_opt=4, atom_sep=1834,
-        atom_x=[-0.9, -0.8, -0.8, -0.9],   # clase O (propietario)
-        v_range=(2.0, 13.0), h_range=(1.5, 6.0), d_range=(100.0, 500.0),
-        carga_max_por_bateria=True,
-        bomba_2=30.0, bomba_4=40.0,
-    ),
+# Niveles de malla para el estudio de independencia (factor ~1.4 entre niveles).
+MALLAS = {
+    "gruesa": {"dx": 0.25, "lv_cerca": 1, "lv_disco": 2, "lv_cuerpo": (2, 3)},
+    "media":  {"dx": 0.18, "lv_cerca": 1, "lv_disco": 2, "lv_cuerpo": (2, 3)},
+    "fina":   {"dx": 0.125, "lv_cerca": 1, "lv_disco": 2, "lv_cuerpo": (2, 3)},
 }
 
-# reparto de empuje del par coaxial: PARAMETRO, no supuesto (coaxial_thrust_split.md)
+# Turbulencia de entrada: intensidad y escala de longitud (clase I, declaradas).
+TU_ENTRADA = 0.05
+L_TURB_M = 0.10
+
+# --------------------------------------------------------------------------------------
+# Compatibilidad con scripts que importaban la API v1 (fix_case_meta_gravity.py, etc.)
+# --------------------------------------------------------------------------------------
+_PLATS = cg.cargar_todas()
+PLAT = {k: {"nombre": p.nombre, "coaxial": p.coaxial, "m_bat": p.masa_vacio_kg,
+            "tanque": p.tanque_kg, "mtow": p.mtow_kg} for k, p in _PLATS.items()}
 SPLIT_COAXIAL = [0.5, 0.6, 0.7]
 
 
-def rot_centers(p: dict) -> list[dict]:
-    """Centros de rotor en planta regular X (hipotesis I). Devuelve upper y lower si coaxial."""
-    R = p["wheelbase"] / 2.0
-    out = []
-    for i, (ang, rol) in enumerate([(45, "FL"), (135, "RL"), (225, "RR"), (315, "FR")], start=1):
-        x = R * math.cos(math.radians(ang))
-        y = R * math.sin(math.radians(ang))
-        if p["coaxial"]:
-            out.append({"id": f"R{i}_upper", "role": rol, "x": x, "y": y, "z": 0.18})
-            out.append({"id": f"R{i}_lower", "role": rol, "x": x, "y": y, "z": -0.02})
-        else:
-            out.append({"id": f"R{i}", "role": rol, "x": x, "y": y, "z": 0.08})
-    return out
-
-
-def n_rotores(p: dict) -> int:
-    return len(rot_centers(p))
-
-
-def disco(p: dict) -> dict:
-    n = n_rotores(p)
-    r = p["rotor_d"] / 2
-    A = n * math.pi * r ** 2
-    return {"n_rotores": n, "r_rotor": r, "A_total": A}
-
-
-def reparto_empuje(p: dict, masa: float, split: float) -> list[float]:
-    """Empuje por disco (N). Coaxial: reparto asimetrico parametrizado; simple: uniforme."""
-    T = masa * G
-    centros = rot_centers(p)
-    if not p["coaxial"]:
-        return [T / len(centros)] * len(centros)
-    n_brazos = len(centros) // 2
-    T_brazo = T / n_brazos
-    # split = fraccion del empuje del brazo que va al rotor SUPERIOR
-    out = []
-    for c in centros:
-        out.append(T_brazo * split if c["id"].endswith("upper") else T_brazo * (1 - split))
-    return out
+def rot_centers(p) -> list[dict]:
+    """Centros de rotor v2 (antes: planta regular X). Acepta clave o dict de PLAT."""
+    clave = p if isinstance(p, str) else next(k for k, v in PLAT.items() if v is p)
+    return [{"id": r.rotor_id, "role": r.brazo, "x": r.centro[0], "y": r.centro[1],
+             "z": r.centro[2], "normal": r.normal, "nivel": r.nivel}
+            for r in _PLATS[clave].rotores]
 
 
 # --------------------------------------------------------------------------------------
-# DOE POR PLATAFORMA
+# geometria: giro de cabeceo
 # --------------------------------------------------------------------------------------
-def latin_hypercube(n: int, dims: int, rng: random.Random) -> list[list[float]]:
-    """LHS estratificado correcto: una muestra por estrato en cada dimension."""
-    cols = []
-    for _ in range(dims):
-        puntos = [(i + rng.random()) / n for i in range(n)]
-        rng.shuffle(puntos)
-        cols.append(puntos)
-    return [[cols[d][i] for d in range(dims)] for i in range(n)]
+def rot_cabeceo(v, theta_deg: float) -> tuple:
+    """Cabeceo MORRO ABAJO de theta (>0): la normal vertical se inclina hacia +X (adelante).
+    Giro alrededor de +Y: x' = x cos + z sin ; z' = -x sin + z cos."""
+    t = math.radians(theta_deg)
+    c, s = math.cos(t), math.sin(t)
+    return (v[0] * c + v[2] * s, v[1], -v[0] * s + v[2] * c)
 
 
-def escala(u: float, lo: float, hi: float) -> float:
-    return lo + u * (hi - lo)
-
-
-def build_doe(n_por_plataforma: int, seed: int = 42) -> list[dict]:
-    rng = random.Random(seed)
-    filas = []
-    for clave, p in PLAT.items():
-        # 5 dimensiones: V, H, d, carga, split
-        muestras = latin_hypercube(n_por_plataforma, 5, rng)
-        for i, (uv, uh, ud, uc, us) in enumerate(muestras, start=1):
-            V = escala(uv, *p["v_range"])
-            H = escala(uh, *p["h_range"])
-            d = escala(ud, *p["d_range"])
-            f = uc                                 # fraccion de tanque 0..1
-            masa = p["m_bat"] + p["tanque"] * f
-            # atomizadores: alternar 2/4 de forma balanceada
-            atom = 2 if i % 2 else 4
-            # split: solo relevante en coaxial; en simple va fijo a 0.5
-            split = escala(us, SPLIT_COAXIAL[0], SPLIT_COAXIAL[-1]) if p["coaxial"] else 0.5
-            case_id = f"{clave}_V{V:.1f}_H{H:.1f}_d{d:.0f}_f{f:.2f}_a{atom}"
-            filas.append({
-                "case_id": case_id,
-                "plataforma": clave,
-                "V_inf_ms": round(V, 3),
-                "H_m": round(H, 3),
-                "DV05_um": round(d, 1),
-                "carga_fraccion": round(f, 4),
-                "masa_total_kg": round(masa, 2),
-                "atomizadores": atom,
-                "split_coaxial_superior": round(split, 3),
-                "coaxial": p["coaxial"],
-                "fuente_geometria": "P/S/O/I (ver presupuesto_hipotesis.md)",
-                "estado": "especificado_no_ejecutado",
-            })
-    return filas
+def stl_girado(origen: Path, destino: Path, theta_deg: float, nombre: str) -> int:
+    """Copia un STL binario girado theta (cabeceo). Devuelve el numero de facetas."""
+    datos = origen.read_bytes()
+    n = struct.unpack("<I", datos[80:84])[0]
+    if len(datos) != 84 + 50 * n:
+        raise ValueError(f"{origen.name}: no es un STL binario valido")
+    cab = (nombre.encode() + b" " * 80)[:80]
+    out = bytearray(cab + struct.pack("<I", n))
+    for i in range(n):
+        reg = struct.unpack("<12fH", datos[84 + 50 * i: 84 + 50 * (i + 1)])
+        vs = [rot_cabeceo(reg[3 * k: 3 * k + 3], theta_deg) for k in range(4)]
+        out += struct.pack("<12fH", *[c for v in vs for c in v], reg[12])
+    destino.write_bytes(bytes(out))
+    return n
 
 
 # --------------------------------------------------------------------------------------
-# GENERACION DE CASOS OpenFOAM
+# fisica del caso (analitica, declarada)
 # --------------------------------------------------------------------------------------
+def empujes_y_fuerzas(p: cg.Plataforma, masa: float, theta_deg: float, split: float) -> dict:
+    """Empuje por rotor y fuerza sobre el aire, con sum(F_aire,z) = -m g exactamente."""
+    pesos = p.reparto_empuje(1.0, split)                      # reparto relativo (suma 1)
+    normales = [rot_cabeceo(r.normal, theta_deg) for r in p.rotores]
+    nz = sum(w * n[2] for w, n in zip(pesos, normales))
+    W = masa * G
+    escala = W / nz                                           # empuje total |T|
+    T = [escala * w for w in pesos]
+    F = [tuple(-t * c for c in n) for t, n in zip(T, normales)]
+    return {"T": T, "F_aire": F, "normales": normales, "W": W, "T_total": escala,
+            "F_suma": tuple(sum(f[i] for f in F) for i in range(3))}
+
+
 def foam_header(cls: str, obj: str) -> str:
     return f"""/*--------------------------------*- C++ -*----------------------------------*\\
 | =========                 |                                                 |
@@ -220,82 +153,221 @@ FoamFile
 """
 
 
-def write_case(case_dir: Path, row: dict, p: dict) -> None:
-    """Escribe un caso OpenFOAM completo para actuator disk con empuje prescrito."""
-    case_dir.mkdir(parents=True, exist_ok=True)
-    (case_dir / "system").mkdir(exist_ok=True)
-    (case_dir / "constant").mkdir(exist_ok=True)
-    (case_dir / "0").mkdir(exist_ok=True)
+def _v(t, fmt=".5f") -> str:
+    return "(" + " ".join(format(c, fmt) for c in t) + ")"
 
-    H = row["H_m"]
-    V = row["V_inf_ms"]
-    masa = row["masa_total_kg"]
-    split = row["split_coaxial_superior"]
-    centros = rot_centers(p)
-    empujes = reparto_empuje(p, masa, split)
-    d = disco(p)
-    r_rot = d["r_rotor"]
 
-    # dominio: el dron en z=0; suelo a -H (altura de aplicacion REAL, no 6 m fijos)
-    x0, x1 = -6.0, 14.0
-    y0, y1 = -6.0, 6.0
-    z0, z1 = -H, 4.0
-    # division de la malla base y tamano de celda resultante.
-    # Se usa para dimensionar el cilindro del disco: un cilindro mas fino que una celda
-    # NO contiene ninguna celda y la cellZone sale vacia (bug detectado en GATE CFD-0).
-    NDIV_X, NDIV_Y, NDIV_Z = 80, 48, 48
-    base_cell = max((x1 - x0) / NDIV_X, (y1 - y0) / NDIV_Y, (z1 - z0) / NDIV_Z)
+# --------------------------------------------------------------------------------------
+# escritura del caso
+# --------------------------------------------------------------------------------------
+def escribir_caso_aire(case_dir: Path, air: dict, malla: str = "gruesa",
+                       hover_bc: str = "abierto") -> dict:
+    """Escribe un caso de aire completo. `air` = fila de air_cases (o equivalente)."""
+    p = cg.cargar(air["plataforma"])
+    V = float(air["V_ms"])
+    H = float(air["H_m"])
+    f = float(air["f"])
+    split = float(air.get("split_coax") or 0.5)
+    theta = air.get("theta_actitud_deg")
+    if V > 0 and theta is None:
+        raise ValueError(f"{air.get('air_id')}: V = {V} m/s sin actitud theta. La actitud "
+                         "en avance es clase D hasta tener telemetria o Cd*A; no se inventa.")
+    theta = float(theta or 0.0)
+    masa = p.masa(f)
+    m = MALLAS[malla]
+    dx = m["dx"]
+    hover = V == 0.0
+
+    fz = empujes_y_fuerzas(p, masa, theta, split)
+    centros = [rot_cabeceo(r.centro, theta) for r in p.rotores]
+    boq = [(b, rot_cabeceo(b.centro, theta), rot_cabeceo(b.eje, theta)) for b in p.boquillas]
+
+    # ---- dominio (ejes del dron)
+    z_suelo = p.z_suelo_modelo - H
+    z_top = 5.0
+    if hover:
+        x0, x1, y0, y1 = -10.0, 10.0, -10.0, 10.0      # simetrico (Entry 017: remallado)
+    else:
+        x0, x1, y0, y1 = -16.0, 8.0, -8.0, 8.0         # estela aguas abajo (-X)
+    nx, ny, nz = (round((x1 - x0) / dx), round((y1 - y0) / dx), round((z_top - z_suelo) / dx))
+    # celda en el disco y espesor de la zona: un cilindro mas fino que ~1.5 celdas sale vacio
+    dx_disco = dx / 2 ** m["lv_disco"]
+    h_zona = max(max(r.espesor_m for r in p.rotores), 1.5 * dx_disco)
+
+    for sub in ("system", "constant/triSurface", "0"):
+        (case_dir / sub).mkdir(parents=True, exist_ok=True)
+
+    n_fac = stl_girado(p.stl_airframe, case_dir / "constant" / "triSurface" / "airframe.stl",
+                       theta, f"{p.clave} airframe v{p.version_modelo} theta={theta}")
 
     # ---- blockMeshDict
-    (case_dir / "system" / "blockMeshDict").write_text(
-        foam_header("dictionary", "blockMeshDict") + f"""
+    (case_dir / "system" / "blockMeshDict").write_text(foam_header("dictionary", "blockMeshDict") + f"""
 scale 1;
-
 vertices
 (
-    ({x0} {y0} {z0})
-    ({x1} {y0} {z0})
-    ({x1} {y1} {z0})
-    ({x0} {y1} {z0})
-    ({x0} {y0} {z1})
-    ({x1} {y0} {z1})
-    ({x1} {y1} {z1})
-    ({x0} {y1} {z1})
+    ({x0} {y0} {z_suelo:.5f}) ({x1} {y0} {z_suelo:.5f}) ({x1} {y1} {z_suelo:.5f}) ({x0} {y1} {z_suelo:.5f})
+    ({x0} {y0} {z_top}) ({x1} {y0} {z_top}) ({x1} {y1} {z_top}) ({x0} {y1} {z_top})
 );
-
-blocks
-(
-    hex (0 1 2 3 4 5 6 7) ({NDIV_X} {NDIV_Y} {NDIV_Z}) simpleGrading (1 1 1)
-);
-
+blocks ( hex (0 1 2 3 4 5 6 7) ({nx} {ny} {nz}) simpleGrading (1 1 1) );
 edges ();
-
 boundary
 (
-    inlet  {{ type patch; faces ((0 4 7 3)); }}
-    outlet {{ type patch; faces ((1 2 6 5)); }}
+    // ejes del dron: +X adelante. En avance el aire ENTRA por x_max (inlet) y sale por x_min.
+    inlet  {{ type patch; faces ((1 2 6 5)); }}
+    outlet {{ type patch; faces ((0 4 7 3)); }}
     sides  {{ type patch; faces ((0 1 5 4) (3 7 6 2)); }}
     top    {{ type patch; faces ((4 5 6 7)); }}
     ground {{ type wall;  faces ((0 3 2 1)); }}
 );
-
 mergePatchPairs ();
 """, encoding="utf-8")
-    # ---- controlDict con extraccion de datos (function objects)
-    probe_lines = "\n".join(
-        f"        ({c['x']:.4f} {c['y']:.4f} {c['z']:.4f})" for c in centros[:2]
-    )
-    (case_dir / "system" / "controlDict").write_text(
-        foam_header("dictionary", "controlDict") + f"""
+
+    # ---- surfaceFeatureExtract + snappyHexMesh
+    (case_dir / "system" / "surfaceFeatureExtractDict").write_text(
+        foam_header("dictionary", "surfaceFeatureExtractDict") + """
+airframe.stl
+{
+    extractionMethod    extractFromSurface;
+    includedAngle       150;
+    subsetFeatures { nonManifoldEdges no; openEdges yes; }
+    writeObj            no;
+}
+""", encoding="utf-8")
+
+    R = max(r.radio_m for r in p.rotores)
+    xs = [c[0] for c in centros]
+    ys = [c[1] for c in centros]
+    zs = [c[2] for c in centros]
+    # caja "cerca": rotores + estela hasta el suelo; en avance se alarga aguas abajo el
+    # recorrido de la estela en el tiempo de caida ~ (H+1)/v_i  (orden de magnitud)
+    vi = p.v_inducida_hover(masa)
+    arrastre = 0.0 if hover else min(V * (H + 1.0) / vi, 12.0)
+    cerca_min = (min(xs) - R - 0.5 - arrastre, min(ys) - R - 0.5, z_suelo - 1.0)
+    cerca_max = (max(xs) + R + 0.5, max(ys) + R + 0.5, max(zs) + 0.8)
+    regiones = [f"""        cerca
+        {{
+            type searchableBox; min {_v(cerca_min, '.3f')}; max {_v(cerca_max, '.3f')};
+        }}"""]
+    niveles = [f"        cerca {{ mode inside; levels ((1e15 {m['lv_cerca']})); }}"]
+    for i, (r, c, n) in enumerate(zip(p.rotores, centros, fz["normales"]), 1):
+        a = tuple(c[k] - 0.15 * n[k] for k in range(3))
+        b = tuple(c[k] + 0.15 * n[k] for k in range(3))
+        regiones.append(f"""        disco{i}   // {r.rotor_id}
+        {{
+            type searchableCylinder; point1 {_v(a)}; point2 {_v(b)}; radius {1.08 * r.radio_m:.4f};
+        }}""")
+        niveles.append(f"        disco{i} {{ mode inside; levels ((1e15 {m['lv_disco']})); }}")
+    for j, (b, c, e) in enumerate(boq, 1):
+        regiones.append(f"""        boquilla{j}   // {b.nozzle_id}
+        {{
+            type searchableSphere; centre {_v(c)}; radius 0.30;
+        }}""")
+        niveles.append(f"        boquilla{j} {{ mode inside; levels ((1e15 {m['lv_disco']})); }}")
+    lv0, lv1 = m["lv_cuerpo"]
+    loc = (x1 - 0.371, y1 - 0.413, z_top - 0.437)
+    (case_dir / "system" / "snappyHexMeshDict").write_text(foam_header("dictionary", "snappyHexMeshDict") + f"""
+castellatedMesh true;
+snap            true;
+addLayers       false;   // capas: se activan tras el estudio de y+ de CFD-0
+
+geometry
+{{
+    airframe.stl {{ type triSurfaceMesh; name airframe; }}
+{chr(10).join(regiones)}
+}}
+
+castellatedMeshControls
+{{
+    maxLocalCells       4000000;
+    maxGlobalCells      8000000;
+    minRefinementCells  10;
+    maxLoadUnbalance    0.10;
+    nCellsBetweenLevels 3;
+    features ( {{ file "airframe.eMesh"; level {lv1}; }} );
+    refinementSurfaces {{ airframe {{ level ({lv0} {lv1}); patchInfo {{ type wall; }} }} }}
+    resolveFeatureAngle 30;
+    refinementRegions
+    {{
+{chr(10).join(niveles)}
+    }}
+    locationInMesh {_v(loc, '.3f')};
+    allowFreeStandingZoneFaces true;
+}}
+
+snapControls
+{{
+    nSmoothPatch 3; tolerance 2.0; nSolveIter 50; nRelaxIter 5;
+    nFeatureSnapIter 10; implicitFeatureSnap false; explicitFeatureSnap true;
+    multiRegionFeatureSnap false;
+}}
+
+addLayersControls
+{{
+    relativeSizes true; layers {{ airframe {{ nSurfaceLayers 3; }} }}
+    expansionRatio 1.2; finalLayerThickness 0.4; minThickness 0.1; nGrow 0;
+    featureAngle 60; nRelaxIter 5; nSmoothSurfaceNormals 1; nSmoothNormals 3;
+    nSmoothThickness 10; maxFaceThicknessRatio 0.5; maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle 90; nBufferCellsNoExtrude 0; nLayerIter 50;
+}}
+
+meshQualityControls
+{{
+    maxNonOrtho 65; maxBoundarySkewness 20; maxInternalSkewness 4; maxConcave 80;
+    minVol 1e-13; minTetQuality 1e-15; minArea -1; minTwist 0.02; minDeterminant 0.001;
+    minFaceWeight 0.05; minVolRatio 0.01; minTriangleTwist -1; nSmoothScale 4;
+    errorReduction 0.75;
+}}
+mergeTolerance 1e-6;
+""", encoding="utf-8")
+
+    # ---- topoSet: cellZone cilindrica INCLINADA por rotor (centro +- h/2 * normal)
+    acciones = []
+    zonas_meta = {}
+    for i, (r, c, n, T, F) in enumerate(zip(p.rotores, centros, fz["normales"], fz["T"], fz["F_aire"]), 1):
+        a = tuple(c[k] - 0.5 * h_zona * n[k] for k in range(3))
+        b = tuple(c[k] + 0.5 * h_zona * n[k] for k in range(3))
+        acciones.append(f"""    // rotor{i} = {r.rotor_id} ({r.nivel}, {r.giro_desde_arriba}); espesor de zona {h_zona:.4f} m
+    {{ name rotorSet{i}; type cellSet; action new; source cylinderToCell;
+      p1 {_v(a)}; p2 {_v(b)}; radius {r.radio_m:.5f}; }}
+    {{ name rotor{i}; type cellZoneSet; action new; source setToCellZone; set rotorSet{i}; }}""")
+        zonas_meta[f"rotor{i}"] = {
+            "rotor_id": r.rotor_id, "nivel": r.nivel, "giro_desde_arriba": r.giro_desde_arriba,
+            "centro_m": [round(x, 6) for x in c], "normal": [round(x, 7) for x in n],
+            "radio_m": r.radio_m, "espesor_zona_m": round(h_zona, 5),
+            "V_teorico_m3": round(math.pi * r.radio_m ** 2 * h_zona, 7),
+            "T_N": round(T, 6), "F_aire_N": [round(x, 6) for x in F],
+        }
+    (case_dir / "system" / "topoSetDict").write_text(foam_header("dictionary", "topoSetDict") + f"""
+// Una cellZone cilindrica por rotor, ALINEADA con disk_normal (geometria v2, inclinada).
+actions
+(
+{chr(10).join(acciones)}
+);
+""", encoding="utf-8")
+
+    # ---- controlDict + function objects de verificacion (CFD-0) y extraccion
+    lineas_dw = []
+    for i, (c, n) in enumerate(zip(centros, fz["normales"]), 1):
+        lineas_dw.append(f"""            bajo_rotor{i} {{ type uniform; axis z; start ({c[0]:.4f} {c[1]:.4f} {z_suelo + 0.02:.4f});
+                           end ({c[0]:.4f} {c[1]:.4f} {c[2] + 1.0:.4f}); nPoints 80; }}""")
+    zonas_vff = []
+    for i in range(1, len(p.rotores) + 1):
+        zonas_vff.append(f"""    U_rotor{i}
+    {{
+        type volFieldValue; libs (fieldFunctionObjects); writeControl timeStep; writeInterval 20;
+        regionType cellZone; name rotor{i}; operation volAverage; fields (U); writeFields false;
+    }}""")
+    z_boq = min(c[2] for _, c, _ in boq)
+    (case_dir / "system" / "controlDict").write_text(foam_header("dictionary", "controlDict") + f"""
 application     simpleFoam;
-startFrom       startTime;
+startFrom       latestTime;
 startTime       0;
 stopAt          endTime;
-endTime         2000;
+endTime         3000;
 deltaT          1;
 writeControl    timeStep;
-writeInterval   100;
-purgeWrite      3;
+writeInterval   500;
+purgeWrite      2;
 writeFormat     ascii;
 writePrecision  8;
 writeCompression off;
@@ -305,77 +377,61 @@ runTimeModifiable true;
 
 functions
 {{
-    // plano receptor a la altura del suelo: D(x,y) se integra aqui
-    receptorPlane
+    residuales {{ type solverInfo; libs (utilityFunctionObjects); fields (U p k omega); writeResidualFields no; }}
+    minmax     {{ type fieldMinMax; libs (fieldFunctionObjects); fields (U p); writeControl timeStep; writeInterval 20; }}
+
+    // balance global de momento (CFD-0, condicion 2): fuerza sobre suelo y sobre el fuselaje
+    fuerza_suelo
     {{
-        type            surfaces;
-        libs            ("libsampling.so");
-        surfaceFormat   raw;
-        fields          (U p k omega);
-        interpolationScheme cellPoint;
-        surfaces
-        {{
-            ground
-            {{
-                type        plane;
-                planeType   pointAndNormal;
-                pointAndNormalDict
-                {{
-                    point   (0 0 {z0 + 0.01});
-                    normal  (0 0 1);
-                }}
-                triangulate false;
-            }}
-        }}
+        type forces; libs (forces); writeControl timeStep; writeInterval 20;
+        patches (ground); rho rhoInf; rhoInf {RHO}; CofR (0 0 0);
+    }}
+    fuerza_fuselaje
+    {{
+        type forces; libs (forces); writeControl timeStep; writeInterval 20;
+        patches (airframe); rho rhoInf; rhoInf {RHO}; CofR (0 0 0);
+    }}
+    fuerza_contorno
+    {{
+        type forces; libs (forces); writeControl timeStep; writeInterval 20;
+        patches (inlet outlet sides top); rho rhoInf; rhoInf {RHO}; CofR (0 0 0);
     }}
 
-    // lineas verticales: perfil de downwash u(z) bajo cada rotor
-    downwashLines
+{chr(10).join(zonas_vff)}
+
+    downwash
     {{
-        type            sets;
-        libs            ("libsampling.so");
-        writeControl    timeStep;
-        writeInterval   100;
-        interpolationScheme cellPoint;
-        setFormat       raw;
-        fields          (U k omega);
+        type sets; libs (sampling); writeControl writeTime; interpolationScheme cellPoint;
+        setFormat raw; fields (U k);
         sets
         {{
-            line_under_rotor1
-            {{
-                type        uniform;
-                axis        z;
-                start       ({centros[0]['x']:.4f} {centros[0]['y']:.4f} {z0 + 0.02});
-                end         ({centros[0]['x']:.4f} {centros[0]['y']:.4f} 1.0);
-                nPoints     60;
-            }}
+{chr(10).join(lineas_dw)}
         }}
     }}
 
-    // residuos y fuerzas en el disco
-    forces
+    planos
     {{
-        type            forces;
-        libs            ("libforces.so");
-        writeControl    timeStep;
-        writeInterval   20;
-        patches         (ground);
-        rho             rhoInf;
-        rhoInf          {RHO};
-        CofR            (0 0 0);
+        type surfaces; libs (sampling); writeControl writeTime; surfaceFormat raw;
+        interpolationScheme cellPoint; fields (U p k);
+        surfaces
+        {{
+            suelo     {{ type plane; point (0 0 {z_suelo + 0.02:.4f}); normal (0 0 1); triangulate false; }}
+            boquillas {{ type plane; point (0 0 {z_boq - 0.05:.4f}); normal (0 0 1); triangulate false; }}
+            simetria  {{ type plane; point (0 0 0); normal (0 1 0); triangulate false; }}
+        }}
     }}
+
+    yPlus {{ type yPlus; libs (fieldFunctionObjects); writeControl writeTime; }}
 }}
 """, encoding="utf-8")
 
-    # ---- fvSchemes
-    (case_dir / "system" / "fvSchemes").write_text(
-        foam_header("dictionary", "fvSchemes") + """
+    (case_dir / "system" / "fvSchemes").write_text(foam_header("dictionary", "fvSchemes") + """
 ddtSchemes      { default steadyState; }
-gradSchemes     { default Gauss linear; limited cellLimited Gauss linear 1; }
+gradSchemes     { default Gauss linear; limited cellLimited Gauss linear 1; grad(U) cellLimited Gauss linear 1; }
 divSchemes
 {
     default                         none;
-    div(phi,U)                      bounded Gauss linearUpwind grad(U);
+    div(phi,U)                      bounded Gauss linearUpwind limited;
     div(phi,k)                      bounded Gauss upwind;
     div(phi,omega)                  bounded Gauss upwind;
     div((nuEff*dev2(T(grad(U)))))   Gauss linear;
@@ -386,36 +442,17 @@ snGradSchemes   { default limited corrected 0.5; }
 wallDist        { method meshWave; }
 """, encoding="utf-8")
 
-    # ---- fvSolution
-    (case_dir / "system" / "fvSolution").write_text(
-        foam_header("dictionary", "fvSolution") + """
+    (case_dir / "system" / "fvSolution").write_text(foam_header("dictionary", "fvSolution") + """
 solvers
 {
-    p
-    {
-        solver          GAMG;
-        tolerance       1e-8;
-        relTol          0.01;
-        smoother        GaussSeidel;
-    }
-    "(U|k|omega)"
-    {
-        solver          smoothSolver;
-        smoother        symGaussSeidel;
-        tolerance       1e-9;
-        relTol          0.01;
-    }
+    p { solver GAMG; tolerance 1e-8; relTol 0.01; smoother GaussSeidel; }
+    "(U|k|omega)" { solver smoothSolver; smoother symGaussSeidel; tolerance 1e-9; relTol 0.05; }
 }
 SIMPLE
 {
-    nNonOrthogonalCorrectors 2;
+    nNonOrthogonalCorrectors 1;
     consistent      yes;
-    residualControl
-    {
-        p               1e-5;
-        U               1e-6;
-        "(k|omega)"     1e-6;
-    }
+    residualControl { p 1e-5; U 1e-6; "(k|omega)" 1e-6; }
 }
 relaxationFactors
 {
@@ -424,337 +461,236 @@ relaxationFactors
 }
 """, encoding="utf-8")
 
-    # ---- turbulenceProperties
-    # OJO CON `class`: OpenFOAM 2412 exige `dictionary` para turbulenceProperties y
-    # transportProperties. Escribir `IOdictionary` provoca:
-    #   FOAM FATAL IO ERROR: unexpected class name IOdictionary expected dictionary
-    # Bug detectado por GATE CFD-0 al ejecutar el primer caso real.
-    (case_dir / "constant" / "turbulenceProperties").write_text(
-        foam_header("dictionary", "turbulenceProperties") + """
-simulationType  RAS;
-RAS
-{
-    model           kOmegaSST;
-    turbulence      on;
-    printCoeffs     on;
-}
+    (case_dir / "system" / "decomposeParDict").write_text(foam_header("dictionary", "decomposeParDict") + """
+numberOfSubdomains 8;
+method          scotch;
 """, encoding="utf-8")
 
-    (case_dir / "constant" / "transportProperties").write_text(
-        foam_header("dictionary", "transportProperties") + f"""
+    (case_dir / "constant" / "turbulenceProperties").write_text(foam_header("dictionary", "turbulenceProperties") + """
+simulationType  RAS;
+RAS { model kOmegaSST; turbulence on; printCoeffs on; }
+""", encoding="utf-8")
+    (case_dir / "constant" / "transportProperties").write_text(foam_header("dictionary", "transportProperties") + f"""
 transportModel  Newtonian;
 nu              [0 2 -1 0 0 0 0] {NU};
 """, encoding="utf-8")
 
-    # ---- condiciones de contorno REALES (con traslacion)
-    tint = 0.05   # intensidad turbulenta (numero, no string)
-    k_val = 1.5 * (V * tint) ** 2
-    omega_val = k_val ** 0.5 / (0.09 ** 0.25 * 0.01)   # l ~ 1 cm
-    (case_dir / "0" / "U").write_text(
-        foam_header("volVectorField", "U") + f"""
-dimensions      [0 1 -1 0 0 0 0];
-internalField   uniform ({V} 0 0);
-boundaryField
-{{
-    inlet   {{ type fixedValue;  value uniform ({V} 0 0); }}
-    outlet  {{ type inletOutlet; inletValue uniform ({V} 0 0); value uniform ({V} 0 0); }}
-    sides   {{ type slip; }}
-    top     {{ type slip; }}
-    ground  {{ type noSlip; }}
-}}
-""", encoding="utf-8")
+    # ---- condiciones de contorno
+    U_ref = max(V, vi)
+    k_val = 1.5 * (U_ref * TU_ENTRADA) ** 2
+    om_val = math.sqrt(k_val) / (0.09 ** 0.25 * L_TURB_M)
+    Uv = f"({-V:g} 0 0)"
+    if hover and hover_bc == "cerrado":
+        # Entry 016/017: dominio cerrado slip + una unica salida de presion en el techo.
+        bcU = {"inlet": "type slip;", "outlet": "type slip;", "sides": "type slip;",
+               "top": "type slip;", "ground": "type noSlip;"}
+        bcp = {"inlet": "type zeroGradient;", "outlet": "type zeroGradient;",
+               "sides": "type zeroGradient;", "top": "type fixedValue; value uniform 0;",
+               "ground": "type zeroGradient;"}
+        bct = {k: "type slip;" for k in ("inlet", "outlet", "sides", "top")}
+    elif hover:
+        # aire libre: entrada/salida por presion total en todos los contornos laterales y techo
+        abierto_U = "type pressureInletOutletVelocity; value uniform (0 0 0);"
+        bcU = {k: abierto_U for k in ("inlet", "outlet", "sides", "top")}
+        bcU["ground"] = "type noSlip;"
+        bcp = {k: "type totalPressure; p0 uniform 0; value uniform 0;" for k in ("inlet", "outlet", "sides", "top")}
+        bcp["ground"] = "type zeroGradient;"
+        bct = None
+    else:
+        bcU = {"inlet": f"type fixedValue; value uniform {Uv};",
+               "outlet": f"type inletOutlet; inletValue uniform (0 0 0); value uniform {Uv};",
+               "sides": "type slip;", "top": "type slip;",
+               "ground": f"type fixedValue; value uniform {Uv};   // suelo movil (ejes del dron)"}
+        bcp = {"inlet": "type zeroGradient;", "outlet": "type fixedValue; value uniform 0;",
+               "sides": "type zeroGradient;", "top": "type zeroGradient;", "ground": "type zeroGradient;"}
+        bct = {"sides": "type slip;", "top": "type slip;"}
+    bcU["airframe"] = "type noSlip;"
+    bcp["airframe"] = "type zeroGradient;"
 
-    (case_dir / "0" / "p").write_text(
-        foam_header("volScalarField", "p") + """
-dimensions      [0 2 -2 0 0 0 0];
-internalField   uniform 0;
-boundaryField
-{
-    inlet   { type zeroGradient; }
-    outlet  { type fixedValue; value uniform 0; }
-    sides   { type zeroGradient; }
-    top     { type zeroGradient; }
-    ground  { type zeroGradient; }
-}
-""", encoding="utf-8")
-
-    for fld, val, dims in (("k", k_val, "[0 2 -2 0 0 0 0]"), ("omega", omega_val, "[0 0 -1 0 0 0 0]")):
-        (case_dir / "0" / fld).write_text(
-            foam_header("volScalarField", fld) + f"""
+    def campo(nombre, clase, dims, interno, bc):
+        cuerpo = "\n".join(f"    {k:9s}{{ {v} }}" for k, v in bc.items())
+        (case_dir / "0" / nombre).write_text(foam_header(clase, nombre) + f"""
 dimensions      {dims};
-internalField   uniform {val:.8g};
+internalField   uniform {interno};
 boundaryField
 {{
-    inlet   {{ type fixedValue;  value uniform {val:.8g}; }}
-    outlet  {{ type inletOutlet; inletValue uniform {val:.8g}; value uniform {val:.8g}; }}
-    sides   {{ type slip; }}
-    top     {{ type slip; }}
-    ground  {{ type kqRWallFunction; value uniform {val:.8g}; }}
+{cuerpo}
 }}
 """, encoding="utf-8")
 
-    (case_dir / "0" / "nut").write_text(
-        foam_header("volScalarField", "nut") + f"""
-dimensions      [0 2 -1 0 0 0 0];
-internalField   uniform 0;
-boundaryField
-{{
-    inlet   {{ type calculated; value uniform 0; }}
-    outlet  {{ type calculated; value uniform 0; }}
-    sides   {{ type calculated; value uniform 0; }}
-    top     {{ type calculated; value uniform 0; }}
-    ground  {{ type nutkWallFunction; value uniform 0; }}
-}}
-""", encoding="utf-8")
+    campo("U", "volVectorField", "[0 1 -1 0 0 0 0]", Uv if not hover else "(0 0 0)", bcU)
+    campo("p", "volScalarField", "[0 2 -2 0 0 0 0]", "0", bcp)
+    for nombre, val, dims, wf in (("k", k_val, "[0 2 -2 0 0 0 0]", "kqRWallFunction"),
+                                  ("omega", om_val, "[0 0 -1 0 0 0 0]", "omegaWallFunction")):
+        bc = {}
+        for pat in ("inlet", "outlet", "sides", "top"):
+            if bct and pat in bct:
+                bc[pat] = bct[pat]
+            elif pat == "inlet" and not hover:
+                bc[pat] = f"type fixedValue; value uniform {val:.6g};"
+            else:
+                bc[pat] = f"type inletOutlet; inletValue uniform {val:.6g}; value uniform {val:.6g};"
+        bc["ground"] = f"type {wf}; value uniform {val:.6g};"
+        bc["airframe"] = f"type {wf}; value uniform {val:.6g};"
+        campo(nombre, "volScalarField", dims, f"{val:.6g}", bc)
+    bc_nut = {k: "type calculated; value uniform 0;" for k in ("inlet", "outlet", "sides", "top")}
+    bc_nut["ground"] = "type nutkWallFunction; value uniform 0;"
+    bc_nut["airframe"] = "type nutkWallFunction; value uniform 0;"
+    campo("nut", "volScalarField", "[0 2 -1 0 0 0 0]", "0", bc_nut)
 
-    # ---- topoSet: una cellZone cilindrica por rotor
-    # SINTAXIS CORRECTA (tres bugs detectados ejecutando GATE CFD-0):
-    #   1) `cylinderToCell` es una FUENTE, no un tipo: type cellSet ; source cylinderToCell
-    #      (el error decia: Unknown set type cylinderToCell)
-    #   2) cada accion exige `action` (new/add/...): Entry 'action' not found
-    #   3) GROSOR DEL CILINDRO: con la malla base (184320 celdas, ~0.2 m por celda) un
-    #      cilindro de 2 cm NO CONTENIA NINGUNA CELDA y la cellZone salia vacia:
-    #          cellLabels List<label> 0()
-    #      => fvOptions avisaba "No cells selected!" y el empuje no se aplicaba.
-    #      Se usa un grosor de 1.5 * tamano de celda base, que garantiza celdas dentro.
-    #      NOTA: el grosor solo selecciona celdas; la fuerza se aplica segun diskDir, asi
-    #      que el modelo sigue siendo de disco. En la suite definitiva esto se sustituye
-    #      por refinamiento local (ver proyecto: refinamiento en el tubo de estela).
-    dz_disco = 1.5 * base_cell
-    acciones = []
-    for i, (c, T) in enumerate(zip(centros, empujes), start=1):
-        acciones.append(f"""    // rotor {i} ({c['id']}): cellSet cilindrico -> cellZone   (grosor {dz_disco:.4f} m)
-    rotorSet{i}
-    {{
-        name    rotorSet{i};
-        type    cellSet;
-        action  new;
-        source  cylinderToCell;
-        p1      ({c['x']:.4f} {c['y']:.4f} {c['z'] - dz_disco/2:.4f});
-        p2      ({c['x']:.4f} {c['y']:.4f} {c['z'] + dz_disco/2:.4f});
-        radius  {r_rot:.4f};
-    }}
-    rotorZone{i}
-    {{
-        name    rotor{i};
-        type    cellZoneSet;
-        action  new;
-        source  setToCellZone;
-        set     rotorSet{i};
-    }}""")
-    (case_dir / "system" / "topoSetDict").write_text(
-        foam_header("dictionary", "topoSetDict") + f"""
-// Crea una cellZone cilindrica por rotor (volumen barrido del disco).
-// cylinderToCell -> cellSet ; cellZoneSet -> cellZone.
-actions
-(
-{chr(10).join(acciones)}
-);
-""", encoding="utf-8")
+    # ---- Allrun (WSL, via scripts/foam_run.py)
+    (case_dir / "Allrun.sh").write_text(f"""#!/usr/bin/env bash
+# Generado por scripts/build_case_suite.py (geometria v{GEOMETRIA_VERSION}).
+# Uso: python3 scripts/foam_run.py bash cfd/cases/<air_id>/Allrun.sh   (desde la raiz)
+set -euo pipefail
+CASO="$(cd "$(dirname "${{BASH_SOURCE[0]}}")" && pwd)"
+RAIZ="$(cd "$CASO/../../.." && pwd)"
+cd "$CASO"
+NP=${{NP:-8}}
+paso() {{ echo "== $(date -Is) $*"; }}
+# marcador propio: snappyHexMesh ya crea un cellZones vacio, asi que no sirve de indicador
+if [[ ! -f constant/polyMesh/.malla_v2_ok ]]; then
+  paso blockMesh;               blockMesh > log.blockMesh 2>&1
+  paso surfaceFeatureExtract;   surfaceFeatureExtract > log.surfaceFeatureExtract 2>&1
+  paso snappyHexMesh;           snappyHexMesh -overwrite > log.snappyHexMesh 2>&1
+  paso topoSet;                 topoSet > log.topoSet 2>&1
+  date -Is > constant/polyMesh/.malla_v2_ok
+fi
+paso checkMesh
+checkMesh -constant > log.checkMesh 2>&1 || true
+if ! grep -q "Mesh OK" log.checkMesh; then echo "[FALLO] checkMesh no da 'Mesh OK'"; exit 2; fi
+paso volumenes de zona y fuente prescrita
+python3 "$RAIZ/scripts/mesh_zone_volumes.py" --case "$CASO" --write > log.zoneVolumes 2>&1
+python3 "$RAIZ/scripts/build_prescribed_momentum.py" --case "$CASO" > log.prescribedMomentum 2>&1
+grep -q vectorSemiImplicitSource constant/fvOptions || {{ echo "[FALLO] sin fuente prescrita"; exit 3; }}
+# reanudacion: si una ejecucion previa se corto, recuperar su ultimo tiempo escrito
+ULT=$(ls -d processor0/[0-9]* 2>/dev/null | xargs -n1 basename 2>/dev/null | sort -g | tail -1 || true)
+if [[ -n "${{ULT:-}}" && "$ULT" != "0" ]]; then
+  paso "reanudacion desde t=$ULT (reconstructPar)"
+  reconstructPar -latestTime > log.reconstructPar.reanudar 2>&1
+  [[ -f log.simpleFoam ]] && mv log.simpleFoam "log.simpleFoam.hasta_t$ULT"   # conservar la historia previa
+fi
+paso decomposePar
+rm -rf processor*
+foamDictionary -entry numberOfSubdomains -set $NP system/decomposeParDict > /dev/null
+decomposePar -force -latestTime > log.decomposePar 2>&1
+paso simpleFoam x$NP
+mpirun --oversubscribe -np $NP simpleFoam -parallel > log.simpleFoam 2>&1
+paso reconstructPar
+reconstructPar -latestTime > log.reconstructPar 2>&1
+rm -rf processor*
+paso fin
+""", encoding="utf-8", newline="\n")
 
-    # ---- fvOptions: actuationDiskSource por rotor con empuje PRESCRITO
-    # SINTAXIS CORRECTA (bug detectado ejecutando GATE CFD-0):
-    #   `options` debe ser un SUB-DICCIONARIO, no una lista:
-    #       Entry 'options' found but not a sub-dictionary in dictionary "constant/fvOptions"
-    #   La version anterior escribia `options ( rotor1 {...} ... );` y fvOptions no se
-    #   cargaba => EL EMPUJE NUNCA SE APLICABA y el solver convergia a un campo sin discos.
-    #   Sintoma: residuales ~1e-10 y ninguna mencion de actuationDisk en el log.
-    opts = []
-    for i, (c, T) in enumerate(zip(centros, empujes), start=1):
-        A_disk = math.pi * r_rot ** 2
-        # Coeficientes del disco actuador derivados de la teoria de cantidad de movimiento.
-        # OJO: OpenFOAM EXIGE Cp > 0:
-        #     Cp and Ct must be greater than zero.
-        #     Cp = 0, Ct = 171.55894
-        # Cp no es decorativo: es la potencia que el disco extrae del flujo.
-        # Relacion estandar:  Cp = Ct * (1 - a),  con  a = (1 - sqrt(1 - Ct)) / 2
-        # (a = factor de induccion axial). Referimos a Uref = 1 m/s, asi que
-        # Ct = T / (0.5 * rho * A * Uref^2).
-        Uref = 1.0
-        ct = T / (0.5 * RHO * A_disk * Uref ** 2)
-        ct_acotado = min(ct, 0.999)          # Ct >= 1 no tiene solucion en teoria de disco
-        a_ind = (1.0 - math.sqrt(max(0.0, 1.0 - ct_acotado))) / 2.0
-        cp = ct_acotado * (1.0 - a_ind)
-        cp = max(cp, 1e-6)                   # nunca cero: OpenFOAM lo rechaza
-        opts.append(f"""    // rotor {i} ({c['id']}): T = {T:.3f} N   (masa {masa:.2f} kg, split {split:.3f})
-    rotor{i}
-    {{
-        type            actuationDiskSource;
-        libs            ("libfvOptions.so");
-        selectionMode   cellZone;
-        cellZone        rotor{i};
-        fields          (U);
-
-        // El empuje actua en la direccion del eje del rotor.
-        // En vuelo nivelado el disco empuja el aire hacia ABAJO: diskDir = (0 0 -1).
-        // upstreamPoint: punto AGUAS ARRIBA del disco (encima, si el flujo va hacia abajo).
-        // OpenFOAM 2412 exige esta entrada.
-        diskDir         (0 0 -1);
-        upstreamPoint   ({c['x']:.4f} {c['y']:.4f} {c['z'] + 0.5:.4f});
-        diskArea        {A_disk:.6f};
-        // Coeficientes referidos a Uref = 1 m/s
-        Uref            {Uref:.4f};
-        Ct              {ct_acotado:.8g};      // T = Ct * 0.5*rho*A*Uref^2
-        Cp              {cp:.8g};              // potencia extraida, Cp = Ct*(1-a)
-        writeMultiVal   false;
-    }}""")
-    (case_dir / "constant" / "fvOptions").write_text(
-        foam_header("dictionary", "fvOptions") + f"""
-// Empuje PRESCRITO por disco (arquitectura C -> B de geometry/coaxial_thrust_split.md).
-// `diskDir (0 0 -1)`: en vuelo nivelado el rotor empuja el aire hacia abajo.
-// El reparto superior/inferior en coaxiales es un PARAMETRO barrido, no una suposicion.
-// OJO: `options` es un SUB-DICCIONARIO (llaves), no una lista (parentesis).
-options
-{{
-{chr(10).join(opts)}
-}}
-""", encoding="utf-8")
-
-    # ---- snappyHexMeshDict (mallado del cuerpo, opcional)
-    (case_dir / "system" / "snappyHexMeshDict").write_text(
-        foam_header("dictionary", "snappyHexMeshDict") + """
-castellatedMesh true;
-snap            true;
-addLayers       true;
-
-geometry
-{
-    // el cuerpo del dron se malla desde geometry/models/<UAV>_control.stl
-    // si el STL no esta, snappyHexMesh no se ejecuta y se corre sobre el blockMesh
-}
-
-castellatedMeshControls
-{
-    maxLocalCells       2000000;
-    maxGlobalCells      8000000;
-    minRefinementCells  10;
-    nCellsBetweenLevels 3;
-    features ();
-    refinementSurfaces {}
-    refinementRegions
-    {
-        // refinamiento del tubo de estela bajo los rotores
-        wake
-        {
-            mode        inside;
-            levels      ((0.0 2));
-            // se define en la plantilla con searchableCylinder por rotor
-        }
-    }
-    resolveFeatureAngle 30;
-    allowFreeStandingZoneFaces false;
-    locationInMesh (3 0 2);
-}
-
-snapControls    { nSmoothPatch 3; tolerance 2.0; nSolveIter 100; nRelaxIter 5; }
-addLayersControls
-{
-    relativeSizes true;
-    layers {}
-    expansionRatio          1.2;
-    finalLayerThickness     0.3;
-    minThickness            0.1;
-    nGrow                   0;
-    featureAngle            60;
-    nRelaxIter              5;
-    nSmoothSurfaceNormals   1;
-    nSmoothNormals          3;
-    nSmoothThickness        10;
-    maxFaceThicknessRatio   0.5;
-    maxThicknessToMedialRatio 0.3;
-    minMedialAxisAngle      90;
-    nBufferCellsNoExtrude   0;
-    nLayerIter              50;
-}
-meshQualityControls
-{
-    maxNonOrtho 65; maxBoundarySkewness 20; maxInternalSkewness 4;
-    maxConcave 80; minVol 1e-13; minTetQuality 1e-30; minArea -1;
-    minTwist 0.02; minTriangleTwist -1; minDeterminant 0.001;
-    minFaceWeight 0.02; minVolRatio 0.01; nSmoothScale 4; errorReduction 0.75;
-}
-debug 0;
-mergeTolerance 1e-6;
-""", encoding="utf-8")
-
-    # ---- ficha del caso (trazabilidad)
+    # ---- ficha del caso
     meta = {
-        "case_id": row["case_id"],
-        "plataforma": row["plataforma"],
-        "nombre_plataforma": p["nombre"],
-        "arquitectura_cfd": "C (equilibrio fisico) -> B (actuator disk con empuje prescrito)",
+        "air_id": air.get("air_id"),
+        "case_id": air.get("air_id"),
+        "plataforma": p.clave,
+        "nombre_plataforma": p.nombre,
+        "geometria_version": GEOMETRIA_VERSION,
+        "fuente_geometria": str(p.dir_modelo.relative_to(ROOT)).replace("\\", "/")
+                            + f"/{p.prefijo}_cfd_coordinates.json",
+        "arquitectura_cfd": "C (equilibrio) -> B (fuente de momento prescrita vectorSemiImplicitSource)",
         "entradas": {
-            "V_inf_ms": row["V_inf_ms"],
-            "H_m": row["H_m"],
-            "DV05_um": row["DV05_um"],
-            "carga_fraccion": row["carga_fraccion"],
-            "masa_total_kg": row["masa_total_kg"],
-            "atomizadores": row["atomizadores"],
-            "split_coaxial_superior": row["split_coaxial_superior"],
+            "V_inf_ms": V, "H_m": H, "carga_fraccion": f, "masa_total_kg": round(masa, 4),
+            "split_coaxial_superior": split if p.coaxial else None,
+            "theta_actitud_deg": theta, "malla": malla, "hover_bc": hover_bc if hover else None,
+            "cuerpos_atom_opcionales": int(air.get("cuerpos_opcionales") or 0),
         },
         "derivados_analiticos": {
-            "n_rotores_modelados": d["n_rotores"],
-            "r_rotor_m": round(r_rot, 4),
-            "area_disco_total_m2": round(d["A_total"], 4),
-            "empuje_total_N": round(masa * G, 2),
-            "empuje_por_disco_N": {c["id"]: round(T, 2) for c, T in zip(centros, empujes)},
-            "v_inducida_hover_ms": round(math.sqrt(masa * G / (2 * RHO * d["A_total"])), 3),
+            "n_rotores_modelados": len(p.rotores),
+            "peso_N": round(fz["W"], 6),
+            "empuje_total_N": round(fz["T_total"], 6),
+            "suma_F_aire_N": [round(x, 6) for x in fz["F_suma"]],
+            "empuje_por_disco_N": {z: d["T_N"] for z, d in zonas_meta.items()},
+            "fuerza_sobre_aire_N": {z: d["F_aire_N"] for z, d in zonas_meta.items()},
+            "v_inducida_hover_ms": round(vi, 4),
+            "nota": "analitico (momentum theory solo orden de magnitud); NO es CFD",
         },
-        "dominio": {"x": [x0, x1], "y": [y0, y1], "z": [z0, z1], "nota": "suelo a -H (altura real)"},
-        "propiedades_fluido": {"rho": RHO, "nu": NU, "p_atm": P_ATM,
-                               "agua_rho": RHO_W, "agua_mu": MU_W, "agua_sigma": SIGMA_W},
-        "clasificacion_geometria": "P/S/O/I — NO M. Ver geometry/presupuesto_hipotesis.md",
+        "zonas_rotor": zonas_meta,
+        "boquillas": [{"nozzle_id": b.nozzle_id, "configuracion": b.configuracion,
+                       "centro_m": [round(x, 6) for x in c], "eje": [round(x, 7) for x in e],
+                       "radio_disco_m": b.radio_disco_m, "clasificacion": b.clasificacion}
+                      for b, c, e in boq],
+        "dominio": {"x": [x0, x1], "y": [y0, y1], "z": [round(z_suelo, 5), z_top],
+                    "z_suelo_modelo": p.z_suelo_modelo,
+                    "nota": "z_suelo = ground_plane_z_m - H (H desde el contacto de los patines, I)"},
+        "malla": {"nivel": malla, "dx_base_m": dx, "dx_disco_m": dx_disco,
+                  "n_bloque": [nx, ny, nz], "facetas_airframe": n_fac},
+        "turbulencia_entrada": {"modelo": "kOmegaSST", "Tu": TU_ENTRADA, "L_m": L_TURB_M,
+                                "U_ref_ms": round(U_ref, 4), "clase": "I"},
+        "propiedades_fluido": {"rho": RHO, "nu": NU, "g": G},
+        "supuestos_declarados": [
+            "H medido desde el contacto de los patines (I)",
+            "pivote del cabeceo en el origen del modelo; CG real D",
+            "reparto de empuje igual por brazo (sin trim de momentos; force_chain.py)",
+            "fuente uniforme en el disco; rotorDiskSource (elemento de pala) pendiente de CFD-0",
+        ],
         "estado": "generado_no_ejecutado",
         "no_contiene": "ningun resultado de CFD: este archivo describe el caso, no su salida",
     }
     (case_dir / "case_meta.json").write_text(json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")
+    return meta
 
 
 # --------------------------------------------------------------------------------------
+def _filas_bd(where: str, args: tuple) -> list[dict]:
+    con = sqlite3.connect(DB)
+    con.row_factory = sqlite3.Row
+    filas = [dict(r) for r in con.execute(f"SELECT * FROM air_cases WHERE {where}", args)]
+    con.close()
+    return filas
+
+
 def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default="data/processed")
-    ap.add_argument("--cfd", default="cfd/cases")
-    ap.add_argument("--n", type=int, default=32, help="casos por plataforma")
-    ap.add_argument("--no-cases", action="store_true", help="solo el DOE, sin escribir casos")
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--air-id")
+    ap.add_argument("--pendientes", action="store_true")
+    ap.add_argument("--max", type=int, default=0)
+    ap.add_argument("--plataforma")
+    ap.add_argument("--V", type=float, default=0.0)
+    ap.add_argument("--H", type=float, default=2.5)
+    ap.add_argument("--f", type=float, default=1.0)
+    ap.add_argument("--split", type=float, default=0.5)
+    ap.add_argument("--theta", type=float, default=None)
+    ap.add_argument("--malla", choices=list(MALLAS), default=None)
+    ap.add_argument("--hover-bc", choices=("cerrado", "abierto"), default="abierto")
+    ap.add_argument("--out", default=str(CASES))
+    ap.add_argument("--nombre", default=None, help="nombre de carpeta (por defecto, air_id)")
     a = ap.parse_args()
 
-    out = ROOT / a.out
-    out.mkdir(parents=True, exist_ok=True)
+    if a.air_id:
+        filas = _filas_bd("air_id = ?", (a.air_id,))
+    elif a.pendientes:
+        filas = _filas_bd("estado = 'pendiente' ORDER BY prioridad, air_id", ())
+    elif a.plataforma:
+        filas = [{"air_id": a.nombre or f"manual_{a.plataforma}_V{a.V:g}_H{a.H:g}_f{a.f:g}",
+                  "plataforma": a.plataforma.upper(), "V_ms": a.V, "H_m": a.H, "f": a.f,
+                  "split_coax": a.split, "theta_actitud_deg": a.theta, "malla": a.malla or "gruesa"}]
+    else:
+        ap.error("indica --air-id, --pendientes o --plataforma")
+    if a.max:
+        filas = filas[: a.max]
+    if not filas:
+        print("nada que generar")
+        return 1
 
-    filas = build_doe(a.n)
-    doe_path = out / "doe_by_platform.csv"
-    with doe_path.open("w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=list(filas[0].keys()))
-        w.writeheader()
-        w.writerows(filas)
-    print(f"DOE por plataforma -> {doe_path.relative_to(ROOT)}  ({len(filas)} casos)")
-
-    # resumen por plataforma
-    print(f"\n  {'plataforma':10s} {'casos':>6s} {'V (m/s)':>14s} {'H (m)':>12s} "
-          f"{'d (um)':>13s} {'masa (kg)':>16s} {'rotores':>8s} {'A_disco':>9s}")
-    for clave, p in PLAT.items():
-        sub = [f for f in filas if f["plataforma"] == clave]
-        d = disco(p)
-        print(f"  {clave:10s} {len(sub):6d} "
-              f"{min(f['V_inf_ms'] for f in sub):6.1f}-{max(f['V_inf_ms'] for f in sub):<7.1f} "
-              f"{min(f['H_m'] for f in sub):5.1f}-{max(f['H_m'] for f in sub):<6.1f} "
-              f"{min(f['DV05_um'] for f in sub):5.0f}-{max(f['DV05_um'] for f in sub):<7.0f} "
-              f"{min(f['masa_total_kg'] for f in sub):6.1f}-{max(f['masa_total_kg'] for f in sub):<9.1f} "
-              f"{d['n_rotores']:8d} {d['A_total']:9.3f}")
-
-    if not a.no_cases:
-        casos_dir = ROOT / a.cfd
-        n_escritos = 0
-        for row in filas:
-            p = PLAT[row["plataforma"]]
-            write_case(casos_dir / row["case_id"], row, p)
-            n_escritos += 1
-        print(f"\ncasos OpenFOAM escritos: {n_escritos} en {casos_dir.relative_to(ROOT)}/")
-
-    print("\nREGLA: esto son CASOS, no resultados. Ningun campo de salida de CFD se ha")
-    print("inventado. Para poblarlos hace falta ejecutar OpenFOAM (no disponible aqui).")
-    return 0
+    ok = 0
+    for fila in filas:
+        destino = Path(a.out) / (a.nombre or fila["air_id"])
+        try:
+            meta = escribir_caso_aire(destino, fila, a.malla or fila.get("malla") or "gruesa", a.hover_bc)
+        except ValueError as exc:
+            print(f"  [OMITIDO] {fila['air_id']}: {exc}")
+            continue
+        d = meta["derivados_analiticos"]
+        print(f"  {destino}  m={meta['entradas']['masa_total_kg']} kg  "
+              f"|T|={d['empuje_total_N']:.2f} N  sumF=({', '.join(f'{x:+.4f}' for x in d['suma_F_aire_N'])}) N  "
+              f"bloque={meta['malla']['n_bloque']}")
+        ok += 1
+    print(f"\n{ok} caso(s) escritos. Son CASOS, no resultados.")
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":

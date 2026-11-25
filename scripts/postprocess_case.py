@@ -1,27 +1,39 @@
 """
-POST-PROCESO de un caso CFD: extrae las metricas y las escribe en la base de datos.
+POST-PROCESO v2 de un caso de aire (nivel A): extrae metricas REALES de OpenFOAM y las escribe
+en `cfd_airflow` (clave air_id, mesh_id). Version v1 (clave case_id) en
+`archive/scripts_geometria_v1/postprocess_case_v1.py`.
 
-POR QUE EXISTE: las tablas cfd_* de la base de datos estan VACIAS A PROPOSITO. Se pueblan
-solo con resultados de simulaciones realmente ejecutadas. Este script es el unico camino
-legitimo para escribirlas: lee la salida de OpenFOAM y no inventa nada.
+Es el UNICO camino legitimo para poblar cfd_airflow (regla 2 del proyecto). Si falta una
+salida, ese campo queda NULL y se dice; nunca se rellena con un valor plausible.
 
-QUE EXTRAE:
-  1. Convergencia: residuales finales de U y p, y si se alcanzo el criterio de residualControl.
-  2. Perfil de downwash u(z) bajo cada rotor (del sampling `downwashLines`).
-  3. Deposicion D(x,y) en el plano receptor (del sampling `receptorPlane`).
-  4. Metricas de franja: W_eff, CV, interlineado recomendado.
-  5. Metadatos: celdas, y+, modelo de turbulencia, version del solver.
+QUE EXTRAE (todo de salidas del solver del propio caso):
+  - log.simpleFoam : ultima iteracion, residuales iniciales finales de U y p, convergencia
+                     de residuales (residualControl) y si el solver termino ("End").
+  - log.checkMesh  : celdas.
+  - postProcessing/fuerza_{suelo,fuselaje,contorno} : F_z total (presion + viscosa), ultimo valor.
+  - case_meta.json : fuerza prescrita sobre el aire (entrada, no resultado) -> cierre del
+                     balance (igual que la condicion 2 de CFD-0, con el flujo de momento M_out
+                     por los contornos abiertos):
+                     cierre_momento_pct = 100 * ((-sum F_paredes_z - M_out) / T - 1)
+  - postProcessing/U_rotorN : Uz media en cada zona de rotor -> asimetria izquierda/derecha
+                     asimetria_LR_pct = 100 * (Uz_izq - Uz_der) / |media|   (izq = y > 0)
+  - postProcessing/downwash : perfiles Uz(z) bajo cada rotor y su minimo (downwash maximo).
+  - postProcessing/yPlus    : y+ medio en el suelo (ground), ultimo tiempo.
 
-REGLA: si falta un archivo de salida, la fila NO se escribe y se reporta el motivo.
-Nunca se rellena un campo con un valor plausible.
+REGLA DE ESCRITURA: solo se escribe si el solver termino sin error. Si los residuales NO
+alcanzaron residualControl, por defecto NO se escribe; con `--registrar-no-convergido` se
+escribe con convergido = 0 (queda marcado, no se oculta). La convergencia de MAGNITUDES (no
+solo residuales) es la condicion 3 de CFD-0 y la evalua check_cfd0_conditions.py.
 
-Uso (dentro del directorio del caso, o con la ruta):
-  python3 scripts/postprocess_case.py <case_id> <cases_dir>
+Uso:
+    python scripts/postprocess_case.py --air-id A_T25P_V00.0_H2.5_f1.00_g2
+    python scripts/postprocess_case.py --case cfd/cases/<carpeta> [--dry-run]
+    python scripts/postprocess_case.py --hechos      # todos los air_cases 'hecho' sin fila
 """
 from __future__ import annotations
 
+import argparse
 import json
-import math
 import re
 import sqlite3
 import sys
@@ -29,141 +41,184 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
 DB = ROOT / "data" / "processed" / "dronewith.sqlite"
+CASES = ROOT / "cfd" / "cases"
+
+from check_cfd0_conditions import flujo_momento_z, leer_fuerza_final  # noqa: E402
+
+VEC = re.compile(r"\(\s*([-+0-9.eE]+)\s+([-+0-9.eE]+)\s+([-+0-9.eE]+)\s*\)")
 
 
-def leer_residuales(caso: Path) -> dict:
-    """Lee el ultimo bloque de residuales de log.simpleFoam."""
-    log = caso / "log.simpleFoam"
-    if not log.exists():
-        return {}
-    txt = log.read_text(errors="ignore")
-    out = {}
-    # Time = N
-    tiempos = re.findall(r"^Time = (\d+)", txt, re.M)
-    if tiempos:
-        out["ultimo_time"] = int(tiempos[-1])
-    # Solving for Ux, Initial residual = 1.2e-05, ...
-    for campo in ("Ux", "Uy", "Uz", "p"):
-        ms = re.findall(rf"Solving for {campo}, Initial residual = ([0-9.eE+-]+)", txt)
-        if ms:
-            out[f"residual_{campo}"] = float(ms[-1])
-    if "SIMPLE solution converged" in txt:
-        out["convergido"] = 1
-    elif "FOAM FATAL ERROR" in txt or "Floating point exception" in txt:
-        out["convergido"] = 0
-        out["error"] = "FALLO del solver (ver log)"
-    else:
-        out["convergido"] = 0
+def _ultimo_dir(base: Path) -> Path | None:
+    ds = [d for d in base.iterdir() if d.is_dir()] if base.exists() else []
+    return max(ds, key=lambda d: float(d.name)) if ds else None
+
+
+def leer_log(caso: Path) -> dict:
+    out = {"iteraciones": None, "res_U": None, "res_p": None, "convergido": 0, "termino": False,
+           "error": None}
+    lg = caso / "log.simpleFoam"
+    if not lg.exists():
+        out["error"] = "sin log.simpleFoam"
+        return out
+    t = lg.read_text(errors="replace")
+    its = re.findall(r"^Time = (\d+)", t, re.M)
+    out["iteraciones"] = int(its[-1]) if its else None
+    ux = [float(v) for v in re.findall(r"Solving for Ux, Initial residual = ([0-9.eE+-]+)", t)]
+    uy = [float(v) for v in re.findall(r"Solving for Uy, Initial residual = ([0-9.eE+-]+)", t)]
+    uz = [float(v) for v in re.findall(r"Solving for Uz, Initial residual = ([0-9.eE+-]+)", t)]
+    ps = [float(v) for v in re.findall(r"Solving for p, Initial residual = ([0-9.eE+-]+)", t)]
+    if ux:
+        out["res_U"] = max(x[-1] for x in (ux, uy, uz) if x)
+    if ps:
+        out["res_p"] = ps[-1]
+    out["convergido"] = int("solution converged in" in t or "reached convergence" in t)
+    out["termino"] = bool(re.search(r"^End\s*$", t, re.M))
+    # ojo: la cabecera dice "Floating point exception trapping enabled" -> no vale buscar la frase
+    if "FOAM FATAL" in t or re.search(r"Floating point exception(?! trapping)", t) or "sigFpe" in t:
+        out["error"] = "error del solver (ver log.simpleFoam)"
     return out
 
 
-def leer_perfil_downwash(caso: Path) -> dict:
-    """Lee el sampling de lineas verticales bajo el rotor."""
-    base = caso / "postProcessing" / "downwashLines"
-    if not base.exists():
-        return {}
-    dirs = sorted([d for d in base.iterdir() if d.is_dir()], key=lambda d: d.name)
-    if not dirs:
-        return {}
-    tiempos = sorted([d for d in dirs[-1].iterdir() if d.is_dir()], key=lambda d: d.name)
-    if not tiempos:
-        return {}
-    archivos = list(tiempos[-1].glob("*.xy")) or list(tiempos[-1].glob("*"))
-    if not archivos:
-        return {}
-    zs, uzs = [], []
-    for linea in archivos[0].read_text(errors="ignore").splitlines():
-        partes = linea.split()
-        if len(partes) >= 4:
-            try:
-                zs.append(float(partes[2]))
-                uzs.append(float(partes[3]))
-            except ValueError:
-                continue
-    if not zs:
-        return {}
-    return {
-        "v_downwash_perfil_json": json.dumps({"z": zs, "Uz": uzs}),
-        "v_downwash_max_ms": round(min(uzs), 4),   # el downwash es negativo (hacia abajo)
-    }
+def leer_celdas(caso: Path) -> int | None:
+    cm = caso / "log.checkMesh"
+    if not cm.exists():
+        return None
+    m = re.search(r"^\s*cells:\s+(\d+)", cm.read_text(errors="replace"), re.M)
+    return int(m.group(1)) if m else None
 
 
-def leer_plano_receptor(caso: Path) -> dict:
-    """Lee el plano receptor y calcula la deposicion integrada D(x,y).
+def uz_zonas(caso: Path, n: int) -> dict:
+    out = {}
+    for i in range(1, n + 1):
+        d = _ultimo_dir(caso / "postProcessing" / f"U_rotor{i}")
+        if d is None or not (d / "volFieldValue.dat").exists():
+            continue
+        filas = [l for l in (d / "volFieldValue.dat").read_text(errors="replace").splitlines()
+                 if l.strip() and not l.startswith("#")]
+        if filas:
+            m = VEC.search(filas[-1])
+            if m:
+                out[i] = float(m.group(3))
+    return out
 
-    NOTA: el plano receptor da el CAMPO DE AIRE. La deposicion propiamente dicha
-    requiere el seguimiento de gotas (Lagrangiano). Aqui se extrae la base para el
-    modelo de gotas y se deja constancia de que D(x,y) se calcula en el paso siguiente.
-    """
-    base = caso / "postProcessing" / "receptorPlane"
-    if not base.exists():
-        return {}
-    dirs = sorted([d for d in base.iterdir() if d.is_dir()], key=lambda d: d.name)
-    if not dirs:
-        return {}
-    return {"plano_receptor_disponible": 1}
+
+def perfiles_downwash(caso: Path) -> dict:
+    d = _ultimo_dir(caso / "postProcessing" / "downwash")
+    out = {}
+    if d is None:
+        return out
+    for f in sorted(d.glob("bajo_rotor*_k_U.xy")):
+        i = int(re.search(r"bajo_rotor(\d+)_", f.name).group(1))
+        zs, uz = [], []
+        for l in f.read_text(errors="replace").splitlines():   # z  k  Ux Uy Uz
+            c = l.split()
+            if len(c) >= 5:
+                zs.append(float(c[0]))
+                uz.append(float(c[4]))
+        if zs:
+            out[f"rotor{i}"] = {"t": float(d.name), "z": zs, "Uz": uz}
+    return out
 
 
-def metricas_franja(perfil: dict) -> dict:
-    """W_eff y CV a partir del perfil transversal, si existe."""
-    return {}
+def yplus_suelo(caso: Path) -> float | None:
+    d = _ultimo_dir(caso / "postProcessing" / "yPlus")
+    if d is None or not (d / "yPlus.dat").exists():
+        return None
+    filas = [l.split() for l in (d / "yPlus.dat").read_text(errors="replace").splitlines()
+             if l.strip() and not l.startswith("#")]
+    suelo = [f for f in filas if len(f) >= 5 and f[1] == "ground"]
+    return float(suelo[-1][4]) if suelo else None
+
+
+def procesar(caso: Path, registrar_no_conv: bool, dry: bool) -> int:
+    meta_p = caso / "case_meta.json"
+    if not meta_p.exists():
+        print(f"  {caso.name}: sin case_meta.json — no es un caso v2, no se escribe nada")
+        return 1
+    meta = json.loads(meta_p.read_text(encoding="utf-8"))
+    aid = meta["air_id"]
+    lg = leer_log(caso)
+    if lg["error"] or not lg["termino"]:
+        print(f"  {aid}: solver no terminado ({lg['error'] or 'sin End en log'}) — no se escribe")
+        return 1
+    if not lg["convergido"] and not registrar_no_conv:
+        print(f"  {aid}: residuales NO alcanzaron residualControl (U {lg['res_U']}, p {lg['res_p']}, "
+              f"iter {lg['iteraciones']}) — no se escribe (usa --registrar-no-convergido para "
+              "dejarlo marcado convergido=0)")
+        return 1
+
+    zonas = meta["zonas_rotor"]
+    zl = list(zonas.values()) if isinstance(zonas, dict) else zonas
+    F_aire_z = sum(z["F_aire_N"][2] for z in zl)
+    Fs = leer_fuerza_final(caso, "fuerza_suelo")
+    Ff = leer_fuerza_final(caso, "fuerza_fuselaje")
+    Fc = leer_fuerza_final(caso, "fuerza_contorno")
+    cierre = None
+    if None not in (Fs, Ff, Fc) and F_aire_z:
+        M_out, _ = flujo_momento_z(caso)       # flujo de momento z por contornos abiertos
+        cierre = 100.0 * ((-(Fs + Ff + Fc) - M_out) / -F_aire_z - 1.0)
+
+    uz = uz_zonas(caso, len(zl))
+    asim = None
+    if len(uz) == len(zl):
+        izq = [uz[i + 1] for i, z in enumerate(zl) if z["centro_m"][1] > 0]
+        der = [uz[i + 1] for i, z in enumerate(zl) if z["centro_m"][1] < 0]
+        if izq and der:
+            mi, md = sum(izq) / len(izq), sum(der) / len(der)
+            asim = 100.0 * (mi - md) / abs(0.5 * (mi + md))
+
+    perf = perfiles_downwash(caso)
+    dw_max = min(min(p["Uz"]) for p in perf.values()) if perf else None
+    celdas = leer_celdas(caso)
+    malla = meta.get("entradas", {}).get("malla", "?")
+    mesh_id = f"{malla}_{celdas}" if celdas else f"{malla}_?"
+    fila = dict(air_id=aid, mesh_id=mesh_id, solver="simpleFoam", solver_version="v2412",
+                turb_model="kOmegaSST", celdas=celdas, y_plus_medio=yplus_suelo(caso),
+                residual_final_U=lg["res_U"], residual_final_p=lg["res_p"],
+                iteraciones=lg["iteraciones"], F_suelo_z_N=Fs, F_fuselaje_z_N=Ff, F_contorno_z_N=Fc,
+                suma_T_N=sum(z["T_N"] for z in zl), cierre_momento_pct=cierre, asimetria_LR_pct=asim,
+                v_downwash_max_ms=dw_max, v_downwash_perfil_json=json.dumps(perf) if perf else None,
+                convergido=lg["convergido"], fecha_ejecucion=datetime.now(timezone.utc).isoformat(
+                    timespec="seconds"), origen_dato="CFD")
+    faltan = [k for k, v in fila.items() if v is None]
+    resumen = (f"celdas={celdas} iter={lg['iteraciones']} conv={lg['convergido']} "
+               f"cierre={cierre if cierre is None else round(cierre, 3)} % "
+               f"asimLR={asim if asim is None else round(asim, 3)} % dw_max={dw_max} "
+               f"y+suelo={fila['y_plus_medio']}")
+    if dry:
+        print(f"  [dry-run] {aid}: {resumen}  NULL: {faltan or '-'}")
+        return 0
+    con = sqlite3.connect(DB, timeout=60)
+    cols = list(fila)
+    con.execute(f"INSERT OR REPLACE INTO cfd_airflow ({','.join(cols)}) VALUES ({','.join('?' * len(cols))})",
+                [fila[c] for c in cols])
+    con.commit()
+    con.close()
+    print(f"  {aid}: escrito  {resumen}  NULL: {faltan or '-'}")
+    return 0
 
 
 def main() -> int:
-    if len(sys.argv) < 3:
-        print(__doc__)
-        return 2
-    case_id, cases_dir = sys.argv[1], Path(sys.argv[2])
-    caso = cases_dir / case_id
-    if not caso.exists():
-        print(f"ERROR: no existe el caso {caso}")
-        return 1
-
-    meta_path = caso / "case_meta.json"
-    meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
-
-    res = leer_residuales(caso)
-    perfil = leer_perfil_downwash(caso)
-    plano = leer_plano_receptor(caso)
-
-    if not res:
-        print(f"  {case_id}: sin log.simpleFoam — no se escribe nada en la base de datos")
-        return 1
-
-    if res.get("convergido") != 1:
-        print(f"  {case_id}: NO convergido (residuales={res}) — se registra el fallo, "
-              "no se escriben metricas")
-        return 1
-
-    # metadatos de malla
-    celdas = None
-    owner = caso / "constant" / "polyMesh" / "owner"
-    if owner.exists():
-        for line in owner.read_text(errors="ignore").splitlines()[:60]:
-            if "nCells:" in line:
-                celdas = int(line.split("nCells:")[1].split()[0].rstrip(","))
-                break
-
-    con = sqlite3.connect(DB)
-    ahora = datetime.now(timezone.utc).isoformat()
-    mesh_id = f"m{celdas}" if celdas else "m?"
-
-    con.execute("""INSERT OR REPLACE INTO cfd_airflow
-        (case_id, mesh_id, solver, solver_version, turb_model, y_plus_medio, celdas,
-         residual_final_U, residual_final_p, v_downwash_max_ms, v_downwash_perfil_json,
-         convergido, fecha_ejecucion, origen_dato)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""", (
-        case_id, mesh_id, "simpleFoam", "2412", "kOmegaSST", None, celdas,
-        res.get("residual_Ux"), res.get("residual_p"),
-        perfil.get("v_downwash_max_ms"), perfil.get("v_downwash_perfil_json"),
-        1, ahora, "CFD"))
-    con.commit()
-    con.close()
-
-    print(f"  {case_id}: OK  celdas={celdas}  residual_Ux={res.get('residual_Ux')}  "
-          f"v_downwash_max={perfil.get('v_downwash_max_ms')}")
-    return 0
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    g = ap.add_mutually_exclusive_group(required=True)
+    g.add_argument("--air-id")
+    g.add_argument("--case")
+    g.add_argument("--hechos", action="store_true")
+    ap.add_argument("--registrar-no-convergido", action="store_true")
+    ap.add_argument("--dry-run", action="store_true")
+    a = ap.parse_args()
+    if a.hechos:
+        con = sqlite3.connect(DB)
+        ids = [r[0] for r in con.execute("SELECT air_id FROM air_cases WHERE estado='hecho' AND air_id "
+                                         "NOT IN (SELECT air_id FROM cfd_airflow)")]
+        con.close()
+        rcs = [procesar(CASES / i, a.registrar_no_convergido, a.dry_run) for i in ids]
+        print(f"{len(ids)} caso(s); {rcs.count(0)} escritos")
+        return 0
+    caso = CASES / a.air_id if a.air_id else Path(a.case)
+    return procesar(caso, a.registrar_no_convergido, a.dry_run)
 
 
 if __name__ == "__main__":

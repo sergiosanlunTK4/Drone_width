@@ -370,10 +370,26 @@ SELECT
 
 def main() -> int:
     DB.parent.mkdir(parents=True, exist_ok=True)
-    if DB.exists():
-        DB.unlink()
+    # 2026-11-22: ya NO se borra el archivo. La base contiene ademas las tablas v2 de
+    # escenarios (scripts/build_scenario_db.py: air_cases, spray_cases, run_log, ...), que
+    # no se pueden perder al reconstruir la capa analitica v1. Se rehacen solo las tablas v1.
     con = sqlite3.connect(DB)
+    con.execute("PRAGMA foreign_keys = OFF")
+    con.executescript("""
+        DROP VIEW  IF EXISTS v_estado;
+        DROP TABLE IF EXISTS analytic_metrics; DROP TABLE IF EXISTS cfd_deposition;
+        DROP TABLE IF EXISTS cfd_swath_metrics; DROP TABLE IF EXISTS cases;
+        DROP TABLE IF EXISTS platforms;
+        DROP TABLE IF EXISTS experiments; DROP TABLE IF EXISTS surrogate_models;
+    """)
+    # cfd_airflow v1 (clave case_id) solo se elimina si esta vacia y aun no migrada a air_id
+    cols = [r[1] for r in con.execute("PRAGMA table_info(cfd_airflow)")]
+    if cols and "air_id" not in cols:
+        if con.execute("SELECT COUNT(*) FROM cfd_airflow").fetchone()[0] == 0:
+            con.execute("DROP TABLE cfd_airflow")
     con.executescript(SCHEMA)
+    # provenance es compartida con v2: se borran solo las filas de las tablas v1
+    con.execute("DELETE FROM provenance WHERE tabla IN ('platforms','cases','analytic_metrics')")
     ahora = datetime.now(timezone.utc).isoformat()
 
     # ---- plataformas
@@ -422,6 +438,8 @@ def main() -> int:
              m["cv_en_interlineado_recomendado_pct"], m["D_center_normalizado"],
              m["deriva_estimada_ms"], m["origen_dato"]))
 
+    # geometria v1 (planta regular X, T55/T70P coaxiales): se CONSERVAN, marcadas obsoletas.
+    con.execute("UPDATE cases SET estado = 'obsoleto_geometria_v1'")
     con.commit()
 
     # ---- informe

@@ -924,3 +924,302 @@ el aviso de que el vector `[0,0,−1]` sigue **abierto** (un disco centrífugo e
   la fuerza integrada iguala el empuje prescrito.
 
 ---
+
+### Entry 019 | Geometría v2 conectada al pipeline CFD, base de datos de escenarios de dos niveles y CFD-0 v2 en marcha
+- **Date:** 2026-11-22
+- **Disparador:** `INSTRUCCIONES_CFD.md`, pasos 0 y 1 del plan.
+
+**1. Adaptador de geometría** — `scripts/agras_model/cfd_geometry.py` lee `<p>_cfd_coordinates.json`
+y devuelve rotores (centro, `disk_normal`, área, giro, nivel simple/upper/lower), boquillas, suelo
+del modelo y masas normalizadas. Autocomprobación (área = πr², simetría L/R, giros CW/CCW
+equilibrados, 4/8 rotores, coaxial solo T100): **OK en las 4 plataformas**.
+
+**2. `build_case_suite.py` reescrito para v2** (v1 en `archive/scripts_geometria_v1/`):
+- zonas de rotor = `cylinderToCell` **inclinado** (centro ± h/2·n), una por rotor (8 en el T100);
+- fuerza sobre el aire **F_i = −T_i·n_i**, escalada para que ΣF_z = −m·g exacto. Residuo horizontal
+  en hover por la geometría real: T25P +0.056 N (0.011 %); T100 −4.17 N (0.24 %, normales delanteras
+  y traseras distintas). Equivale a un cabeceo de trim de ~0.14° en el T100: se declara, no se corrige;
+- suelo en `ground_plane_z_m − H` (H medido desde el contacto de los patines; **I**);
+- pared = `<p>_airframe.stl` con snappyHexMesh; tres niveles de malla (dx base 0.25 / 0.18 / 0.125 m);
+- **error de v1 encontrado al migrar:** el aire entraba por x_min con U = (+V 0 0), es decir, el dron
+  volaba **hacia atrás** en la terna v2 (+X adelante). Ahora, en ejes del dron: inlet en x_max,
+  U = (−V 0 0) y **suelo móvil** a (−V 0 0);
+- si θ ≠ 0, se gira el modelo entero (STL, rotores, boquillas) alrededor del origen (CG: **D**).
+  `build_prescribed_momentum.py` toma la fuerza vectorial de `case_meta.json` y compara V_zone con πr²h.
+- `build_hover_case.py` pasa a generar los casos CFD-0 desde la base de datos; `check_cfd0_conditions.py`
+  incluye en el balance global el fuselaje (la estela lo golpea) y los contornos, no solo el suelo.
+
+**3. Base de datos v2** (`scripts/build_scenario_db.py`, misma `dronewith.sqlite`, sin borrar nada):
+`platforms_v2`, `air_cases` (242), `lagrangian_runs` (10 648 = boquilla × clase de gota), `spray_cases`
+(4 840 = VMD × configuración 2/4), `cfd_airflow` (clave `air_id`), `deposition_maps`, `swath_metrics`,
+`interp_error`, `run_log`. La `cfd_airflow` v1 (1 fila, ejecución de `actuationDiskSource`) se conserva
+como `cfd_airflow_v1`; los 128 `cases` v1 quedan `obsoleto_geometria_v1`. `build_database.py` ya **no
+borra el archivo** (antes hacía `unlink()` y se habría llevado las tablas v2). Copia de seguridad previa:
+`data/processed/dronewith_backup_20261122_pre_v2.sqlite`.
+- Matriz de la **etapa 1 (propuesta, pendiente de aprobación)**: H {1.5, 2.5, 3.5, 5} × V {0, 2, 5, 8, 12, 16, 20}
+  (T25P {0…10}) × f {1, 0}; más la sensibilidad al reparto coaxial del T100, CFD-0 en 3 mallas, el efecto
+  de los cuerpos opcionales y 12 puntos de validación de la interpolación.
+- **200 de 242 casos de aire están `bloqueado`:** con V > 0 la actitud θ(V, f) es **D** (Cd·A desconocido
+  en T25P/T55/T70P; E en el T100). No se rellena. Desbloqueo: cabeceo de la telemetría del propietario (O)
+  o un modelo E aprobado por él. Los 4 casos `efecto_cuerpos` esperan un STL con los cuerpos opcionales
+  (`AIRFRAME_NOZZLE_CONFIGS = ("std",)`).
+
+**4. Cola reanudable** `scripts/run_queue.py`: ejecuta en WSL, registra el coste en `run_log` y marca
+`hecho` o `fallido`; los casos `en_curso` vuelven a `pendiente` al relanzar. **Hace cumplir el gate:**
+mientras `evidence/cfd0_conditions.json` no tenga las 5 condiciones en verde, solo corre los roles `cfd0`.
+
+**5. Documentos corregidos:** `geometry/manifests/t70p_…json` y `t55_…json` (4 rotores, no coaxial,
+con el valor previo y la evidencia), `docs/specs/T55.md`, `build_geometry_manifests.py` y
+`annotate_manifests_with_media_evidence.py`. Los 131 casos v1 están en `cfd/cases/_obsoletos_geometria_v1/` (con `LEEME.md`).
+
+**6. CFD-0 v2: malla y fuente** (`A_T25P_V00.0_H2.5_f1.00_g2`, T25P en hover, H = 2.5 m, MTOW 53 kg):
+- snappyHexMesh: 255 306 celdas en 70 s y 0.39 GB; `checkMesh` sin errores (no ortogonalidad máx. 49.7°,
+  oblicuidad máx. 3.86);
+- zonas: 958 / 972 / 985 / 992 celdas, V = 0.1171–0.1182 m³ frente a πr²h = 0.1188 m³ (−1.4 %);
+- ΣT = peso = 519.75 N, con residuo 0.
+- **Hallazgo:** en la malla snappy, el volumen de zona de OpenFOAM (log: 0.11709868 m³) difiere del de
+  `mesh_zone_volumes.py` (0.11711190) en 1.1·10⁻⁴. En la malla v1, hexaédrica, coincidían a 10⁻¹⁶. La
+  fuerza aplicada queda un 0.011 % por debajo de T_i, dentro de la tolerancia del 0.1 %.
+  `check_cfd0_conditions.py` comprueba ahora la condición 1 con el volumen que imprime el solver.
+  Alternativa a decidir: `volumeMode absolute` con Su = F, donde el solver divide por su propio
+  volumen; está ligada al bug #7, así que **no se cambia sin verificarla**.
+
+**7. Primera ejecución de CFD-0 v2: interrumpida, no fallida.** `simpleFoam` con 8 procesos llegó a la
+iteración 567 de 3000, en 1028 s de reloj (**1.8 s por iteración** con 255 k celdas, unas 1.5 h para
+3000 iteraciones). Claude Code detuvo el lanzador porque **Windows se quedaba sin memoria**; la ejecución
+no dio ningún error. Residuales iniciales en la iteración 567: U ~4·10⁻³, p ~4·10⁻². Aún no ha convergido,
+así que no se evalúa ninguna condición. Queda escrita la iteración 500 en `processor*/500`.
+- Corregido el `Allrun.sh` (generador y caso): antes borraba `processor*` y volvía a empezar desde 0.
+  Ahora hace `reconstructPar -latestTime` y continúa (`decomposePar -latestTime`, `startFrom latestTime`).
+- En la base de datos, el caso sigue `en_curso`; `run_queue.py` lo devuelve a `pendiente` al relanzarse.
+  `run_log` no tiene fila de esta ejecución porque el lanzador murió antes de escribirla. Coste medido en el log.
+- **CFD-0 sigue ABIERTO** (`evidence/cfd0_conditions.json` sin cambios).
+
+### Entry 020 | Cabeceo θ(V, f) modelo E y etapa 1 aprobados; CFD-0 reanudado; postproceso v2
+
+**Fecha:** 2026-11-23. **Decisión del propietario:** aprueba (a) el modelo estimado de cabeceo y (b) la
+rejilla de la etapa 1 (H {1.5, 2.5, 3.5, 5} × V {0, 2, 5, 8, 12, 16, 20}, T25P {0…10} × f {1, 0}).
+
+**1. Modelo E de actitud** (`scripts/agras_model/attitude.py`), el mismo equilibrio que `force_chain.py::actitud`
+(versión explícita): tan θ = ½ρ·Cd·A·V² / (m(f)·g), con ρ = 1.1716 kg/m³.
+- A_frontal = proyección del `<p>_airframe.stl` sobre Y-Z, rasterizada a 5 mm (**clase I**: derivada del modelo; corregido en la Entry 023, antes decía M). Sale 0.362
+  (T25P), 0.588 (T55), 0.604 (T70P) y 0.610 m² (T100). Sin palas ni flujo de rotor.
+- Cd = 0.8 (**clase E**), sin medida. Sensibilidad Cd 0.6 / 1.0 disponible en el módulo.
+- Rango de θ obtenido: de 0.04° (T100, 2 m/s, f = 1) a 14.0° (T55, 20 m/s, f = 0). A 20 m/s y f = 0:
+  T25P 11.8°, T55 14.0°, T70P 11.6°, T100 8.8°. Con Cd 0.6–1.0 el T55 va de 10.6° a 17.4°.
+- **Discrepancia declarada:** para el T100 la estimación anterior (`tilt_model.py`) usaba A = 1.729 m²
+  (3.224 × 0.975 × 0.55, factor inventado). El STL da 0.610 m², casi tres veces menos. Se usa el STL
+  porque es la misma geometría que ve el CFD.
+- **Sesgo conocido:** sin H-force de las hélices ni arrastre del flujo inducido, θ probablemente queda
+  **subestimado**. Si llega la telemetría de cabeceo (O), sustituye a este modelo.
+- Base de datos: los 196 casos con V > 0 que estaban bloqueados solo por θ pasan a `pendiente`, con
+  `theta_clase = 'E'` y una fila en `provenance`. Siguen bloqueados los 4 de `efecto_cuerpos`, que
+  esperan el STL con los cuerpos opcionales. Total: 237 pendientes, 4 bloqueados y 1 en curso.
+  Copia previa: `data/processed/dronewith_backup_20261123_pre_thetaE.sqlite`.
+- Comprobación de un caso generado: T55, V 20, f 0 da ΣF_aire = (−111.5, 0, −441.3) N. La componente
+  vertical es igual al peso (45 kg) y la horizontal es el arrastre del modelo. El residuo de la geometría
+  real (inclinación de los rotores) es ≈ 1 N.
+
+**2. Errores encontrados y corregidos al probar**
+- El bloque de reanudación de la Entry 019 estaba dentro de un f-string de `build_case_suite.py`:
+  `${ULT:-}` daba `NameError`, y **ningún caso nuevo se podía generar**. Las llaves están escapadas.
+  El `Allrun.sh` del caso CFD-0 no estaba afectado porque se editó a mano.
+- `decomposeParDict` tenía numberOfSubdomains = 8 fijo, y con `NP` ≠ 8 `mpirun` habría fallado. El
+  `Allrun` ahora hace `foamDictionary -entry numberOfSubdomains -set $NP`. En el caso CFD-0 se cambió el
+  diccionario a mano a 6, antes de que llegara a leerlo `decomposePar`.
+- `run_queue.py` buscaba "reached convergence", pero v2412 escribe "SIMPLE solution converged in".
+  Con eso, `convergido` habría salido siempre 0. Corregido.
+
+**3. CFD-0 reanudado** desde t = 500 con 6 procesos. La reanudación funciona: `reconstructPar`,
+`decomposePar` y arranque en `Time = 501`. **Coste medido: 0.72 s por iteración con 6 procesos, frente a
+1.8 s con 8** (2.5× más rápido, probablemente por sobresuscripción de núcleos o presión de memoria con 8).
+`run_queue.py --np` pasa a 6 por defecto.
+
+**4. `postprocess_case.py` v2** (la v1 está en `archive/scripts_geometria_v1/`). Escribe `cfd_airflow`
+(air_id, mesh_id) solo desde salidas reales:
+- residuales e iteraciones;
+- F_z de suelo, fuselaje y contorno, con el cierre del balance contra ΣF_aire_z prescrito;
+- asimetría izquierda/derecha de la Uz media de las zonas;
+- perfiles de downwash e y+ del suelo.
+
+No escribe si el solver no terminó. Si no hay convergencia de residuales tampoco escribe, salvo con
+`--registrar-no-convergido`, que escribe la fila con convergido = 0. Se encontró y corrigió un falso
+positivo: la cabecera "Floating point exception trapping enabled" se leía como un fallo.
+
+**5. Hallazgo a vigilar (no es resultado de CFD-0, que sigue corriendo):** a mitad de la ejecución
+(iteración ~1070), el **y+ medio en el suelo es ≈ 4.4·10³** en la malla gruesa, muy por encima del rango
+de las funciones de pared (~30–300). En el fuselaje es ≈ 6.4·10². El chorro de pared sobre el suelo
+transporta las gotas finas, así que si se confirma al final habrá que refinar cerca del suelo, con capas
+o con una región de refinamiento. Esto se decide después de ver la independencia de malla; no se cambia
+ahora.
+
+### Entry 021 | CFD-0 v2, primera evaluación: 3 de 5 condiciones. El dominio "cerrado" no da un flujo estacionario
+
+**Fecha:** 2026-11-23. Caso `A_T25P_V00.0_H2.5_f1.00_g2` (T25P en hover, H 2.5 m, malla gruesa,
+255 306 celdas, BC "cerrado"). Llegó a 3000 iteraciones (endTime) sin errores, con 0.51 h de pared y
+6 procesos (`run_log`). **Los residuales NO alcanzaron `residualControl`:** p estancado en ≈ 5·10⁻⁴,
+U en ≈ 5·10⁻³. `check_cfd0_conditions.py` → `evidence/cfd0_conditions.json`:
+
+| Condición | Resultado | Dato |
+|---|---|---|
+| 1. Fuerza aplicada por rotor | PASA | \|F\|/T − 1 ≤ 1.1·10⁻⁴ con el volumen que usa el solver |
+| 2. Balance global de momento | **FALLA** | −ΣF_paredes/T = 1.16 en la iteración 3000 (margen 0.9–1.1) |
+| 3. Convergencia de magnitudes | **FALLA** | F_suelo con dispersión del 35 % en el último 40 % de la ejecución |
+| 4. Simetría | PASA | \|media U\|/max\|Uz\| ≤ 0.0011 |
+| 5. Orden de magnitud del downwash | PASA | Uz medio en las zonas / v_i = 1.39 |
+
+**CFD-0 sigue ABIERTO.** No se escribe nada en `cfd_airflow` (`postprocess_case.py` lo rechaza porque no
+hay convergencia de residuales).
+
+**Diagnóstico (con los datos, no supuesto):**
+- Las fuerzas **no derivan, oscilan** de forma casi periódica, con un periodo de unas 1500 iteraciones.
+  F_suelo va de −572 a −855 N; F_contorno, de +17 a +544 N. **En promedio entre las iteraciones 520 y
+  3000, −ΣF/T = 1.051**, dentro del margen. El valor instantáneo va de 0.47 a 1.24.
+- F_contorno es **entera la componente viscosa normal en el techo**: slip + p = 0, y la componente de
+  presión es 0. Con slip, la velocidad normal en la cara es 0 pero no en la celda, y con νt grande ese
+  término entra en las ecuaciones discretas. Es real en el modelo, así que se suma bien. Pero solo el
+  suelo recibe 1.42·T de media.
+- Con "cerrado", el dominio es una **caja sellada** (slip en todo el contorno salvo el suelo, p = 0 solo
+  como referencia). El chorro de pared sube por los laterales, choca con el techo y **recircula hacia los
+  rotores**. Hipótesis: esa recirculación confinada es lo que no deja que SIMPLE converja. Un rotor en
+  hover sobre suelo abierto no tiene ese retorno.
+
+**Siguiente prueba (prevista en CFD-0, Entry 017):** el mismo caso con BC "abierto" (`totalPressure` +
+`pressureInletOutletVelocity` en todo el contorno salvo el suelo), en
+`cfd/cases/A_T25P_V00.0_H2.5_f1.00_g2_bcabierto`. Con contornos abiertos, el balance tiene además el flujo
+de momento que sale por los contornos, que el comprobador no integra. Se valorará al tener el resultado.
+
+**Pendiente de decisión del propietario si el flujo resulta intrínsecamente no estacionario:** aceptar
+el promedio de iteraciones de SIMPLE como métrica, que no es lo ortodoxo, o pasar a `pimpleFoam` (URANS)
+con promedio temporal, a un coste de 3–10× por caso. Los criterios del gate no se cambian sin esa decisión.
+
+También se añadió la línea `foamDictionary … numberOfSubdomains` al `Allrun.sh` del caso CFD-0.
+
+### Entry 022 | Bug #8: la fuente de momento aplicaba ρ·T (17 % de más). Con BC "abierto" el flujo es estacionario
+
+**Fecha:** 2026-11-23.
+
+**1. BC "abierto"** (`cfd/cases/A_T25P_V00.0_H2.5_f1.00_g2_bcabierto`): mismo caso y misma malla que el
+CFD-0 cerrado (Entry 021), con `totalPressure` + `pressureInletOutletVelocity` en todo el contorno
+salvo el suelo. 3000 iteraciones, 0.59 h con 6 procesos. **Las magnitudes sí convergen:** la dispersión
+de F_suelo en el último 40 % es del 1.26 %, frente al 35 % con BC cerrado, y p baja a 2.5·10⁻⁴. El
+residualControl de 10⁻⁵ tampoco se alcanza. Pasan las condiciones 1, 3, 4 y 5. Conclusión: **la
+oscilación de la Entry 021 la causaba el dominio sellado**, no el solver.
+
+**2. El balance seguía sin cerrar, y eso descubrió el bug #8.** Con el flujo de momento por los
+contornos integrado (ρ Σ Uz φ en los parches abiertos: +22.9 N, casi todo entrada por el techo),
+(−ΣF_paredes − M_out)/T = 1.177. El exceso coincide con **ρ = 1.1716**:
+- simpleFoam es incompresible: su ecuación de U está dividida por ρ (p cinemático), así que `Su` es
+  una aceleración, en m/s²;
+- `build_prescribed_momentum.py` escribía Su = F/V_zone, en N/m³, con un comentario que decía
+  "en un solver incompresible rho NO aparece";
+- la fuerza física aplicada era por tanto **ρ·T = 608.9 N en vez de 519.75 N, un 17 % de más**;
+- referido a 608.9 N, el balance da (634.6 − 22.9)/608.9 = **1.005**: cierra al 0.5 %.
+
+**3. Por qué la condición 1 no lo detectó: era circular.** Reconstruía T_i a partir del propio Su·V y
+lo comparaba consigo mismo (error de 10⁻¹¹). Además, `T_total_prescrito_N` era la suma de lo
+aplicado, no de lo prescrito. **Corregido:**
+- `build_prescribed_momentum.py`: Su = F/(ρ·V_zone), en m/s², con ρ en la cabecera.
+- `verify_prescribed_force.py`: la fuerza física es ρ·Su·V (ρ de `case_meta.propiedades_fluido`).
+- `check_cfd0_conditions.py`:
+  - condición 1: compara ρ·Su·V_solver con `case_meta.zonas_rotor.F_aire_N`, que es la cadena de
+    fuerzas, independiente de fvOptions;
+  - T de referencia de las condiciones 2 y 5: sale de `case_meta`;
+  - condición 2: integra M_out por los contornos abiertos;
+  - la evidencia JSON guarda el caso evaluado.
+- Comprobación: el comprobador nuevo, aplicado al caso abierto con el bug, **falla la condición 1 con
+  un error de 1.71·10⁻¹ en los 4 rotores**. Ahora sí lo ve.
+
+**4. Alcance del bug #8:**
+- **Afectados:** todos los casos v2 ejecutados hasta hoy (CFD-0 cerrado y abierto). También los v1 con
+  fuente prescrita, ya obsoletos, y las Entries 016–017 en la parte de magnitudes: el downwash sale
+  ≈ √1.17 = 8 % alto.
+- **No afectados:** `cfd_airflow_v1` (era actuationDiskSource) y los modelos analíticos.
+- `cfd_airflow` v2 está vacía, así que no hay que retirar ningún resultado.
+- El caso CFD-0 `A_T25P_V00.0_H2.5_f1.00_g2` pasa a `bloqueado` en la base de datos. Relanzarlo exige
+  borrar sus tiempos 500 y 3000 (pendiente del permiso del propietario) y decidir el BC de hover.
+
+**5. En curso:** `A_T25P_V00.0_H2.5_f1.00_g2_bcabierto_b8`, BC abierto con la fuente corregida.
+
+### Entry 023 | Decisiones del propietario; escenarios climáticos de MMVR; evaporación en todo el nivel B; CFD-0 pasa las 5 condiciones
+
+**Fecha:** 2026-11-23.
+
+**1. Decisiones del propietario**
+- **Hover con BC "abierto"** ("hay que hacerlo lo más real posible, no se fumiga en hover cerrados").
+  Es el valor por defecto en `build_case_suite.py`, `build_hover_case.py`, `build_scenario_db.py` y
+  `run_queue.py`; en la base de datos, `hover_bc = 'abierto'` en los 44 casos con V = 0, con una fila
+  en `provenance`. "cerrado" queda solo como referencia (Entry 021).
+- **Permiso para borrar** los tiempos del CFD-0 viejo. El caso se movió a `cfd/cases/_evidencia/`, con
+  un `LEEME.md` y conservando logs y `postProcessing`, y se borraron solo `500/` y `3000/` (62 MB). El caso
+  abierto con el bug #8 también está en `_evidencia/`.
+- **Evaporación en todos los casos lagrangianos**, no como factor de corrección: depende del tamaño de
+  gota y cambia la trayectoria, no solo la masa. **Solo agua** por ahora, sin fracción no volátil.
+- **Más escenarios climáticos que 3**, sacados de datos.
+- **Densidad del aire:** se mantiene ρ = 1.1716 kg/m³ en los casos de aire y se declara que ρ depende de
+  T y HR (punto 2).
+
+**2. Escenarios climáticos de Veracruz** (`scripts/build_climate_scenarios.py` → tabla
+`climate_scenarios` y `data/processed/clima_MMVR_escenarios.json`):
+- Datos: METAR horarios de **MMVR, 2010–2025**, del archivo ASOS del Iowa Environmental Mesonet.
+  113 346 observaciones; archivo bruto en `data/raw/clima_MMVR/`, SHA-256 59c3b51ae79cacc1…
+  **Clase M** (instrumental de la estación). Cumple el pendiente de la `Metodología` §7.3.
+- Ventanas de aplicación: 06–09 h y 16–18 h, hora local; 43 008 observaciones válidas. Solo con la
+  mañana, P5 y P10 salían ambos con ΔT = 0 (saturación), es decir, el mismo escenario.
+- Método: **cuantiles de la depresión de bulbo húmedo ΔT = T − T_bh**, que es lo que gobierna la
+  evaporación. T es la media de las observaciones en la banda del cuantil; la HR se resuelve para que
+  ΔT sea exacta. No se cruzan percentiles de T y HR, que darían climas que no existen.
+
+| clima_id | ΔT (K) | T (°C) | HR (%) | ρ (kg/m³) | vs 1.1716 |
+|---|---|---|---|---|---|
+| VER_P10 | 0.64 | 20.9 | 94.4 | 1.1905 | +1.6 % |
+| VER_P25 | 1.25 | 22.1 | 89.5 | 1.1863 | +1.3 % |
+| VER_P50 | 2.62 | 23.1 | 79.0 | 1.1842 | +1.1 % |
+| VER_P75 | 3.88 | 26.0 | 71.5 | 1.1691 | −0.2 % |
+| VER_P90 | 5.16 | 29.1 | 65.2 | 1.1527 | −1.6 % |
+| VER_P95 | 5.84 | 28.6 | 60.7 | 1.1563 | −1.3 % |
+| VER_P99 | 7.49 | 30.2 | 52.6 | 1.1486 | −2.0 % |
+
+- **ρ en horas de aplicación:** P1 1.1314, **P50 1.1705**, P99 1.2236 kg/m³. La ρ de los casos (1.1716)
+  es la mediana real, a un −0.1 %. El rango P1–P99 es del −3.4 % al +4.4 %; el downwash escala con
+  ρ^−½, así que varía alrededor del ±2 %. Se recomiendan 2 casos de aire de sensibilidad (ρ P1 y P99),
+  pendientes de crear.
+- Viento, solo como referencia (no está en el alcance): P50 2.1 m/s, P90 6.2 m/s.
+
+**3. Nivel B con clima:**
+- `lagrangian_runs` y `spray_cases` ganan `clima_id`: `SIN_EVAP` (deposición potencial, "lo que
+  debería llegar") más los 7 escenarios, y `lagrangian_runs` también `evaporacion`.
+- **85 184** corridas lagrangianas (10 648 × 8) y **38 720** casos de pulverización (4 840 × 8).
+- La pérdida por evaporación se obtiene como 1 − D_clima/D_SIN_EVAP, por clase de gota, H, V y clima.
+- Las tablas anteriores, sin resultados, se conservan como `*_sin_clima`; `deposition_maps` y
+  `swath_metrics`, vacías, también, para que sus claves foráneas no apunten a la tabla renombrada.
+  Copia previa: `dronewith_backup_20261123_pre_clima.sqlite`.
+- Para el paso 4 (pendiente): evaporación con la ley d² y la corrección de Ranz-Marshall, con T y HR
+  ambientes uniformes. Se ignora la humidificación local que produce la propia nube: es una
+  suposición declarada. `build_lagrangian_spec.py` es una plantilla v1 y se reescribe en ese paso.
+
+**4. Corrección de clase:** el área frontal del STL (Entry 020) es **I**, derivada del modelo, no M.
+Corregido en `attitude.py`, en la Entry 020 y en `provenance`.
+
+**5. CFD-0 con BC abierto y fuente corregida: LAS 5 CONDICIONES SE CUMPLEN**
+(`cfd/cases/A_T25P_V00.0_H2.5_f1.00_g2`; se ejecutó como `_bcabierto_b8` y se renombró):
+
+| Condición | Dato |
+|---|---|
+| 1. Fuerza por rotor | \|ρ·Su·V_solver\| frente a la F prescrita: error ≤ 1.13·10⁻⁴ |
+| 2. Balance | (−ΣF_paredes − M_out)/T = **0.994** (F_suelo −529.7, fuselaje −9.3, contorno +2.7, M_out +19.6 N) |
+| 3. Magnitudes | dispersión de F_suelo 1.30 %, tendencia +0.19 % |
+| 4. Simetría | \|media U\|/max\|Uz\| ≤ 0.0009 |
+| 5. Downwash | Uz medio en las zonas / v_i = 1.28 |
+
+- Coste: 0.66 h de pared con 6 procesos, en `run_log`. `cfd_airflow`: **primera fila real**, con
+  `convergido = 0` porque residualControl (p 10⁻⁵) no se alcanza aunque las magnitudes sí convergen.
+  Cierre −0.60 %, asimetría izquierda/derecha 0.09 %, downwash máximo −14.1 m/s.
+- `postprocess_case.py`: el cierre incluye ahora M_out, igual que la condición 2.
+- y+ medio en el suelo = 3.8·10³ (sigue el aviso de la Entry 020).
+
+**6. El gate CFD-0 todavía NO está cerrado.** El paso 2 de INSTRUCCIONES exige además la independencia
+de malla (2–3 niveles) y la verificación del desacoplamiento aire/gotas. `run_queue.py` comprobaba solo
+las 5 condiciones y **habría empezado a escalar la suite**. Ahora exige también
+`evidence/cfd0_independencia_malla.json` y `evidence/cfd0_acoplamiento.json` con `pasa: true`. En curso:
+mallas media y fina (`run_queue --rol cfd0_malla`).

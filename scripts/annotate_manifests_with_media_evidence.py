@@ -59,9 +59,9 @@ EVIDENCIA = {
         "slide": 11,
         "archivo": "data/raw/media/01a_conocimiento_basico/p11_be434fb85503.png",
         "muestra": "vista general de la aeronave (3/4 frontal) y detalle de rotor",
-        "observa": "cada uno de los 4 brazos porta DOS helices en configuracion COAXIAL (superior e inferior, "
-                   "con separacion axial visible) => 8 rotores; el detalle de rotor muestra 2 PALAS y "
-                   "abrazadera de helice oscilante",
+        "observa": "1 helice por brazo (4 rotores simples) y detalle de rotor con 2 PALAS y abrazadera de "
+                   "helice oscilante. CORREGIDO 2026-11-22: la lectura anterior ('par coaxial => 8 rotores') "
+                   "era erronea; ver geometry/models/T70P_CFD/t70p_cfd_coordinates.json (topology)",
         "no_permite": "medir la separacion axial del par ni las cotas de brazo",
     },
     "T70P_rotor_detalle": {

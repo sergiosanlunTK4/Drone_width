@@ -30,7 +30,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROYECTO="$(cd "${SCRIPT_DIR}/.." && pwd)"
 CASES_DIR="${CASES_DIR:-${PROYECTO}/cfd/cases}"
 ITER_TEST="${ITER_TEST:-400}"
-CASO="${1:-T25P_V3.1_H2.8_d190_f0.95_a4_HOVER_U0}"
+CASO="${1:-A_T25P_V00.0_H2.5_f1.00_g2}"   # CFD-0 v2
 CASO_PATH="${CASES_DIR}/${CASO}"
 
 echo "=============================================================="

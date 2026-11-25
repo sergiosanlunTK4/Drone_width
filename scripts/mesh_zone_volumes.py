@@ -44,7 +44,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "cfd" / "cases"
-CASO_NOMINAL = "T25P_V3.1_H2.8_d190_f0.95_a4"
+CASO_NOMINAL = "A_T25P_V00.0_H2.5_f1.00_g2"   # CFD-0 v2 (antes T25P_V3.1_H2.8_d190_f0.95_a4, v1 obsoleto)
 
 
 # ---------------------------------------------------------------------------------------

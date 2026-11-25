@@ -1,0 +1,106 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     simpleFoam;
+startFrom       latestTime;
+startTime       0;
+stopAt          endTime;
+endTime         3000;
+deltaT          1;
+writeControl    timeStep;
+writeInterval   500;
+purgeWrite      2;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    residuales { type solverInfo; libs (utilityFunctionObjects); fields (U p k omega); writeResidualFields no; }
+    minmax     { type fieldMinMax; libs (fieldFunctionObjects); fields (U p); writeControl timeStep; writeInterval 20; }
+
+    // balance global de momento (CFD-0, condicion 2): fuerza sobre suelo y sobre el fuselaje
+    fuerza_suelo
+    {
+        type forces; libs (forces); writeControl timeStep; writeInterval 20;
+        patches (ground); rho rhoInf; rhoInf 1.1716; CofR (0 0 0);
+    }
+    fuerza_fuselaje
+    {
+        type forces; libs (forces); writeControl timeStep; writeInterval 20;
+        patches (airframe); rho rhoInf; rhoInf 1.1716; CofR (0 0 0);
+    }
+    fuerza_contorno
+    {
+        type forces; libs (forces); writeControl timeStep; writeInterval 20;
+        patches (inlet outlet sides top); rho rhoInf; rhoInf 1.1716; CofR (0 0 0);
+    }
+
+    U_rotor1
+    {
+        type volFieldValue; libs (fieldFunctionObjects); writeControl timeStep; writeInterval 20;
+        regionType cellZone; name rotor1; operation volAverage; fields (U); writeFields false;
+    }
+    U_rotor2
+    {
+        type volFieldValue; libs (fieldFunctionObjects); writeControl timeStep; writeInterval 20;
+        regionType cellZone; name rotor2; operation volAverage; fields (U); writeFields false;
+    }
+    U_rotor3
+    {
+        type volFieldValue; libs (fieldFunctionObjects); writeControl timeStep; writeInterval 20;
+        regionType cellZone; name rotor3; operation volAverage; fields (U); writeFields false;
+    }
+    U_rotor4
+    {
+        type volFieldValue; libs (fieldFunctionObjects); writeControl timeStep; writeInterval 20;
+        regionType cellZone; name rotor4; operation volAverage; fields (U); writeFields false;
+    }
+
+    downwash
+    {
+        type sets; libs (sampling); writeControl writeTime; interpolationScheme cellPoint;
+        setFormat raw; fields (U k);
+        sets
+        {
+            bajo_rotor1 { type uniform; axis z; start (0.6800 -0.7120 -3.0450);
+                           end (0.6800 -0.7120 1.1299); nPoints 80; }
+            bajo_rotor2 { type uniform; axis z; start (0.6800 0.7120 -3.0450);
+                           end (0.6800 0.7120 1.1299); nPoints 80; }
+            bajo_rotor3 { type uniform; axis z; start (-0.6800 0.7160 -3.0450);
+                           end (-0.6800 0.7160 1.1299); nPoints 80; }
+            bajo_rotor4 { type uniform; axis z; start (-0.6800 -0.7160 -3.0450);
+                           end (-0.6800 -0.7160 1.1299); nPoints 80; }
+        }
+    }
+
+    planos
+    {
+        type surfaces; libs (sampling); writeControl writeTime; surfaceFormat raw;
+        interpolationScheme cellPoint; fields (U p k);
+        surfaces
+        {
+            suelo     { type plane; point (0 0 -3.0450); normal (0 0 1); triangulate false; }
+            boquillas { type plane; point (0 0 -0.3250); normal (0 0 1); triangulate false; }
+            simetria  { type plane; point (0 0 0); normal (0 1 0); triangulate false; }
+        }
+    }
+
+    yPlus { type yPlus; libs (fieldFunctionObjects); writeControl writeTime; }
+}

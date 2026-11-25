@@ -1,0 +1,111 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+castellatedMesh true;
+snap            true;
+addLayers       false;   // capas: se activan tras el estudio de y+ de CFD-0
+
+geometry
+{
+    airframe.stl { type triSurfaceMesh; name airframe; }
+        cerca
+        {
+            type searchableBox; min (-1.815 -1.851 -4.065); max (1.815 1.851 0.930);
+        }
+        disco1   // M1_FR
+        {
+            type searchableCylinder; point1 (0.68380 -0.71633 -0.01999); point2 (0.67620 -0.70767 0.27979); radius 0.6858;
+        }
+        disco2   // M2_FL
+        {
+            type searchableCylinder; point1 (0.68380 0.71633 -0.01999); point2 (0.67620 0.70767 0.27979); radius 0.6858;
+        }
+        disco3   // M3_RL
+        {
+            type searchableCylinder; point1 (-0.68377 0.72036 -0.01999); point2 (-0.67623 0.71164 0.27979); radius 0.6858;
+        }
+        disco4   // M4_RR
+        {
+            type searchableCylinder; point1 (-0.68377 -0.72036 -0.01999); point2 (-0.67623 -0.71164 0.27979); radius 0.6858;
+        }
+        boquilla1   // N1_RL
+        {
+            type searchableSphere; centre (-0.68000 0.71000 -0.27500); radius 0.30;
+        }
+        boquilla2   // N2_RR
+        {
+            type searchableSphere; centre (-0.68000 -0.71000 -0.27500); radius 0.30;
+        }
+        boquilla3   // N3_FL
+        {
+            type searchableSphere; centre (0.68000 0.70600 -0.27500); radius 0.30;
+        }
+        boquilla4   // N4_FR
+        {
+            type searchableSphere; centre (0.68000 -0.70600 -0.27500); radius 0.30;
+        }
+}
+
+castellatedMeshControls
+{
+    maxLocalCells       4000000;
+    maxGlobalCells      8000000;
+    minRefinementCells  10;
+    maxLoadUnbalance    0.10;
+    nCellsBetweenLevels 3;
+    features ( { file "airframe.eMesh"; level 3; } );
+    refinementSurfaces { airframe { level (2 3); patchInfo { type wall; } } }
+    resolveFeatureAngle 30;
+    refinementRegions
+    {
+        cerca { mode inside; levels ((1e15 1)); }
+        disco1 { mode inside; levels ((1e15 2)); }
+        disco2 { mode inside; levels ((1e15 2)); }
+        disco3 { mode inside; levels ((1e15 2)); }
+        disco4 { mode inside; levels ((1e15 2)); }
+        boquilla1 { mode inside; levels ((1e15 2)); }
+        boquilla2 { mode inside; levels ((1e15 2)); }
+        boquilla3 { mode inside; levels ((1e15 2)); }
+        boquilla4 { mode inside; levels ((1e15 2)); }
+    }
+    locationInMesh (9.629 9.587 4.563);
+    allowFreeStandingZoneFaces true;
+}
+
+snapControls
+{
+    nSmoothPatch 3; tolerance 2.0; nSolveIter 50; nRelaxIter 5;
+    nFeatureSnapIter 10; implicitFeatureSnap false; explicitFeatureSnap true;
+    multiRegionFeatureSnap false;
+}
+
+addLayersControls
+{
+    relativeSizes true; layers { airframe { nSurfaceLayers 3; } }
+    expansionRatio 1.2; finalLayerThickness 0.4; minThickness 0.1; nGrow 0;
+    featureAngle 60; nRelaxIter 5; nSmoothSurfaceNormals 1; nSmoothNormals 3;
+    nSmoothThickness 10; maxFaceThicknessRatio 0.5; maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle 90; nBufferCellsNoExtrude 0; nLayerIter 50;
+}
+
+meshQualityControls
+{
+    maxNonOrtho 65; maxBoundarySkewness 20; maxInternalSkewness 4; maxConcave 80;
+    minVol 1e-13; minTetQuality 1e-15; minArea -1; minTwist 0.02; minDeterminant 0.001;
+    minFaceWeight 0.05; minVolRatio 0.01; minTriangleTwist -1; nSmoothScale 4;
+    errorReduction 0.75;
+}
+mergeTolerance 1e-6;

@@ -76,9 +76,11 @@ import math
 import sys
 from pathlib import Path
 
+RHO = 1.1716   # kg/m3, el mismo de los casos (case_meta.propiedades_fluido.rho)
+
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "cfd" / "cases"
-CASO_NOMINAL = "T25P_V3.1_H2.8_d190_f0.95_a4"
+CASO_NOMINAL = "A_T25P_V00.0_H2.5_f1.00_g2"   # CFD-0 v2 (antes T25P_V3.1_H2.8_d190_f0.95_a4, v1 obsoleto)
 
 G = 9.80665
 
@@ -164,6 +166,19 @@ def reparto_empuje(meta: dict, n_rotores: int) -> tuple[list, float]:
     der = meta.get("derivados_analiticos", {})
     masa = float(meta.get("entradas", {}).get("masa_total_kg", 0.0))
     peso = masa * G
+
+    # GEOMETRIA v2 (2026-11-22): el generador escribe la fuerza VECTORIAL sobre el aire por
+    # zona, F_i = -T_i * n_i, con n_i = disk_normal inclinado (cant del motor + actitud).
+    # Si esta, manda: no se recalcula nada aqui.
+    vec = der.get("fuerza_sobre_aire_N")
+    if isinstance(vec, dict) and vec:
+        def clave_v(k: str) -> int:
+            return int("".join(ch for ch in k if ch.isdigit()) or 0)
+        zonas_ord = sorted(vec, key=clave_v)
+        if len(zonas_ord) != n_rotores:
+            raise ValueError(f"fuerza_sobre_aire_N tiene {len(zonas_ord)} zonas y la malla {n_rotores}")
+        fuerzas = [tuple(float(c) for c in vec[z]) for z in zonas_ord]
+        return fuerzas, peso
 
     por_disco = der.get("empuje_por_disco_N")
     if isinstance(por_disco, dict) and por_disco:
@@ -256,18 +271,18 @@ def construir_fvOptions(caso: Path, zonas: dict, fuerzas: list) -> str:
         "//",
         "// Formulacion: vectorSemiImplicitSource. En OpenFOAM, `Su` entra en la ecuacion de",
         "// momento CINEMATICA (fvm::div(phi,U) -> dimensiones [0 2 -2 0 0 0 0]), de modo que",
-        "// `Su` tiene dimensiones [0 -1 -2] = aceleracion por unidad de volumen, NO fuerza por",
-        "// unidad de masa. En un solver incompresible rho NO aparece: la densidad ya esta",
-        "// implicita en las unidades. La cadena es",
+        "// `Su` es una ACELERACION (m/s2): la ecuacion de simpleFoam esta dividida por rho",
+        "// (p cinematico). BUG #8 (Entry 022): hasta 2026-11-23 se escribia Su = F/V_zone y",
+        "// la fuerza fisica aplicada era rho*F = 1.1716*F (17 % de mas). La cadena correcta es",
         "//",
-        "//       F [N]  ->  F/V_zone [N/m^3]  ->  Su",
+        "//       F [N]  ->  F/(rho V_zone) [m/s2]  ->  Su     (fuerza fisica = rho*Su*V_zone)",
         "//",
         "// El codigo de OpenFOAM aplica, por celda, `Su_c * V_c` newtons (fvm::SuSp multiplica",
         "// por el volumen de celda). Por tanto, con Su CONSTANTE en la zona,",
         "//",
         "//       integral_{V_zone} f dV = Su * sum_c V_c = Su * V_zone",
         "//",
-        "// y para que valga `F` hay que escribir `Su = F / V_zone`.",
+        "// y para que la fuerza fisica valga `F` hay que escribir `Su = F / (rho V_zone)`.",
         "//",
         "// POR QUE `specific` Y NO `absolute`  (candidato a bug #7, medido)",
         "//   El codigo de v2412 hace, para volumeMode absolute:",
@@ -305,12 +320,12 @@ def construir_fvOptions(caso: Path, zonas: dict, fuerzas: list) -> str:
         V = zonas[zona]
         if V <= 0:
             raise ValueError(f"{caso.name}/{zona}: V_zone = {V} no es positivo")
-        su = tuple(c / V for c in F)
-        T = -F[2]
+        su = tuple(c / (RHO * V) for c in F)      # bug #8: Su cinematico (m/s2)
+        T = math.sqrt(sum(c * c for c in F))
         lineas += [
-            f"    // {zona}: T_i = {T:.6f} N (fuerza del rotor sobre el UAV, hacia arriba)",
-            f"    //     V_zone = {V:.10e} m3  ->  Su = F_aire/V_zone = "
-            f"({su[0]:.10e} {su[1]:.10e} {su[2]:.10e}) N/m3",
+            f"    // {zona}: |T_i| = {T:.6f} N (fuerza del rotor sobre el UAV, segun disk_normal)",
+            f"    //     V_zone = {V:.10e} m3  ->  Su = F_aire/(rho V_zone), rho = {RHO} -> "
+            f"({su[0]:.10e} {su[1]:.10e} {su[2]:.10e}) m/s2",
             f"    {zona}",
             "    {",
             "        type            vectorSemiImplicitSource;",
@@ -348,6 +363,18 @@ def procesar(caso: Path, dry_run: bool) -> dict:
             raise ValueError(f"{caso.name}: rotorZoneVolumes no coincide con cellZones. "
                              f"faltan={sorted(faltan)} sobran={sorted(sobran)}")
 
+    # v2: comprobacion de la zona contra la geometria, V_zone ~ pi r^2 h (castellated: aprox.)
+    avisos_volumen = []
+    zm = meta.get("zonas_rotor", {})
+    for z in sorted(zonas):
+        teo = zm.get(z, {}).get("V_teorico_m3")
+        if teo:
+            err = zonas[z] / teo - 1.0
+            avisos_volumen.append((z, zonas[z], teo, err))
+            if abs(err) > 0.35:
+                raise ValueError(f"{caso.name}/{z}: V_zone = {zonas[z]:.4e} m3 frente a pi r^2 h = "
+                                 f"{teo:.4e} m3 ({err:+.0%}). La zona no representa el disco.")
+
     suma = [sum(f[i] for f in fuerzas) for i in range(3)]
     Fz_aire = suma[2]                      # fuerza vertical sobre el aire (negativa)
     T_total = -Fz_aire                     # empuje total del UAV
@@ -363,7 +390,9 @@ def procesar(caso: Path, dry_run: bool) -> dict:
         "caso": caso.name,
         "n_rotores": len(zonas),
         "zonas": {z: zonas[z] for z in sorted(zonas)},
-        "T_por_rotor_N": [-f[2] for f in fuerzas],
+        "T_por_rotor_N": [math.sqrt(sum(c * c for c in f)) for f in fuerzas],
+        "V_zona_frente_teorico": [{"zona": z, "V": v, "V_teo": vt, "err": e}
+                                  for z, v, vt, e in avisos_volumen],
         "F_aire_por_rotor_N": [list(f) for f in fuerzas],
         "Su_por_rotor_N_m3": [[c / zonas[z] for c in f]
                               for z, f in zip(sorted(zonas), fuerzas)],
@@ -424,7 +453,7 @@ def main() -> int:
                                                r["F_aire_por_rotor_N"],
                                                r["Su_por_rotor_N_m3"]), 1):
             print(f"      {z:<10} T = {T:10.6f} N · F_aire = "
-                  f"({F[0]:+.6f} {F[1]:+.6f} {F[2]:+.6f}) N · Su = {su[2]:+.6e} N/m3")
+                  f"({F[0]:+.6f} {F[1]:+.6f} {F[2]:+.6f}) N · Su = {su[2]:+.6e} m/s2 (rho={RHO})")
         print(f"    T total = {r['T_total_N']:.6f} N   peso = {r['peso_N']:.6f} N   "
               f"residuo = {r['residuo_N']:+.6f} N ({r['residuo_pct']:+.4f} %)")
         if abs(r["residuo_pct"] or 0.0) > 0.01:

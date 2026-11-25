@@ -75,9 +75,9 @@ PLATFORMS = {
         "swath_nominal_m": [4, 11],
         "motor_stator_mm": [155, 16],
         "motor_kv": 55,
-        "arm_count": 4,                       # I: "4 pares de helices" en specs
-        "coaxial": True,                      # I
-        "rotor_count_hypothesis": 8,          # I: 4 brazos x par coaxial
+        "arm_count": 4,                       # I: "4 pares de helices" = pares de PALAS
+        "coaxial": False,                     # S (2026-11-22): 1 helice por brazo, ver T55_cfd_coordinates.json
+        "rotor_count_hypothesis": 4,          # S (2026-11-22); antes 8 (I, retirado)
         "blade_model": "no declarado",
     },
     "T70P": {
@@ -101,8 +101,8 @@ PLATFORMS = {
         "motor_stator_mm": [155, 22],
         "motor_kv": 65,
         "arm_count": 4,                       # I: motores numerados 1-4
-        "coaxial": True,                      # I
-        "rotor_count_hypothesis": 8,          # I
+        "coaxial": False,                     # P-A + S (2026-11-22): 'empuje de un solo eje', 1 helice por brazo
+        "rotor_count_hypothesis": 4,          # P-A + S (2026-11-22); antes 8 (I, retirado)
         "blade_model": "6223 (62 x 23 in) fibra de carbono",
         "rotacion": "motor 1/3 CW, motor 2/4 CCW -> opuesta a cuadricoptero tradicional (P-A)",
         "v_descenso_ms": [2, 3],

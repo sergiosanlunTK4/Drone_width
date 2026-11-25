@@ -1,0 +1,147 @@
+{
+  "fuente": "METAR MMVR via IEM ASOS",
+  "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=MMVR&data=tmpf&data=dwpf&data=relh&data=alti&data=sknt&data=drct&tz=America/Mexico_City&format=onlycomma&latlon=no&missing=M&report_type=3&report_type=4&year1=2010&month1=1&day1=1&year2=2025&month2=12&day2=31",
+  "archivo": "data/raw/clima_MMVR/MMVR_2010_2025_metar.csv",
+  "sha256": "59c3b51ae79cacc14e576c5c03cdd57f1ca6a1129aa96914bc060e6274ec82c1",
+  "clase": "M",
+  "horas_locales": "06:00-09:59, 16:00-18:59",
+  "anios": [
+    2010,
+    2025
+  ],
+  "n_obs": 43008,
+  "descartes": {
+    "total": 113346,
+    "sin_dato": 92,
+    "fuera_de_hora": 70236,
+    "fuera_de_rango": 10
+  },
+  "metodo": "cuantiles de T - T_bh; T, HR, P = medianas en banda +-2.5",
+  "rho_P1_P50_P99": [
+    1.1314,
+    1.1705,
+    1.2236
+  ],
+  "escenarios": [
+    {
+      "clima_id": "VER_P10",
+      "cuantil_dT": 10,
+      "dT_bh_K": 0.636,
+      "T_C": 20.92,
+      "HR": 0.9443,
+      "P_Pa": 101379.6,
+      "rho_kg_m3": 1.1905,
+      "rho_vs_casos_pct": 1.61,
+      "T_bh_C": 20.29,
+      "n_obs_banda": 3349,
+      "meses_mas_frecuentes": [
+        12,
+        1,
+        2
+      ]
+    },
+    {
+      "clima_id": "VER_P25",
+      "cuantil_dT": 25,
+      "dT_bh_K": 1.248,
+      "T_C": 22.12,
+      "HR": 0.8949,
+      "P_Pa": 101447.2,
+      "rho_kg_m3": 1.1863,
+      "rho_vs_casos_pct": 1.25,
+      "T_bh_C": 20.87,
+      "n_obs_banda": 2154,
+      "meses_mas_frecuentes": [
+        1,
+        12,
+        2
+      ]
+    },
+    {
+      "clima_id": "VER_P50",
+      "cuantil_dT": 50,
+      "dT_bh_K": 2.621,
+      "T_C": 23.1,
+      "HR": 0.7896,
+      "P_Pa": 101548.7,
+      "rho_kg_m3": 1.1842,
+      "rho_vs_casos_pct": 1.08,
+      "T_bh_C": 20.48,
+      "n_obs_banda": 2163,
+      "meses_mas_frecuentes": [
+        1,
+        12,
+        2
+      ]
+    },
+    {
+      "clima_id": "VER_P75",
+      "cuantil_dT": 75,
+      "dT_bh_K": 3.876,
+      "T_C": 26.02,
+      "HR": 0.715,
+      "P_Pa": 101312.0,
+      "rho_kg_m3": 1.1691,
+      "rho_vs_casos_pct": -0.21,
+      "T_bh_C": 22.15,
+      "n_obs_banda": 2156,
+      "meses_mas_frecuentes": [
+        11,
+        1,
+        3
+      ]
+    },
+    {
+      "clima_id": "VER_P90",
+      "cuantil_dT": 90,
+      "dT_bh_K": 5.157,
+      "T_C": 29.11,
+      "HR": 0.6521,
+      "P_Pa": 101007.6,
+      "rho_kg_m3": 1.1527,
+      "rho_vs_casos_pct": -1.61,
+      "T_bh_C": 23.95,
+      "n_obs_banda": 2152,
+      "meses_mas_frecuentes": [
+        8,
+        7,
+        5
+      ]
+    },
+    {
+      "clima_id": "VER_P95",
+      "cuantil_dT": 95,
+      "dT_bh_K": 5.843,
+      "T_C": 28.64,
+      "HR": 0.6073,
+      "P_Pa": 101075.2,
+      "rho_kg_m3": 1.1563,
+      "rho_vs_casos_pct": -1.3,
+      "T_bh_C": 22.8,
+      "n_obs_banda": 2156,
+      "meses_mas_frecuentes": [
+        5,
+        4,
+        10
+      ]
+    },
+    {
+      "clima_id": "VER_P99",
+      "cuantil_dT": 99,
+      "dT_bh_K": 7.494,
+      "T_C": 30.21,
+      "HR": 0.526,
+      "P_Pa": 100872.3,
+      "rho_kg_m3": 1.1486,
+      "rho_vs_casos_pct": -1.96,
+      "T_bh_C": 22.71,
+      "n_obs_banda": 861,
+      "meses_mas_frecuentes": [
+        4,
+        5,
+        3
+      ]
+    }
+  ],
+  "generado": "2026-11-24T04:16:23+00:00"
+}
