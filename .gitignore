@@ -91,3 +91,9 @@ cfd/cases/**/[1-9]*/
 cfd/cases/**/[1-9]*.*/
 cfd/cases/**/*backup*/
 literature/**/texto.txt
+
+# --- Prueba de acoplamiento: el 0/ es el campo RANS convergido copiado (regenerable con
+#     scripts/build_coupling_test.py desde el caso CFD-0), y _humo_* son pruebas de humo
+cfd/cases/_acoplamiento/*/0/
+cfd/cases/_acoplamiento/_humo_*/
+cfd/cases/**/lagrangian/

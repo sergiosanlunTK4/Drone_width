@@ -1,0 +1,144 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// =====================================================================================
+// FUENTE DE MOMENTO PRESCRITA  -  arquitectura C -> B
+// =====================================================================================
+//
+// NO es actuationDiskSource. Aquel CALCULA el empuje a partir del flujo incidente
+// axial (T = 2 rho A |U_o.n|^2 a(1-a)), de modo que con flujo perpendicular da
+// T ~ 0. Aqui el empuje es una ENTRADA.
+//
+// Formulacion: vectorSemiImplicitSource. En OpenFOAM, `Su` entra en la ecuacion de
+// momento CINEMATICA (fvm::div(phi,U) -> dimensiones [0 2 -2 0 0 0 0]), de modo que
+// `Su` es una ACELERACION (m/s2): la ecuacion de simpleFoam esta dividida por rho
+// (p cinematico). BUG #8 (Entry 022): hasta 2026-11-23 se escribia Su = F/V_zone y
+// la fuerza fisica aplicada era rho*F = 1.1716*F (17 % de mas). La cadena correcta es
+//
+//       F [N]  ->  F/(rho V_zone) [m/s2]  ->  Su     (fuerza fisica = rho*Su*V_zone)
+//
+// El codigo de OpenFOAM aplica, por celda, `Su_c * V_c` newtons (fvm::SuSp multiplica
+// por el volumen de celda). Por tanto, con Su CONSTANTE en la zona,
+//
+//       integral_{V_zone} f dV = Su * sum_c V_c = Su * V_zone
+//
+// y para que la fuerza fisica valga `F` hay que escribir `Su = F / (rho V_zone)`.
+//
+// POR QUE `specific` Y NO `absolute`  (candidato a bug #7, medido)
+//   El codigo de v2412 hace, para volumeMode absolute:
+//       VDash_ = V_ ;   Su_interno = Su_diccionario / VDash_
+//   es decir, `absolute` DIVIDE por el volumen de la zona. Eso mete una division por
+//   V_zone en medio de la formulacion y hace que el resultado dependa de que el volumen
+//   declarado coincida EXACTAMENTE con el de la malla. Se midio en un caso controlado
+//   (scripts/calibrate_semiimplicit.py): con el mismo `Su`, `specific` aplica un factor
+//   V_zone mas de fuerza que `absolute`, exactamente el factor 4.0 del volumen del test.
+//
+//   Con `specific`, `VDash_ = 1` y el valor del diccionario es la densidad volumetrica
+//   SIN ninguna renormalizacion. La formulacion deja de depender de la semantica del
+//   modo: menos piezas moviles, mismo resultado fisico.
+//
+// Constante es lo correcto: el reparto por volumen ya lo hace la integracion, porque
+// una celda grande recibe mas fuerza total al multiplicarse por su volumen. Repartir
+// Su_c proporcional a V_c sobreponderia las celdas grandes.
+//
+// Convenio de signos: T_i es la fuerza del rotor SOBRE EL UAV; lo que se inyecta al
+// FLUIDO es la reaccion, -T_i. En hover, (0 0 -T_i).
+//
+// V_zone procede de constant/rotorZoneVolumes, calculado sobre la malla REAL de este
+// caso (scripts/mesh_zone_volumes.py). OpenFOAM imprime su propio valor en el log
+// ('- selected N cell(s) with volume V'); verificacion: verify_prescribed_force.py.
+//
+// VERIFICACION OBLIGATORIA (GATE CFD-0): la fuerza aplicada debe integrar T_i rotor
+// por rotor, y el balance global de momento debe cerrar.
+// =====================================================================================
+
+options
+{
+    // rotor1: |T_i| = 130.033958 N (fuerza del rotor sobre el UAV, segun disk_normal)
+    //     V_zone = 1.1711189881e-01 m3  ->  Su = F_aire/(rho V_zone), rho = 1.1716 -> (2.4002702347e+01 -2.7339592301e+01 -9.4701347796e+02) m/s2
+    rotor1
+    {
+        type            vectorSemiImplicitSource;
+        libs            ("libfvOptions.so");
+        selectionMode   cellZone;
+        cellZone        rotor1;
+        // `specific`: el valor es la densidad volumetrica y NO se renormaliza.
+        // NO cambiar a `absolute` sin volver a dividir por V_zone (ver cabecera).
+        volumeMode      specific;
+
+        sources
+        {
+            U               ((2.4002702347e+01 -2.7339592301e+01 -9.4701347796e+02) 0);
+        }
+    }
+
+    // rotor2: |T_i| = 130.033958 N (fuerza del rotor sobre el UAV, segun disk_normal)
+    //     V_zone = 1.1709484167e-01 m3  ->  Su = F_aire/(rho V_zone), rho = 1.1716 -> (2.4006198808e+01 2.7343574844e+01 -9.4715142889e+02) m/s2
+    rotor2
+    {
+        type            vectorSemiImplicitSource;
+        libs            ("libfvOptions.so");
+        selectionMode   cellZone;
+        cellZone        rotor2;
+        // `specific`: el valor es la densidad volumetrica y NO se renormaliza.
+        // NO cambiar a `absolute` sin volver a dividir por V_zone (ver cabecera).
+        volumeMode      specific;
+
+        sources
+        {
+            U               ((2.4006198808e+01 2.7343574844e+01 -9.4715142889e+02) 0);
+        }
+    }
+
+    // rotor3: |T_i| = 130.033959 N (fuerza del rotor sobre el UAV, segun disk_normal)
+    //     V_zone = 1.1822786785e-01 m3  ->  Su = F_aire/(rho V_zone), rho = 1.1716 -> (-2.3572420676e+01 2.7258022684e+01 -9.3807452412e+02) m/s2
+    rotor3
+    {
+        type            vectorSemiImplicitSource;
+        libs            ("libfvOptions.so");
+        selectionMode   cellZone;
+        cellZone        rotor3;
+        // `specific`: el valor es la densidad volumetrica y NO se renormaliza.
+        // NO cambiar a `absolute` sin volver a dividir por V_zone (ver cabecera).
+        volumeMode      specific;
+
+        sources
+        {
+            U               ((-2.3572420676e+01 2.7258022684e+01 -9.3807452412e+02) 0);
+        }
+    }
+
+    // rotor4: |T_i| = 130.033959 N (fuerza del rotor sobre el UAV, segun disk_normal)
+    //     V_zone = 1.1821314944e-01 m3  ->  Su = F_aire/(rho V_zone), rho = 1.1716 -> (-2.3575355616e+01 -2.7261416509e+01 -9.3819132132e+02) m/s2
+    rotor4
+    {
+        type            vectorSemiImplicitSource;
+        libs            ("libfvOptions.so");
+        selectionMode   cellZone;
+        cellZone        rotor4;
+        // `specific`: el valor es la densidad volumetrica y NO se renormaliza.
+        // NO cambiar a `absolute` sin volver a dividir por V_zone (ver cabecera).
+        volumeMode      specific;
+
+        sources
+        {
+            U               ((-2.3575355616e+01 -2.7261416509e+01 -9.3819132132e+02) 0);
+        }
+    }
+
+}
+
+// ************************************************************************* //

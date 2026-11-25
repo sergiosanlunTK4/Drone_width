@@ -1,0 +1,36 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Una cellZone cilindrica por rotor, ALINEADA con disk_normal (geometria v2, inclinada).
+actions
+(
+    // rotor1 = M1_FR (simple, CCW); espesor de zona 0.0938 m
+    { name rotorSet1; type cellSet; action new; source cylinderToCell;
+      p1 (0.68119 -0.71335 0.08306); p2 (0.67881 -0.71065 0.17674); radius 0.63500; }
+    { name rotor1; type cellZoneSet; action new; source setToCellZone; set rotorSet1; }
+    // rotor2 = M2_FL (simple, CW); espesor de zona 0.0938 m
+    { name rotorSet2; type cellSet; action new; source cylinderToCell;
+      p1 (0.68119 0.71335 0.08306); p2 (0.67881 0.71065 0.17674); radius 0.63500; }
+    { name rotor2; type cellZoneSet; action new; source setToCellZone; set rotorSet2; }
+    // rotor3 = M3_RL (simple, CCW); espesor de zona 0.0938 m
+    { name rotorSet3; type cellSet; action new; source cylinderToCell;
+      p1 (-0.68118 0.71736 0.08306); p2 (-0.67882 0.71464 0.17674); radius 0.63500; }
+    { name rotor3; type cellZoneSet; action new; source setToCellZone; set rotorSet3; }
+    // rotor4 = M4_RR (simple, CW); espesor de zona 0.0938 m
+    { name rotorSet4; type cellSet; action new; source cylinderToCell;
+      p1 (-0.68118 -0.71736 0.08306); p2 (-0.67882 -0.71464 0.17674); radius 0.63500; }
+    { name rotor4; type cellZoneSet; action new; source setToCellZone; set rotorSet4; }
+);

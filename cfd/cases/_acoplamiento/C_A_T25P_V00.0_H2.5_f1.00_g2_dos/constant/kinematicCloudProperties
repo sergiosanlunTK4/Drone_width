@@ -1,0 +1,95 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      kinematicCloudProperties;
+}
+// generado por scripts/build_coupling_test.py
+
+solution
+{
+    active          true;
+    coupled         yes;
+    transient       yes;
+    cellValueSourceCorrection no;
+    maxCo           0.3;
+    sourceTerms { schemes { U semiImplicit 1; } }
+    interpolationSchemes { rho cell; U cellPoint; muc cell; p cell; }
+    integrationSchemes { U Euler; }
+}
+
+constantProperties { rho0 996.2; }
+
+subModels
+{
+    particleForces { sphereDrag; gravity; }
+    injectionModels
+    {
+        N1_RL
+        {
+            type            coneNozzleInjection;
+            SOI             0;
+            duration        2.0;
+            massTotal       0.39848;
+            parcelBasisType mass;
+            injectionMethod disc;
+            flowType        constantVelocity;
+            UMag            43.98;
+            outerDiameter   0.06;
+            innerDiameter   0.054;
+            position        (-0.68075 0.71087 -0.30498);
+            direction       (-0.02511 0.029036 -0.9992629);
+            parcelsPerSecond 20000;
+            flowRateProfile constant 1;
+            thetaInner      constant 85;
+            thetaOuter      constant 90;
+            sizeDistribution
+            {
+                type        RosinRammler;
+                RosinRammlerDistribution { lambda 0.0001; n 3.0; minValue 2e-05; maxValue 0.0004; }
+            }
+        }
+        N2_RR
+        {
+            type            coneNozzleInjection;
+            SOI             0;
+            duration        2.0;
+            massTotal       0.39848;
+            parcelBasisType mass;
+            injectionMethod disc;
+            flowType        constantVelocity;
+            UMag            43.98;
+            outerDiameter   0.06;
+            innerDiameter   0.054;
+            position        (-0.68075 -0.71087 -0.30498);
+            direction       (-0.02511 -0.029036 -0.9992629);
+            parcelsPerSecond 20000;
+            flowRateProfile constant 1;
+            thetaInner      constant 85;
+            thetaOuter      constant 90;
+            sizeDistribution
+            {
+                type        RosinRammler;
+                RosinRammlerDistribution { lambda 0.0001; n 3.0; minValue 2e-05; maxValue 0.0004; }
+            }
+        }
+    }
+    dispersionModel none;
+    patchInteractionModel localInteraction;
+    localInteractionCoeffs
+    {
+        patches
+        (
+            "(ground|airframe)" { type stick; }
+            "(inlet|outlet|sides|top)" { type escape; }
+        );
+    }
+    stochasticCollisionModel none;
+    surfaceFilmModel none;
+}
+
+cloudFunctions
+{
+    impactos_suelo { type particlePostProcessing; maxStoredParcels 2000000; patches (ground); }
+}

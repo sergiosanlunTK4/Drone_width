@@ -1,0 +1,33 @@
+{
+  "proposito": "verificacion del acoplamiento en un sentido (INSTRUCCIONES §5.1)",
+  "caso_aire": "A_T25P_V00.0_H2.5_f1.00_g2",
+  "campo_inicial": "A_T25P_V00.0_H2.5_f1.00_g2/3000 (RANS convergido)",
+  "acoplado": false,
+  "Q_total_Lmin": 24.0,
+  "atomizadores": "estandar (2)",
+  "rpm": 14000.0,
+  "UMag_ms": 43.982,
+  "gotas": {
+    "modelo": "RosinRammler",
+    "lambda_m": 0.0001,
+    "n": 3.0,
+    "min_m": 2e-05,
+    "max_m": 0.0004,
+    "clase": "I"
+  },
+  "endTime_s": 2.0,
+  "ventana_estadistica_s": [
+    1.0,
+    2.0
+  ],
+  "rho_aire": 1.1716,
+  "rho_liquido": 996.2,
+  "peor_caso": "24 L/min por 2 atomizadores (1.5x el maximo real de 2), hover, rpm maxima",
+  "sin": [
+    "dispersion turbulenta estocastica",
+    "evaporacion",
+    "rotura secundaria"
+  ],
+  "desplazamiento_inyeccion_m": 0.03,
+  "nota_inyeccion": "centro del disco dentro del cuerpo del STL; inyeccion 3 cm mas abajo a lo largo de -eje (I)"
+}
