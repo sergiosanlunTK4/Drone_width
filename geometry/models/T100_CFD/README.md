@@ -1,108 +1,20 @@
-# Modelo Geométrico 3D y Coordenadas CFD — DJI Agras T100
+# DJI Agras T100 — modelo CFD (v2)
 
-Este directorio contiene la geometría tridimensional de alta fidelidad y el catálogo completo de coordenadas del dron agrícola **DJI Agras T100**, modelado específicamente para análisis de aerodinámica (CFD), campo de downwash e inyección y deposición lagrangiana de gotas (deriva y distribución de pulverización).
+El sistema común, la terna de ejes, la inclinación, los archivos y el uso en OpenFOAM se describen en **[`../README_MODELOS_CFD.md`](../README_MODELOS_CFD.md)**. Los parámetros están en `scripts/agras_model/platforms/t100.py`. El modelo anterior está guardado en `_anterior_v1/`.
 
----
-
-## 1. Archivos en este Directorio
-
-| Archivo | Tipo / Formato | Descripción y Uso en CFD |
+| Dato | Valor | Clase / fuente |
 |---|---|---|
-| [`t100_cfd_coordinates.json`](file:///c:/Users/Dimasur/Downloads/AUTOMATIONS/DRONEWITH/geometry/models/T100_CFD/t100_cfd_coordinates.json) | JSON Maestro | Catálogo completo de coordenadas XYZ, vectores normales y de empuje, especificaciones de atomizadores, espectro de gota y metrología. |
-| [`t100_airframe.stl`](file:///c:/Users/Dimasur/Downloads/AUTOMATIONS/DRONEWITH/geometry/models/T100_CFD/t100_airframe.stl) | STL Binario | Superficies sólidas impermeables (`wall` sin deslizamiento): fuselaje, tanque de 100 L, brazos tubulares, tren de aterrizaje, barra trasera LS100 y carcasas de atomizadores. |
-| [`t100_airframe_ascii.stl`](file:///c:/Users/Dimasur/Downloads/AUTOMATIONS/DRONEWITH/geometry/models/T100_CFD/t100_airframe_ascii.stl) | STL ASCII | Versión ASCII de la estructura sólida del dron. |
-| [`t100_rotor_disks.stl`](file:///c:/Users/Dimasur/Downloads/AUTOMATIONS/DRONEWITH/geometry/models/T100_CFD/t100_rotor_disks.stl) | STL Binario | 8 volúmenes cilíndricos cerrados correspondientes al barrido de los rotores (discos actuadores para `topoSet` / `cellZone` en OpenFOAM o Ansys Fluent). |
-| [`t100_rotor_disks_ascii.stl`](file:///c:/Users/Dimasur/Downloads/AUTOMATIONS/DRONEWITH/geometry/models/T100_CFD/t100_rotor_disks_ascii.stl) | STL ASCII | Versión ASCII de los 8 discos actuadores. |
-| [`t100_spray_nozzles.stl`](file:///c:/Users/Dimasur/Downloads/AUTOMATIONS/DRONEWITH/geometry/models/T100_CFD/t100_spray_nozzles.stl) | STL Binario | Discos marcadores de la posición de eyección de los 4 atomizadores centrífugos. |
-| [`t100_spray_nozzles_ascii.stl`](file:///c:/Users/Dimasur/Downloads/AUTOMATIONS/DRONEWITH/geometry/models/T100_CFD/t100_spray_nozzles_ascii.stl) | STL ASCII | Versión ASCII de las boquillas de atomización. |
-| [`t100_full_assembly.stl`](file:///c:/Users/Dimasur/Downloads/AUTOMATIONS/DRONEWITH/geometry/models/T100_CFD/t100_full_assembly.stl) | STL Binario | Ensamblaje completo unificado (fuselaje + rotores + aspersores) para visualización en Paraview o mallado conjunto. |
-| [`t100_geometry_verification.png`](file:///c:/Users/Dimasur/Downloads/AUTOMATIONS/DRONEWITH/geometry/models/T100_CFD/t100_geometry_verification.png) | Imagen PNG | Gráfico de verificación ortográfica multieje (Planta XY, Perfil XZ, Alzado YZ y ficha técnica). |
+| Topología | **4 pares coaxiales = 8 rotores** 6223 | P-A ("hélices duales coaxiales") + M |
+| Bujes (X, Y) | (±0.8238, ±0.8238) | M / P (diagonal 2330); confirmado en `T100_UP` (radio de hélice 404 px → 1.95 mm/px) |
+| Planos de hélice | Z = ±0.145 (separación 0.290 m) | M; S en `T100_REAR`: 0.28–0.29 m |
+| **Marco vertical** | plano medio coaxial a **0.73 m** del suelo (suelo Z = −0.73); radar a +0.25 | **S** (`T100_REAR` 0.743 y `T100_RIGHT` 0.720; suman los 975 mm oficiales). El modelo anterior usaba 0.625 m |
+| Giro | FR sup. CCW / inf. CW · RR sup. CW · RL sup. CCW · FL sup. CW | M (por nombre de rotor) + P-A |
+| **Inclinación del motor** | **−3.3° a lo largo del brazo** | S: columnas coaxiales traseras, lateral −2.17 ± 0.3° |
+| Barra LS100 | a Z = −0.39; 4 cuerpos de atomizador | S |
+| Atomizadores | exteriores (estándar) (−0.875, ±0.917); interiores (opcionales) (−0.775, ±0.4585); disco Z = −0.448 (0.28 m sobre el suelo) | **M**: ver la discrepancia más abajo |
+| Tren | patines en Y = ±0.375, X −0.45 … +0.30 | S (el modelo anterior tenía 1.10 × 1.15 m) |
+| Chequeos | diagonal 2330 mm, sobre 3247 mm (+0.8 %: los rotores inferiores inclinados sobresalen), altura 975 mm; 1 sólido, mallas limpias, 0 interferencias | `_build_report.json` |
 
----
+> ⚠️ **Por confirmar: la X de los atomizadores.** En `t100_overlay_top.png`, los extremos de la barra LS100 de la foto cenital oficial caen en **X ≈ −0.58 m, Y ≈ ±0.86 m**, y la vista lateral da X ≈ −0.68 m. Tu medición dice −0.875 m, que los pone justo bajo el buje trasero. La diferencia (~0.2–0.3 m) cambia si la lámina de gotas nace bajo la estela del rotor o por dentro de ella. Se mantienen tus valores; para cambiarlos se edita `NOZZLES` en `t100.py`.
 
-## 2. Sistema de Coordenadas de Referencia
-
-Convención aeronáutica de mano derecha (estándar SAE / CFD):
-- **Origen $(0, 0, 0)$:** Centro geométrico del chasis en el plano medio de los tubos de los brazos de carbono.
-- **Eje $+X$:** Hacia adelante (dirección de avance en vuelo).
-- **Eje $+Y$:** Hacia estribor / derecha del dron.
-- **Eje $+Z$:** Vertical hacia arriba (opuesto a la gravedad y al downwash descendente).
-
----
-
-## 3. Tabla Maestra de Coordenadas 3D
-
-### A. Rotores y Discos Actuadores (8 Rotores — 4 Pares Coaxiales)
-- **Hélice:** 6223 (Diámetro 62 pulgadas = 1.5748 m, Radio = 0.7874 m, Paso = 23 pulgadas).
-- **Separación axial coaxial:** $\Delta Z = 0.290\text{ m}$ ($290\text{ mm}$).
-- **Espesor de disco actuador:** $0.040\text{ m}$ ($40\text{ mm}$).
-
-| Rotor ID | Brazo | Nivel | $X$ (m) | $Y$ (m) | $Z$ (m) | Rotación | Vector Normal | Vector Empuje Hover |
-|---|---|---|---|---|---|---|---|---|
-| `M1_FR_upper` | Frontal Der. (M1) | Superior | $+0.8238$ | $+0.8238$ | $+0.1450$ | CCW | $[0, 0, +1]$ | $[0, 0, -1]$ |
-| `M1_FR_lower` | Frontal Der. (M1) | Inferior | $+0.8238$ | $+0.8238$ | $-0.1450$ | CW | $[0, 0, +1]$ | $[0, 0, -1]$ |
-| `M2_RR_upper` | Trasero Der. (M2) | Superior | $-0.8238$ | $+0.8238$ | $+0.1450$ | CW | $[0, 0, +1]$ | $[0, 0, -1]$ |
-| `M2_RR_lower` | Trasero Der. (M2) | Inferior | $-0.8238$ | $+0.8238$ | $-0.1450$ | CCW | $[0, 0, +1]$ | $[0, 0, -1]$ |
-| `M3_RL_upper` | Trasero Izq. (M3) | Superior | $-0.8238$ | $-0.8238$ | $+0.1450$ | CCW | $[0, 0, +1]$ | $[0, 0, -1]$ |
-| `M3_RL_lower` | Trasero Izq. (M3) | Inferior | $-0.8238$ | $-0.8238$ | $-0.1450$ | CW | $[0, 0, +1]$ | $[0, 0, -1]$ |
-| `M4_FL_upper` | Frontal Izq. (M4) | Superior | $+0.8238$ | $-0.8238$ | $+0.1450$ | CW | $[0, 0, +1]$ | $[0, 0, -1]$ |
-| `M4_FL_lower` | Frontal Izq. (M4) | Inferior | $+0.8238$ | $-0.8238$ | $-0.1450$ | CCW | $[0, 0, +1]$ | $[0, 0, -1]$ |
-
-### B. Sistema de Pulverización (4 Atomizadores Centrífugos LX07550SX)
-- **Barra de pulverización:** Modelo LS100 (barra trasera).
-- **Separación exterior (N1–N4):** $1834.0\text{ mm}$ ($Y = \pm 0.9170\text{ m}$).
-- **Separación interior (N2–N3):** $917.0\text{ mm}$ ($Y = \pm 0.4585\text{ m}$).
-- **Caudal nominal:** $10.0\text{ L/min}$ por boquilla ($40.0\text{ L/min}$ total) $= 1.667 \times 10^{-4}\text{ m}^3\text{/s}$.
-- **Régimen de giro del disco:** Hasta $14\,000\text{ RPM}$ ($v_{\text{tangencial}} = 73.3\text{ m/s}$).
-- **Espectro de gota:** $D_{10} = 50\,\mu\text{m}$, $D_{50} = 150\,\mu\text{m}$, $D_{90} = 300\,\mu\text{m}$ (Rango: $10 - 500\,\mu\text{m}$).
-
-| Boquilla ID | Rol / Posición | $X$ (m) | $Y$ (m) | $Z$ (m) | Vector Inyección | Caída bajo brazos (m) | Caída bajo rotor inf. (m) | Despeje suelo (m) |
-|---|---|---|---|---|---|---|---|---|
-| `N1_left_outer` | Izquierda Exterior | $-0.8750$ | $-0.9170$ | $-0.4480$ | $[0, 0, -1]$ | $0.4480$ | $0.3030$ | $0.1770$ |
-| `N2_left_inner` | Izquierda Interior | $-0.7750$ | $-0.4585$ | $-0.4480$ | $[0, 0, -1]$ | $0.4480$ | $0.3030$ | $0.1770$ |
-| `N3_right_inner` | Derecha Interior | $-0.7750$ | $+0.4585$ | $-0.4480$ | $[0, 0, -1]$ | $0.4480$ | $0.3030$ | $0.1770$ |
-| `N4_right_outer` | Derecha Exterior | $-0.8750$ | $+0.9170$ | $-0.4480$ | $[0, 0, -1]$ | $0.4480$ | $0.3030$ | $0.1770$ |
-
----
-
-## 4. Guía de Implementación en CFD (OpenFOAM / Fluent)
-
-### 1. Mallado con `snappyHexMesh`
-En el diccionario `system/snappyHexMeshDict`:
-```cpp
-geometry
-{
-    t100_airframe.stl
-    {
-        type triSurfaceMesh;
-        name airframe;
-    }
-    t100_rotor_disks.stl
-    {
-        type triSurfaceMesh;
-        name rotor_disks;
-    }
-}
-```
-
-### 2. Discos Actuadores con `fvOptions`
-Para simular el empuje y downwash de los 8 rotores mediante momentum theory:
-```cpp
-rotorSources
-{
-    type            actuationDiskSource;
-    active          true;
-    selectionMode   cellZone;
-    cellZone        rotor_disks;
-    diskDir         (0 0 -1);       // Downwash hacia abajo (-Z)
-    Cp              0.0;
-    Ct              0.80;           // Coeficiente de empuje calibrado
-    diskArea        15.5823;        // Área acumulada de los 8 discos
-}
-```
-
-### 3. Inyección Lagrangiana para Deposición de Gotas
-En el módulo de partículas (`sprayFoam`, `coalChemistryFoam`, o `simpleFoam` acoplado con DPM):
-- **Tipo de inyector:** `coneInjection` o inyector de película/disco centrífugo con velocidad radial tangencial $73.3\text{ m/s}$.
-- **Posiciones de inyección:** Utilizar exactamente las 4 coordenadas $(X, Y, Z)$ de la tabla B.
-- **Distribución de tamaños:** Rosin-Rammler con $d_{50} = 150\,\mu\text{m}$, parámetro de dispersión $n = 2.4$, corte en $10\,\mu\text{m}$ y $500\,\mu\text{m}$.
+> 🔧 **Barra LS100, pendiente de corregir.** Según el propietario (2026-11-23), la barra real son **dos barras rectas** (una por lado) que **salen del tren de aterrizaje**, sin quiebros, con los dos atomizadores de cada lado sobre ella. El modelo actual la dibuja con quiebros y anclada al cuerpo. No se corrige hasta que el propietario vuelva a medir la distancia en X entre la pata trasera y cada atomizador: con las posiciones actuales, la barra recta no llega a la pata que muestran las fotos (ver `INSTRUCCIONES_CFD.md`, §7).

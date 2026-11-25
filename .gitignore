@@ -54,3 +54,40 @@ Thumbs.db
 *.raw
 *.h5
 *.hdf5
+
+# --- Mallas y resultados CFD a cualquier profundidad (_evidencia/, _obsoletos_*/ ...)
+cfd/cases/**/constant/polyMesh/
+cfd/cases/**/constant/extendedFeatureEdgeMesh/
+cfd/cases/**/constant/triSurface/
+cfd/cases/**/0/polyMesh/
+cfd/cases/**/0/pointLevel
+cfd/cases/**/0/cellLevel
+cfd/cases/**/processor*/
+cfd/cases/**/postProcessing/
+cfd/cases/**/log.*
+
+# --- Geometria CFD: STL/STEP/FCStd se regeneran con
+#     python scripts/agras_model/run.py all
+#     Las superficies de control (geometry/models/T*_control.stl) SI se versionan.
+geometry/models/*_CFD/**/*.stl
+geometry/models/*_CFD/**/*.step
+geometry/models/*_CFD/**/*.FCStd
+geometry/models/*_CFD/**/*.FCBak
+geometry/models/*_CFD/**/*.log
+
+# --- Material de terceros y fotos crudas del propietario (pesado, no redistribuible)
+geometry/models/*_CFD/**/descargas_dji/
+geometry/models/T55_CFD/T55_reference/DJI_T55/
+geometry/models/T55_CFD/T55_reference/DJI_T55_png/
+*.HEIC
+*.heic
+
+# --- Literatura: PDFs con derechos de editorial (solo fichas y referencias)
+literature/**/*.pdf
+
+# --- Copias de seguridad de la base de datos
+data/processed/*_backup_*.sqlite
+cfd/cases/**/[1-9]*/
+cfd/cases/**/[1-9]*.*/
+cfd/cases/**/*backup*/
+literature/**/texto.txt

@@ -1,0 +1,504 @@
+{
+  "platform": "DJI Agras T55",
+  "model_version": "2.0",
+  "generated_by": "scripts/agras_model (build_freecad.py + export_metadata.py), parametros en platforms/t55.py",
+  "classification_legend": {
+    "P": "ficha oficial DJI",
+    "P-A": "DJI Academy",
+    "S": "medido sobre imagen",
+    "O/M": "medido por el propietario",
+    "I": "inferido / estimado",
+    "D": "desconocido"
+  },
+  "coordinate_system": {
+    "handedness": "derecha (X x Y = Z)",
+    "origin": "XY: centroide de los bujes; Z: plano de raiz de los brazos",
+    "x_axis": "+X adelante",
+    "y_axis": "+Y IZQUIERDA (babor)",
+    "z_axis": "+Z arriba",
+    "ground_plane_z_m": -0.514,
+    "units_stl": "m",
+    "units_step": "mm"
+  },
+  "topology": {
+    "rotor_count": 4,
+    "coaxial": false,
+    "evidence": "T55.webp, T55_REAR.jpg, fotos del propietario DJI_T55/: 1 helice por brazo. Ficha: '4 pares' = pares de palas",
+    "classification": "S"
+  },
+  "general_dimensions": {
+    "wheelbase_diagonal_model_m": 2.4392,
+    "wheelbase_diagonal_official_m": 2.415,
+    "envelope_with_props_model_m": [
+      3.1503,
+      3.5202
+    ],
+    "envelope_with_props_official_m": [
+      3.19,
+      3.57
+    ],
+    "height_model_m": 0.934,
+    "height_official_m": 0.934
+  },
+  "cant": {
+    "motor_along_arm_deg": -2.2,
+    "model": "motor perpendicular al tubo del brazo: giro rigido alrededor de la union brazo-motor, en el plano vertical que contiene al brazo; + = parte alta hacia fuera",
+    "atomizers": "los montados en el grupo motor heredan la inclinacion; 'own_cant_deg' es adicional",
+    "source": "I: valor de familia (T70P S+M); no hay vista limpia del T55 para medirlo. VERIFICAR con medicion"
+  },
+  "rotors": [
+    {
+      "rotor_id": "M1_FR",
+      "arm": "M1_FR",
+      "dji_motor_number": 1,
+      "role": "delantero-derecho",
+      "level": "simple",
+      "center_xyz_m": [
+        0.7875,
+        -0.9725,
+        0.1859
+      ],
+      "height_above_ground_m": 0.6999,
+      "arm_motor_joint_pivot_xyz_m": [
+        0.7893,
+        -0.9759,
+        0.086
+      ],
+      "cant_along_arm_deg": -2.2,
+      "arm_direction_xy": [
+        0.464,
+        -0.8858
+      ],
+      "cant_components_deg": {
+        "lateral": -1.949,
+        "longitudinal": -1.021
+      },
+      "disk_normal": [
+        -0.017812,
+        0.034005,
+        0.999263
+      ],
+      "thrust_direction_on_airframe": [
+        -0.017812,
+        0.034005,
+        0.999263
+      ],
+      "downwash_direction": [
+        0.017812,
+        -0.034005,
+        -0.999263
+      ],
+      "thrust_components_fraction": {
+        "vertical": 0.99926,
+        "lateral_inward": 0.03401,
+        "longitudinal": -0.01781
+      },
+      "rotation_seen_from_above": "CCW",
+      "angular_velocity_unit_vector": [
+        -0.017812,
+        0.034005,
+        0.999263
+      ],
+      "diameter_m": 1.5748,
+      "radius_m": 0.7874,
+      "swept_area_m2": 1.9478,
+      "disk_thickness_m": 0.04,
+      "blades": 2
+    },
+    {
+      "rotor_id": "M2_FL",
+      "arm": "M2_FL",
+      "dji_motor_number": 2,
+      "role": "delantero-izquierdo",
+      "level": "simple",
+      "center_xyz_m": [
+        0.7875,
+        0.9725,
+        0.1859
+      ],
+      "height_above_ground_m": 0.6999,
+      "arm_motor_joint_pivot_xyz_m": [
+        0.7893,
+        0.9759,
+        0.086
+      ],
+      "cant_along_arm_deg": -2.2,
+      "arm_direction_xy": [
+        0.464,
+        0.8858
+      ],
+      "cant_components_deg": {
+        "lateral": -1.949,
+        "longitudinal": -1.021
+      },
+      "disk_normal": [
+        -0.017812,
+        -0.034005,
+        0.999263
+      ],
+      "thrust_direction_on_airframe": [
+        -0.017812,
+        -0.034005,
+        0.999263
+      ],
+      "downwash_direction": [
+        0.017812,
+        0.034005,
+        -0.999263
+      ],
+      "thrust_components_fraction": {
+        "vertical": 0.99926,
+        "lateral_inward": 0.03401,
+        "longitudinal": -0.01781
+      },
+      "rotation_seen_from_above": "CW",
+      "angular_velocity_unit_vector": [
+        0.017812,
+        0.034005,
+        -0.999263
+      ],
+      "diameter_m": 1.5748,
+      "radius_m": 0.7874,
+      "swept_area_m2": 1.9478,
+      "disk_thickness_m": 0.04,
+      "blades": 2
+    },
+    {
+      "rotor_id": "M3_RL",
+      "arm": "M3_RL",
+      "dji_motor_number": 3,
+      "role": "trasero-izquierdo",
+      "level": "simple",
+      "center_xyz_m": [
+        -0.7875,
+        0.89,
+        0.1859
+      ],
+      "height_above_ground_m": 0.6999,
+      "arm_motor_joint_pivot_xyz_m": [
+        -0.7898,
+        0.8931,
+        0.086
+      ],
+      "cant_along_arm_deg": -2.2,
+      "arm_direction_xy": [
+        -0.6022,
+        0.7983
+      ],
+      "cant_components_deg": {
+        "lateral": -1.757,
+        "longitudinal": -1.325
+      },
+      "disk_normal": [
+        0.023117,
+        -0.030647,
+        0.999263
+      ],
+      "thrust_direction_on_airframe": [
+        0.023117,
+        -0.030647,
+        0.999263
+      ],
+      "downwash_direction": [
+        -0.023117,
+        0.030647,
+        -0.999263
+      ],
+      "thrust_components_fraction": {
+        "vertical": 0.99926,
+        "lateral_inward": 0.03065,
+        "longitudinal": 0.02312
+      },
+      "rotation_seen_from_above": "CCW",
+      "angular_velocity_unit_vector": [
+        0.023117,
+        -0.030647,
+        0.999263
+      ],
+      "diameter_m": 1.5748,
+      "radius_m": 0.7874,
+      "swept_area_m2": 1.9478,
+      "disk_thickness_m": 0.04,
+      "blades": 2
+    },
+    {
+      "rotor_id": "M4_RR",
+      "arm": "M4_RR",
+      "dji_motor_number": 4,
+      "role": "trasero-derecho",
+      "level": "simple",
+      "center_xyz_m": [
+        -0.7875,
+        -0.89,
+        0.1859
+      ],
+      "height_above_ground_m": 0.6999,
+      "arm_motor_joint_pivot_xyz_m": [
+        -0.7898,
+        -0.8931,
+        0.086
+      ],
+      "cant_along_arm_deg": -2.2,
+      "arm_direction_xy": [
+        -0.6022,
+        -0.7983
+      ],
+      "cant_components_deg": {
+        "lateral": -1.757,
+        "longitudinal": -1.325
+      },
+      "disk_normal": [
+        0.023117,
+        0.030647,
+        0.999263
+      ],
+      "thrust_direction_on_airframe": [
+        0.023117,
+        0.030647,
+        0.999263
+      ],
+      "downwash_direction": [
+        -0.023117,
+        -0.030647,
+        -0.999263
+      ],
+      "thrust_components_fraction": {
+        "vertical": 0.99926,
+        "lateral_inward": 0.03065,
+        "longitudinal": 0.02312
+      },
+      "rotation_seen_from_above": "CW",
+      "angular_velocity_unit_vector": [
+        -0.023117,
+        -0.030647,
+        -0.999263
+      ],
+      "diameter_m": 1.5748,
+      "radius_m": 0.7874,
+      "swept_area_m2": 1.9478,
+      "disk_thickness_m": 0.04,
+      "blades": 2
+    }
+  ],
+  "rotation_source": "I: convencion DJI tradicional (como T40/T50/T100). VERIFICAR",
+  "propeller": {
+    "diameter_m": 1.5748,
+    "pitch_m": 0.5842,
+    "blades": 2,
+    "beta_75R_deg": 8.95,
+    "twist_law": "beta = atan(P / (2 pi r)), congelado bajo r/R = 0.20",
+    "chord_over_R_vs_r_over_R": [
+      [
+        0.045,
+        0.0508001016002032
+      ],
+      [
+        0.12,
+        0.0698501397002794
+      ],
+      [
+        0.2,
+        0.095250190500381
+      ],
+      [
+        0.3,
+        0.10795021590043181
+      ],
+      [
+        0.4,
+        0.10541021082042165
+      ],
+      [
+        0.5,
+        0.10033020066040133
+      ],
+      [
+        0.6,
+        0.09271018542037084
+      ],
+      [
+        0.7,
+        0.08509017018034036
+      ],
+      [
+        0.8,
+        0.07747015494030988
+      ],
+      [
+        0.9,
+        0.06604013208026416
+      ],
+      [
+        0.96,
+        0.05334010668021336
+      ],
+      [
+        0.995,
+        0.031750063500127004
+      ]
+    ],
+    "airfoil": "NACA 4-digitos m=0.04 p=0.4",
+    "classification": "diametro P; paso, cuerda y perfil I (familia 62 in)"
+  },
+  "spray_system": {
+    "atomizer_model": "LX09050DX (estandar) / LX09510DX (niebla, opcional)",
+    "nozzle_spacing_official_m": 1.8,
+    "flow_L_min": {
+      "2_boquillas": 40.0,
+      "4_boquillas": 50.0
+    },
+    "flow_class": "O (propietario 2026-11-22)",
+    "droplet_um": [
+      50,
+      500
+    ],
+    "v_cant_deg": 10.0,
+    "nozzles": [
+      {
+        "nozzle_id": "N_RL_ext",
+        "configuration": "estandar",
+        "mount": "grupo motor (hereda la inclinacion)",
+        "disc_center_xyz_m": [
+          -0.795,
+          0.9,
+          -0.224
+        ],
+        "height_above_ground_m": 0.29,
+        "disc_axis": [
+          0.12726,
+          -0.16871,
+          0.977416
+        ],
+        "disc_radius_m": 0.035,
+        "injection": "lamina radial 360 grados en el plano perpendicular a disc_axis; v_borde = omega*R_disco",
+        "own_cant_deg": -10.0,
+        "classification": "P (Y) + S (X, Z) + I (V)",
+        "mounted_under": "M3_RL",
+        "below_lowest_rotor_plane_m": 0.4099
+      },
+      {
+        "nozzle_id": "N_RL_int",
+        "configuration": "opcional",
+        "mount": "grupo motor (hereda la inclinacion)",
+        "disc_center_xyz_m": [
+          -0.5783,
+          0.6126,
+          -0.224
+        ],
+        "height_above_ground_m": 0.29,
+        "disc_axis": [
+          -0.081728,
+          0.108348,
+          0.990748
+        ],
+        "disc_radius_m": 0.035,
+        "injection": "lamina radial 360 grados en el plano perpendicular a disc_axis; v_borde = omega*R_disco",
+        "own_cant_deg": 10.0,
+        "classification": "S + I (V)",
+        "mounted_under": "M3_RL",
+        "below_lowest_rotor_plane_m": 0.4099
+      },
+      {
+        "nozzle_id": "N_RR_ext",
+        "configuration": "estandar",
+        "mount": "grupo motor (hereda la inclinacion)",
+        "disc_center_xyz_m": [
+          -0.795,
+          -0.9,
+          -0.224
+        ],
+        "height_above_ground_m": 0.29,
+        "disc_axis": [
+          0.12726,
+          0.16871,
+          0.977416
+        ],
+        "disc_radius_m": 0.035,
+        "injection": "lamina radial 360 grados en el plano perpendicular a disc_axis; v_borde = omega*R_disco",
+        "own_cant_deg": -10.0,
+        "classification": "P (Y) + S (X, Z) + I (V)",
+        "mounted_under": "M4_RR",
+        "below_lowest_rotor_plane_m": 0.4099
+      },
+      {
+        "nozzle_id": "N_RR_int",
+        "configuration": "opcional",
+        "mount": "grupo motor (hereda la inclinacion)",
+        "disc_center_xyz_m": [
+          -0.5783,
+          -0.6126,
+          -0.224
+        ],
+        "height_above_ground_m": 0.29,
+        "disc_axis": [
+          -0.081728,
+          -0.108348,
+          0.990748
+        ],
+        "disc_radius_m": 0.035,
+        "injection": "lamina radial 360 grados en el plano perpendicular a disc_axis; v_borde = omega*R_disco",
+        "own_cant_deg": 10.0,
+        "classification": "S + I (V)",
+        "mounted_under": "M4_RR",
+        "below_lowest_rotor_plane_m": 0.4099
+      }
+    ]
+  },
+  "mass": {
+    "con_bateria_DB1050_kg": 45.0,
+    "tanque_kg": 50.0,
+    "mtow_pulverizacion_2boq_kg": 95.0
+  },
+  "momentum_theory_hover_reference": {
+    "rho_kg_m3": 1.1716,
+    "rotor_count": 4,
+    "total_disk_area_m2": 7.7911,
+    "momentum_area_m2": 7.7911,
+    "aviso": "teoria de cantidad de movimiento, solo orden de magnitud",
+    "vacio_45kg": {
+      "thrust_per_rotor_N": 110.3,
+      "disk_loading_N_m2": 56.6,
+      "induced_velocity_m_s": 4.92,
+      "far_wake_velocity_m_s": 9.83
+    },
+    "mtow_95kg": {
+      "thrust_per_rotor_N": 232.9,
+      "disk_loading_N_m2": 119.6,
+      "induced_velocity_m_s": 7.14,
+      "far_wake_velocity_m_s": 14.29
+    }
+  },
+  "airframe_brep": {
+    "brep_valid": true,
+    "solids": 1,
+    "volume_m3": 0.18255,
+    "wetted_area_m2": 4.7184,
+    "bbox_m": [
+      -0.8844,
+      0.884,
+      -1.0703,
+      1.0703,
+      -0.514,
+      0.42
+    ]
+  },
+  "airframe_mesh": {
+    "triangles": 140994,
+    "is_solid_closed": true,
+    "non_manifolds": false,
+    "self_intersections": false,
+    "volume_m3": 0.182543
+  },
+  "disk_airframe_overlap_cm3": {
+    "M1_FR": 0.0,
+    "M2_FL": 0.0,
+    "M3_RL": 0.0,
+    "M4_RR": 0.0
+  },
+  "notes": [
+    "PLANTA INFERIDA: sin vista cenital ortografica; proporciones T70P escaladas a las 3 cotas oficiales (error <= 1.4 %).",
+    "Atomizadores en V sobre barra bajo cada brazo trasero; angulo de la V +-10 grados (I): MEDIR.",
+    "Inclinacion del motor: valor de familia -2.2 grados (I). Sentido de giro asumido (I).",
+    "Alturas medidas en T55_REAR.jpg (S)."
+  ]
+}

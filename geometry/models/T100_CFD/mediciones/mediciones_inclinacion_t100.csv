@@ -1,0 +1,4 @@
+imagen,elemento,tipo,parametro,valor_deg_positivo_alto_hacia_fuera,incertidumbre_deg,n_puntos
+T100_REAR.png,radar,referencia,vertical_cuerpo_en_imagen,-0.06,0.00,0
+T100_REAR.png,M_izq_imagen,columna_motor_atomizador,cant_lateral,-1.90,0.48,37
+T100_REAR.png,M_dcha_imagen,columna_motor_atomizador,cant_lateral,-2.44,0.23,37

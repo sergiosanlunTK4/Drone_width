@@ -1,0 +1,7 @@
+imagen,elemento,tipo,parametro,valor_deg_positivo_alto_hacia_fuera,incertidumbre_deg,n_puntos
+T70P_REAR.png,radar,referencia,vertical_cuerpo_en_imagen,-0.33,0.00,0
+T70P_RIGHT.png,radar,referencia,vertical_cuerpo_en_imagen,-2.36,0.00,0
+T70P_REAR.png,M4_RR+N2_RR,columna_motor_atomizador,cant_lateral,-1.24,0.05,52
+T70P_REAR.png,M3_RL+N1_RL,columna_motor_atomizador,cant_lateral,-1.81,0.04,52
+T70P_RIGHT.png,trasero_cercano,columna_motor_atomizador,cant_longitudinal,+2.11,3.84,45
+T70P_RIGHT.png,trasero_lejano,columna_motor_atomizador,cant_longitudinal,+3.03,4.48,40

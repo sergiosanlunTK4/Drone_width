@@ -1,0 +1,7 @@
+imagen,elemento,tipo,parametro,valor_deg_positivo_alto_hacia_fuera,incertidumbre_deg,n_puntos
+T25P_FRONT.png,radar,referencia,vertical_cuerpo_en_imagen,-1.61,0.00,0
+T25P_LEFT.png,radar,referencia,vertical_cuerpo_en_imagen,+0.57,0.00,0
+T25P_FRONT.png,M_RR(trasero dcho),columna_motor_atomizador,cant_lateral,+3.35,0.82,36
+T25P_FRONT.png,M_RL(trasero izdo),columna_motor_atomizador,cant_lateral,-0.07,0.83,36
+T25P_LEFT.png,trasero_A,columna_motor_atomizador,cant_longitudinal,-2.89,0.18,52
+T25P_LEFT.png,trasero_B,columna_motor_atomizador,cant_longitudinal,-1.08,0.21,52

@@ -1,0 +1,145 @@
+{
+  "platform": "T55",
+  "airframe": {
+    "brep_valid": true,
+    "solids": 1,
+    "volume_m3": 0.18255,
+    "wetted_area_m2": 4.7184,
+    "bbox_m": [
+      -0.8844,
+      0.884,
+      -1.0703,
+      1.0703,
+      -0.514,
+      0.42
+    ]
+  },
+  "propellers": {
+    "M1_FR": {
+      "valid": true,
+      "solids": 1
+    },
+    "M2_FL": {
+      "valid": true,
+      "solids": 1
+    },
+    "M3_RL": {
+      "valid": true,
+      "solids": 1
+    },
+    "M4_RR": {
+      "valid": true,
+      "solids": 1
+    }
+  },
+  "disk_airframe_overlap_cm3": {
+    "M1_FR": 0.0,
+    "M2_FL": 0.0,
+    "M3_RL": 0.0,
+    "M4_RR": 0.0
+  },
+  "disk_disk_overlap_cm3": {
+    "M1_FR|M4_RR": 0.0,
+    "M2_FL|M3_RL": 0.0
+  },
+  "height_ground_to_top_m": 0.934,
+  "ground_z_m": -0.514,
+  "envelope_with_props_m": [
+    3.1503,
+    3.5202
+  ],
+  "meshes": {
+    "airframe": {
+      "triangles": 140994,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 0.182543
+    },
+    "rotor_M1_FR": {
+      "triangles": 1004,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 0.077903
+    },
+    "rotor_M2_FL": {
+      "triangles": 1004,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 0.077903
+    },
+    "rotor_M3_RL": {
+      "triangles": 1004,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 0.077903
+    },
+    "rotor_M4_RR": {
+      "triangles": 1004,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 0.077903
+    },
+    "prop_M1_FR": {
+      "triangles": 105316,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 0.000828
+    },
+    "prop_M2_FL": {
+      "triangles": 105068,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 0.000829
+    },
+    "prop_M3_RL": {
+      "triangles": 105764,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 0.000828
+    },
+    "prop_M4_RR": {
+      "triangles": 105294,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 0.00083
+    },
+    "N_RL_ext": {
+      "triangles": 500,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 3.9e-05
+    },
+    "N_RL_int": {
+      "triangles": 500,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 3.8e-05
+    },
+    "N_RR_ext": {
+      "triangles": 500,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 3.9e-05
+    },
+    "N_RR_int": {
+      "triangles": 500,
+      "is_solid_closed": true,
+      "non_manifolds": false,
+      "self_intersections": false,
+      "volume_m3": 3.8e-05
+    }
+  },
+  "mesh_problems": []
+}

@@ -90,17 +90,19 @@
       "razon": "geometria y dimensiones del sobre"
     },
     "coaxial": {
-      "valor": true,
-      "clasificacion": "S",
-      "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, deck 01)",
-      "nota": "elevado de I a S: la imagen de la slide 11 muestra el par coaxial en cada brazo. Falta la separacion axial del par (D)."
+      "valor": false,
+      "clasificacion": "P-A + S",
+      "fuente": "geometry/models/T70P_CFD/t70p_cfd_coordinates.json",
+      "nota": "CORREGIDO 2026-11-22 (geometria v2): 4 rotores simples, NO coaxial. Evidencia: geometry/models/T70P_CFD/t70p_cfd_coordinates.json -> topology (DJI Academy deck 01: 'empuje de un solo eje 54.2 kg', 'abrazadera oscilante (solo T70P)'; slide 11 muestra 1 helice por brazo). La lectura previa de la slide 11 como 'par coaxial' se retira.",
+      "valor_previo": true
     },
     "rotor_count": {
-      "valor": 8,
-      "clasificacion": "S",
-      "fuente": "data/raw/dji_academy_01_conocimiento_basico.txt (DJI Academy, deck 01)",
-      "nota": "elevado de I a S: la imagen de la slide 11 muestra el par coaxial en cada brazo. Falta la separacion axial del par (D).",
-      "hipotesis_previa": 8
+      "valor": 4,
+      "clasificacion": "P-A + S",
+      "fuente": "geometry/models/T70P_CFD/t70p_cfd_coordinates.json",
+      "nota": "CORREGIDO 2026-11-22 (geometria v2): 4 rotores simples, NO coaxial. Evidencia: geometry/models/T70P_CFD/t70p_cfd_coordinates.json -> topology (DJI Academy deck 01: 'empuje de un solo eje 54.2 kg', 'abrazadera oscilante (solo T70P)'; slide 11 muestra 1 helice por brazo). La lectura previa de la slide 11 como 'par coaxial' se retira.",
+      "hipotesis_previa": 8,
+      "valor_previo": 8
     },
     "direccion_rotacion": {
       "valor": "motor 1/3 CW, motor 2/4 CCW -> opuesta a cuadricoptero tradicional (P-A)",
@@ -247,15 +249,16 @@
   "derivados_nivel0": {
     "aviso": "momentum theory: solo ordenes de magnitud (context.md SS12 nivel 0). No es resultado del estudio.",
     "rho_aire_kg_m3": 1.1716,
-    "n_rotores_hipotesis": 8,
-    "area_disco_total_m2": 15.566,
-    "carga_disco_N_m2": 79.4,
-    "v_inducida_hover_ms": 5.82,
-    "carga_disco_por_rotor_N_m2": 79.4,
-    "relacion_empuje_peso_declarada": 1.72
+    "n_rotores_hipotesis": 4,
+    "area_disco_total_m2": 7.791,
+    "carga_disco_N_m2": 158.6,
+    "v_inducida_hover_ms": 8.23,
+    "carga_disco_por_rotor_N_m2": 158.6,
+    "relacion_empuje_peso_declarada": 1.72,
+    "correccion": "recalculado 2026-11-22 con 4 rotores (antes 8)"
   },
   "pendiente_de_medicion": [
-    "numero real de rotores y de pares coaxiales",
+    "numero de rotores: RESUELTO (4, no coaxial; 2026-11-22)",
     "posicion XYZ real de cada rotor y z del plano de rotor",
     "numero de palas y geometria de pala (cuerda, twist)",
     "RPM real en hover y en traslacion  [RIESGO R1]",
@@ -279,9 +282,10 @@
         "slide": 11,
         "archivo": "data/raw/media/01a_conocimiento_basico/p11_be434fb85503.png",
         "muestra": "vista general de la aeronave (3/4 frontal) y detalle de rotor",
-        "observa": "cada uno de los 4 brazos porta DOS helices en configuracion COAXIAL (superior e inferior, con separacion axial visible) => 8 rotores; el detalle de rotor muestra 2 PALAS y abrazadera de helice oscilante",
+        "observa": "1 helice por brazo (4 rotores). CORREGIDO 2026-11-22 (geometria v2): 4 rotores simples, NO coaxial. Evidencia: geometry/models/T70P_CFD/t70p_cfd_coordinates.json -> topology (DJI Academy deck 01: 'empuje de un solo eje 54.2 kg', 'abrazadera oscilante (solo T70P)'; slide 11 muestra 1 helice por brazo). La lectura previa de la slide 11 como 'par coaxial' se retira.",
         "corrobora": null,
-        "no_permite": "medir la separacion axial del par ni las cotas de brazo"
+        "no_permite": "medir la separacion axial del par ni las cotas de brazo",
+        "observa_previo": "cada uno de los 4 brazos porta DOS helices en configuracion COAXIAL (superior e inferior, con separacion axial visible) => 8 rotores; el detalle de rotor muestra 2 PALAS y abrazadera de helice oscilante"
       },
       {
         "clasificacion": "S",

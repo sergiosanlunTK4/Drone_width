@@ -90,17 +90,20 @@
       "razon": "geometria y dimensiones del sobre"
     },
     "coaxial": {
-      "valor": null,
-      "clasificacion": "D",
-      "fuente": null,
-      "nota": "sin evidencia visual en el deck 01; las specs DJI mencionan '4 pares de helices'. Requiere medicion o localizacion de material propio del T55."
+      "valor": false,
+      "clasificacion": "S",
+      "fuente": "geometry/models/T55_CFD/t55_cfd_coordinates.json",
+      "nota": "CORREGIDO 2026-11-22 (geometria v2): 4 rotores simples, NO coaxial. Evidencia: geometry/models/T55_CFD/t55_cfd_coordinates.json -> topology (T55.webp, T55_REAR.jpg, fotos del propietario DJI_T55/: 1 helice por brazo. Ficha: '4 pares' = pares de palas). La hipotesis previa (I: '4 pares' = 4 pares coaxiales) se retira.",
+      "valor_previo": null
     },
     "rotor_count": {
-      "valor": null,
-      "clasificacion": "D",
+      "valor": 4,
+      "clasificacion": "S",
       "hipotesis_trabajo": 8,
       "conflicto": null,
-      "nota": "NO confirmado. Usar la hipotesis solo marcandola como tal en CFD."
+      "nota": "CORREGIDO 2026-11-22 (geometria v2): 4 rotores simples, NO coaxial. Evidencia: geometry/models/T55_CFD/t55_cfd_coordinates.json -> topology (T55.webp, T55_REAR.jpg, fotos del propietario DJI_T55/: 1 helice por brazo. Ficha: '4 pares' = pares de palas). La hipotesis previa (I: '4 pares' = 4 pares coaxiales) se retira.",
+      "valor_previo": null,
+      "fuente": "geometry/models/T55_CFD/t55_cfd_coordinates.json"
     },
     "direccion_rotacion": {
       "valor": null,
@@ -244,15 +247,16 @@
   "derivados_nivel0": {
     "aviso": "momentum theory: solo ordenes de magnitud (context.md SS12 nivel 0). No es resultado del estudio.",
     "rho_aire_kg_m3": 1.1716,
-    "n_rotores_hipotesis": 8,
-    "area_disco_total_m2": 15.586,
-    "carga_disco_N_m2": 59.8,
-    "v_inducida_hover_ms": 5.05,
-    "carga_disco_por_rotor_N_m2": 59.8,
-    "relacion_empuje_peso_declarada": null
+    "n_rotores_hipotesis": 4,
+    "area_disco_total_m2": 7.791,
+    "carga_disco_N_m2": 119.6,
+    "v_inducida_hover_ms": 7.14,
+    "carga_disco_por_rotor_N_m2": 119.6,
+    "relacion_empuje_peso_declarada": null,
+    "correccion": "recalculado 2026-11-22 con 4 rotores (antes 8)"
   },
   "pendiente_de_medicion": [
-    "numero real de rotores y de pares coaxiales",
+    "numero de rotores: RESUELTO (4, no coaxial; 2026-11-22)",
     "posicion XYZ real de cada rotor y z del plano de rotor",
     "numero de palas y geometria de pala (cuerda, twist)",
     "RPM real en hover y en traslacion  [RIESGO R1]",
